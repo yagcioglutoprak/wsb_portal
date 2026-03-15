@@ -287,7 +287,7 @@ export default function JobDetail() {
                   return (
                     <div
                       key={cert.id}
-                      className="group rounded-md border-l-[3px] border-l-rust border border-t-faint border-r-faint border-b-faint bg-white px-5 py-4 transition-all duration-200 hover:translate-x-1 hover:shadow-sm animate-fade-in-up"
+                      className="group rounded-md border border-faint bg-white px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-pencil/30 animate-fade-in-up"
                       style={{ animationDelay: `${(i + 4) * 80}ms` }}
                     >
                       <Link
