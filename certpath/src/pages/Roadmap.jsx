@@ -1,6 +1,33 @@
 import { useParams, Link } from "react-router-dom";
 import { fields, certifications, jobs } from "../data/mock";
 import StageCard from "../components/StageCard";
+import {
+  CybersecurityIcon,
+  CloudIcon,
+  DevOpsIcon,
+  DataScienceIcon,
+  BackendIcon,
+  NetworkingIcon,
+  ITSMIcon,
+  FrontendIcon,
+  FinanceIcon,
+  ManagementIcon,
+  LogisticsIcon,
+} from "../components/Icons";
+
+const fieldIcons = {
+  cybersecurity: CybersecurityIcon,
+  "cloud-engineering": CloudIcon,
+  devops: DevOpsIcon,
+  "data-science": DataScienceIcon,
+  "backend-development": BackendIcon,
+  networking: NetworkingIcon,
+  itsm: ITSMIcon,
+  "frontend-development": FrontendIcon,
+  "finance-accounting": FinanceIcon,
+  management: ManagementIcon,
+  "logistics-supply-chain": LogisticsIcon,
+};
 
 const stageNames = {
   1: "Foundation",
@@ -85,9 +112,15 @@ export default function Roadmap() {
         <span className="font-mono text-xs uppercase tracking-widest text-pencil">
           Certification Roadmap
         </span>
-        <h1 className="mt-2 font-serif text-3xl italic text-ink sm:text-4xl">
-          {field.name}
-        </h1>
+        <div className="mt-2 flex items-center gap-3">
+          {(() => {
+            const Icon = fieldIcons[slug];
+            return Icon ? <Icon className="h-10 w-10 text-merito" /> : null;
+          })()}
+          <h1 className="font-serif text-3xl italic text-ink sm:text-4xl">
+            {field.name}
+          </h1>
+        </div>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-graphite">
           {field.description}
         </p>

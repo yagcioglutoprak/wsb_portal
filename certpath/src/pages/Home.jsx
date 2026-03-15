@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { UserIcon, StageIcon, BriefcaseIcon } from "../components/Icons";
 
 const steps = [
   {
@@ -6,18 +7,21 @@ const steps = [
     title: "Tell us about yourself",
     description:
       "Your year, your program, your interests. A few quick taps and we know what matters to you.",
+    Icon: UserIcon,
   },
   {
     num: "02",
     title: "Get your roadmap",
     description:
       "Staged certifications matched to your profile -- from foundation to expert, in the right order.",
+    Icon: StageIcon,
   },
   {
     num: "03",
     title: "See real jobs",
     description:
       "Live positions in Poland that list the certifications on your path. Know where each cert leads.",
+    Icon: BriefcaseIcon,
   },
 ];
 
@@ -104,6 +108,8 @@ export default function Home() {
             >
               {/* Top accent line */}
               <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-rust transition-transform duration-300 group-hover:scale-x-100 rounded-t-lg" />
+
+              <step.Icon className="mb-4 h-10 w-10 text-rust/60" />
 
               <span className="font-mono text-4xl font-light text-pencil/40">
                 {step.num}

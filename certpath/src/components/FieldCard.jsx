@@ -1,5 +1,32 @@
 import { Link } from "react-router-dom";
 import { certifications, jobs } from "../data/mock";
+import {
+  CybersecurityIcon,
+  CloudIcon,
+  DevOpsIcon,
+  DataScienceIcon,
+  BackendIcon,
+  NetworkingIcon,
+  ITSMIcon,
+  FrontendIcon,
+  FinanceIcon,
+  ManagementIcon,
+  LogisticsIcon,
+} from "./Icons";
+
+const fieldIcons = {
+  cybersecurity: CybersecurityIcon,
+  "cloud-engineering": CloudIcon,
+  devops: DevOpsIcon,
+  "data-science": DataScienceIcon,
+  "backend-development": BackendIcon,
+  networking: NetworkingIcon,
+  itsm: ITSMIcon,
+  "frontend-development": FrontendIcon,
+  "finance-accounting": FinanceIcon,
+  management: ManagementIcon,
+  "logistics-supply-chain": LogisticsIcon,
+};
 
 export default function FieldCard({ field, index }) {
   const fieldCerts = certifications[field.slug] || [];
@@ -18,6 +45,14 @@ export default function FieldCard({ field, index }) {
     >
       {/* Top accent line -- reveals on hover */}
       <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-rust transition-transform duration-300 group-hover:scale-x-100" />
+
+      {/* Field icon — top right */}
+      {(() => {
+        const Icon = fieldIcons[field.slug];
+        return Icon ? (
+          <Icon className="absolute right-5 top-5 h-8 w-8 text-pencil/40 transition-colors duration-300 group-hover:text-rust" />
+        ) : null;
+      })()}
 
       {/* Figure number */}
       <span className="font-mono text-xs font-light tracking-wider text-pencil">

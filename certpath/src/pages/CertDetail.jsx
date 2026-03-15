@@ -8,6 +8,7 @@ import {
 } from "../data/mock";
 import ResourceRow from "../components/ResourceRow";
 import JobRow from "../components/JobRow";
+import { CurrencyIcon, ClockIcon, BookIcon, StageIcon } from "../components/Icons";
 
 const difficultyStyles = {
   beginner: "bg-success/10 text-success border-success/20",
@@ -144,12 +145,13 @@ export default function CertDetail() {
             style={{ animationDelay: "160ms" }}
           >
             <StatBlock
+              icon={CurrencyIcon}
               label="Cost"
               value={`${cert.costPln.toLocaleString("pl-PL")} PLN`}
             />
-            <StatBlock label="Duration" value={`~${Math.round(cert.durationWeeks / 4)} months`} />
-            <StatBlock label="Exam code" value={cert.examCode || "N/A"} />
-            <StatBlock label="Stage" value={`${cert.stage} of ${totalStages}`} />
+            <StatBlock icon={ClockIcon} label="Duration" value={`~${Math.round(cert.durationWeeks / 4)} months`} />
+            <StatBlock icon={BookIcon} label="Exam code" value={cert.examCode || "N/A"} />
+            <StatBlock icon={StageIcon} label="Stage" value={`${cert.stage} of ${totalStages}`} />
           </div>
 
           {/* Salary after this certification */}
@@ -327,9 +329,10 @@ export default function CertDetail() {
   );
 }
 
-function StatBlock({ label, value }) {
+function StatBlock({ icon: Icon, label, value }) {
   return (
     <div className="rounded-md border border-faint bg-white p-6">
+      {Icon && <Icon className="mb-2 h-5 w-5 text-pencil" />}
       <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
         {label}
       </span>
