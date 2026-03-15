@@ -10,8 +10,8 @@ export default function Layout() {
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           backgroundImage: [
-            "linear-gradient(to right, rgba(26,23,20,0.03) 1px, transparent 1px)",
-            "linear-gradient(to bottom, rgba(26,23,20,0.03) 1px, transparent 1px)",
+            "linear-gradient(to right, rgba(27,34,82,0.03) 1px, transparent 1px)",
+            "linear-gradient(to bottom, rgba(27,34,82,0.03) 1px, transparent 1px)",
           ].join(", "),
           backgroundSize: "48px 48px",
         }}

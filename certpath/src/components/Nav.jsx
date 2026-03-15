@@ -11,10 +11,13 @@ export default function Nav() {
     <header className="sticky top-0 z-50 border-b border-faint bg-paper/90 backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link to="/" className="flex items-baseline gap-0">
+        <Link to="/" className="flex items-baseline gap-3">
           <span className="font-serif text-2xl italic text-ink">
             <span className="text-rust">C</span>ert
             <span className="text-rust">P</span>ath
+          </span>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-merito">
+            for WSB Merito
           </span>
         </Link>
 

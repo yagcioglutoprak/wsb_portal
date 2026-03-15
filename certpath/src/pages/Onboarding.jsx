@@ -29,7 +29,7 @@ function ProgressDots({ current, total }) {
             i + 1 === current
               ? "bg-rust scale-125"
               : i + 1 < current
-                ? "bg-rust/40"
+                ? "bg-merito"
                 : "bg-pencil/20",
           ].join(" ")}
         />

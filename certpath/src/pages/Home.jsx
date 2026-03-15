@@ -27,11 +27,16 @@ export default function Home() {
       {/* ── Hero ────────────────────────────────────────────────── */}
       <div className="mx-auto max-w-2xl text-center">
         <span
-          className="inline-block font-mono text-xs uppercase tracking-widest text-pencil animate-fade-in-up"
+          className="inline-block font-mono text-xs uppercase tracking-widest text-merito animate-fade-in-up"
           style={{ animationDelay: "0ms" }}
         >
           Built for WSB Merito students
         </span>
+
+        <div
+          className="mx-auto mt-5 w-16 border-t border-merito animate-fade-in-up"
+          style={{ animationDelay: "40ms" }}
+        />
 
         <h1
           className="mt-6 font-serif text-4xl italic leading-tight text-ink sm:text-5xl lg:text-6xl animate-fade-in-up"
