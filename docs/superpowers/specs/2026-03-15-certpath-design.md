@@ -101,16 +101,9 @@ Sign up -> Onboarding quiz -> Dashboard (personalized path, matched jobs, skill 
 - icon (text) — icon identifier
 - order (int)
 
-### `career_paths`
-- id (uuid, PK)
-- field_id (uuid, FK -> fields)
-- name (text) — e.g. "Penetration Testing"
-- description (text)
-- difficulty (text) — beginner/intermediate/advanced
-
 ### `certifications`
 - id (uuid, PK)
-- career_path_id (uuid, FK -> career_paths)
+- field_id (uuid, FK -> fields)
 - name (text)
 - provider (text) — e.g. "CompTIA"
 - cost_pln (int)
@@ -150,7 +143,12 @@ Sign up -> Onboarding quiz -> Dashboard (personalized path, matched jobs, skill 
 - scraped_at (timestamptz)
 - field_id (uuid, FK -> fields)
 
-### `job_certifications` (join table)
+### `cert_keywords` (for job matching)
+- id (uuid, PK)
+- certification_id (uuid, FK -> certifications)
+- keyword (text) — lowercase, e.g. "security+", "comptia security", "sec+"
+
+### `job_certifications` (join table, auto-populated by scraper)
 - job_id (uuid, FK -> jobs)
 - certification_id (uuid, FK -> certifications)
 
@@ -159,7 +157,7 @@ Sign up -> Onboarding quiz -> Dashboard (personalized path, matched jobs, skill 
 - display_name (text)
 - university_year (int) — 1-5
 - field_id (uuid, FK -> fields, nullable)
-- career_path_id (uuid, FK -> career_paths, nullable)
+- target_field_id (uuid, FK -> fields, nullable) — secondary interest
 - budget_pln (int, nullable)
 - hours_per_week (int, nullable)
 - skills (text[])
@@ -173,25 +171,62 @@ Sign up -> Onboarding quiz -> Dashboard (personalized path, matched jobs, skill 
 - started_at (timestamptz, nullable)
 - completed_at (timestamptz, nullable)
 
+## Seed Data Strategy
+
+All certification, resource, and field data is curated manually and loaded via a SQL seed file (`supabase/seed.sql`). This is a one-time authoring effort during Day 1-2 of development.
+
+Estimated scope: ~50 certifications, ~150 learning resources, 11 fields. The seed file is the single source of truth for curated content.
+
 ## Integrations
 
 ### Job Scraping (Supabase Edge Functions, daily cron)
 - **JustJoin.IT**: Via Apify scraper. Filter: Poland, IT, intern/junior.
-- **NoFluffJobs**: Via their API/scraper. Filter: Poland, with salary data.
+- **NoFluffJobs**: Via their GitHub API wrapper. Filter: Poland, with salary data.
 - Jobs stored in `jobs` table, refreshed daily.
 - Stale jobs (>30 days) auto-archived.
 
-### AI Features (Supabase Edge Functions -> Gemini API)
-All AI calls use curated certification data as context (not hallucinated):
+**Job-to-certification matching strategy**: When jobs are scraped, an Edge Function runs keyword matching on the job's `required_skills` array against a mapping table of cert-related keywords (e.g. "Security+" -> ["security+", "comptia security", "sec+"], "AWS" -> ["aws", "amazon web services", "cloud practitioner"]). This keyword map is stored in a `cert_keywords` table seeded alongside certifications. Matches populate the `job_certifications` join table. No AI needed for this — simple text matching is sufficient and deterministic.
 
-1. **Path Recommendation** (onboarding): Input student profile -> Output recommended path + starting cert
-2. **Skill Gap Analysis** (dashboard): Input completed certs + target job -> Output gap + how to close it
-3. **Learning Plan** (per cert): Input cert + available hours/week -> Output week-by-week study plan
+### AI Features (Supabase Edge Functions -> Gemini API)
+
+Model: Gemini 2.0 Flash (fast, cheap, sufficient for structured recommendations).
+Fallback: If API is down or rate-limited, show a static "default path" recommendation based on the most popular cert in the student's field.
+
+**1. Path Recommendation** (onboarding)
+- Input: `{ year, field_slug, experience_level, budget_pln, hours_per_week, goals }`
+- Context injected: All certifications + stages for the selected field (JSON, ~2k tokens)
+- System prompt: "You are a career advisor for Polish IT students. Given the student profile and available certifications, recommend one career path and a starting certification. Respond in JSON."
+- Output schema: `{ recommended_path_id, starting_cert_id, reasoning: string }`
+- Token budget: ~500 input + 200 output
+
+**2. Skill Gap Analysis** (dashboard)
+- Input: `{ completed_cert_ids, target_job: { title, required_skills } }`
+- Context injected: Student's completed certs + target job details
+- Output schema: `{ match_percentage: number, skills_have: string[], skills_need: string[], recommended_next_cert_id, study_suggestion: string }`
+
+**3. Learning Plan** (per cert)
+- Input: `{ certification_id, hours_per_week }`
+- Context injected: Cert details + all learning resources for that cert
+- Output schema: `{ weeks: [{ week: number, focus: string, resources: string[], hours: number }] }`
 
 ### Authentication (Supabase Auth)
 - Email/password
 - Google OAuth
-- Row Level Security on profiles and progress tables
+- Row Level Security policies:
+  - `fields`, `certifications`, `learning_resources`, `jobs`: SELECT for all (anon + authenticated)
+  - `profiles`: SELECT/UPDATE/INSERT only where `auth.uid() = id`
+  - `progress`: SELECT/UPDATE/INSERT/DELETE only where `auth.uid() = profile_id`
+
+## Onboarding Quiz -> Profile Mapping
+
+| Quiz question | Type | Maps to `profiles` column |
+|---------------|------|--------------------------|
+| "What year are you in?" | Select: 1-5 | `university_year` |
+| "What field interests you?" | Field picker (same as home) | `field_id` |
+| "How would you rate your experience?" | Select: beginner/some/experienced | `skills` (mapped to skill tags) |
+| "Monthly budget for learning?" | Select: 0/50/100/200+ PLN | `budget_pln` |
+| "Hours per week for self-study?" | Select: 2/5/10/15+ | `hours_per_week` |
+| "What's your career goal?" | Free text | `goals` |
 
 ## Key Design Decisions
 
