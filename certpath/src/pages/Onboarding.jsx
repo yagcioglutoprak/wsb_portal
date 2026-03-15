@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { fields, certifications } from "../data/mock";
+import { fields, certifications, jobs } from "../data/mock";
 import { programs } from "../data/programs";
 import {
   CybersecurityIcon,
@@ -789,93 +789,173 @@ export default function Onboarding() {
           )}
 
           {/* ── Step 4: Result ───────────────────────────── */}
-          {step === 4 && (
-            <div>
-              <span className="block font-mono text-xs tracking-widest text-pencil">
-                04
-              </span>
+          {step === 4 && (() => {
+            const FieldIcon = selectedField ? fieldIcons[selectedField] : null;
+            const fieldJobs = chosenField ? jobs.filter(j => j.fieldId === chosenField.id) : [];
+            const salaryMin = fieldJobs.length ? Math.min(...fieldJobs.map(j => j.salaryMin)) : 0;
+            const salaryMax = fieldJobs.length ? Math.max(...fieldJobs.map(j => j.salaryMax)) : 0;
+            const totalWeeks = fieldCerts.reduce((s, c) => s + c.durationWeeks, 0);
+            const totalCost = fieldCerts.reduce((s, c) => s + c.costPln, 0);
+            const firstCert = fieldCerts.length ? fieldCerts.sort((a,b) => a.stage - b.stage)[0] : null;
 
-              {/* Celebratory path illustration */}
-              <div className="mt-4 flex justify-center">
-                <PathIllustration className="h-24 w-32 text-merito/40" />
+            return (
+            <div>
+              {/* Header with icon */}
+              <div className="flex items-start gap-5 animate-fade-in-up" style={{ animationDelay: "0ms" }}>
+                {FieldIcon && (
+                  <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-merito/10 animate-scale-in" style={{ animationDelay: "200ms" }}>
+                    <FieldIcon className="h-7 w-7 text-merito" />
+                  </div>
+                )}
+                <div>
+                  <span className="block font-mono text-xs tracking-widest text-pencil">
+                    Your personalized path
+                  </span>
+                  <h1 className="mt-1 font-serif text-3xl italic text-ink sm:text-4xl">
+                    {chosenField?.name || "Your path"}
+                  </h1>
+                  {chosenField && (
+                    <p className="mt-2 text-base leading-relaxed text-graphite">
+                      Tailored for a <span className="font-medium text-ink">{yearLabel}</span>{" "}
+                      {programLabel !== "Other" ? <><span className="font-medium text-ink">{programLabel}</span> </> : ""}student.
+                      Here is where we recommend you start.
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <h1 className="mt-3 font-serif text-3xl italic text-ink sm:text-4xl">
-                Here is your path.
-              </h1>
-              {chosenField && (
-                <p className="mt-3 text-base leading-relaxed text-graphite">
-                  As a {yearLabel} {programLabel} student interested in{" "}
-                  <span className="font-medium text-ink">
-                    {chosenField.name}
-                  </span>
-                  , here is where we recommend you start.
-                </p>
+              {/* Animated progress bar */}
+              <div className="mt-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+                <div className="h-1.5 rounded-full bg-warm overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-merito to-rust transition-all duration-1000 ease-out"
+                    style={{ width: "100%", animation: "drawLine 1.2s ease-out 0.5s both" }}
+                  />
+                </div>
+              </div>
+
+              {/* Key stats row */}
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  { value: stageNums.length, label: "stages", color: "text-ink", delay: 300 },
+                  { value: fieldCerts.length, label: "certifications", color: "text-ink", delay: 400 },
+                  { value: fieldJobs.length, label: "jobs in Poland", color: "text-rust", delay: 500 },
+                  { value: `~${Math.round(totalWeeks / 4)}`, label: "months total", color: "text-ink", delay: 600 },
+                ].map(({ value, label, color, delay }) => (
+                  <div
+                    key={label}
+                    className="rounded-lg border border-faint bg-card p-4 text-center animate-scale-in"
+                    style={{ animationDelay: `${delay}ms` }}
+                  >
+                    <span className={`block font-serif text-2xl italic ${color}`}>{value}</span>
+                    <span className="block font-mono text-xs tracking-wider text-pencil mt-1">{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Salary + cost summary */}
+              {fieldJobs.length > 0 && (
+                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg border border-success/20 bg-success/5 p-4 animate-slide-in-right" style={{ animationDelay: "700ms" }}>
+                    <span className="block font-mono text-xs tracking-widest text-success">Salary range in Poland</span>
+                    <span className="mt-1 block font-serif text-xl italic text-ink">
+                      {salaryMin.toLocaleString("pl-PL")} - {salaryMax.toLocaleString("pl-PL")} PLN/month
+                    </span>
+                  </div>
+                  <div className="rounded-lg border border-faint bg-card p-4 animate-slide-in-right" style={{ animationDelay: "800ms" }}>
+                    <span className="block font-mono text-xs tracking-widest text-pencil">Total certification cost</span>
+                    <span className="mt-1 block font-serif text-xl italic text-ink">
+                      ~{totalCost.toLocaleString("pl-PL")} PLN
+                    </span>
+                    <span className="block text-xs text-graphite mt-0.5">Many free alternatives available</span>
+                  </div>
+                </div>
               )}
 
-              {/* Mini roadmap preview */}
-              {previewStages.length > 0 && (
-                <div className="mt-10 space-y-6">
-                  {previewStages.map((stageNum) => (
+              {/* Start here highlight */}
+              {firstCert && (
+                <div className="mt-8 rounded-xl border-2 border-rust/20 bg-rust/5 p-6 animate-fade-in-up animate-pulse-soft" style={{ animationDelay: "900ms" }}>
+                  <span className="block font-mono text-xs tracking-widest text-rust">Start here</span>
+                  <span className="mt-2 block font-serif text-xl italic text-ink">{firstCert.name}</span>
+                  <p className="mt-1 text-sm leading-relaxed text-graphite">{firstCert.description}</p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                      {firstCert.provider}
+                    </span>
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                      {firstCert.costPln > 0 ? `~${firstCert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
+                    </span>
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                      ~{Math.round(firstCert.durationWeeks / 4)} months
+                    </span>
+                    {firstCert.examCode && (
+                      <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                        {firstCert.examCode}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Full stage overview */}
+              <div className="mt-8 animate-fade-in-up" style={{ animationDelay: "1000ms" }}>
+                <span className="block font-mono text-xs tracking-widest text-pencil mb-4">Full roadmap overview</span>
+                <div className="space-y-3">
+                  {stageNums.map((stageNum, idx) => (
                     <div
                       key={stageNum}
-                      className="rounded-lg border border-faint bg-card p-6"
+                      className="rounded-lg border border-faint bg-card p-5 animate-fade-in-up"
+                      style={{ animationDelay: `${(idx + 3) * 100}ms` }}
                     >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rust text-white font-mono text-xs font-medium">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-xs font-medium ${
+                          idx === 0 ? "bg-rust text-white" : "border-2 border-pencil/20 text-pencil"
+                        }`}>
                           {stageNum}
                         </div>
-                        <div>
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-pencil">
-                            Stage {String(stageNum).padStart(2, "0")}
-                          </span>
+                        <div className="flex-1">
                           <span className="block font-serif text-lg italic text-ink">
-                            {stages[stageNum][0]?.stageName ||
-                              `Stage ${stageNum}`}
+                            {stages[stageNum][0]?.stageName || `Stage ${stageNum}`}
+                          </span>
+                          <span className="block font-mono text-xs text-pencil">
+                            ~{Math.round(stages[stageNum].reduce((s, c) => s + c.durationWeeks, 0) / 4)} months
                           </span>
                         </div>
+                        <span className="font-mono text-xs text-pencil">
+                          {stages[stageNum].length} cert{stages[stageNum].length !== 1 ? "s" : ""}
+                        </span>
                       </div>
-                      <div className="space-y-2 pl-11">
+                      <div className="space-y-2 pl-12">
                         {stages[stageNum].map((cert) => (
-                          <div
-                            key={cert.id}
-                            className="flex items-baseline justify-between border-b border-faint pb-2 last:border-0 last:pb-0"
-                          >
+                          <div key={cert.id} className="flex items-center justify-between py-1.5 border-b border-faint last:border-0">
                             <div>
-                              <span className="text-sm font-medium text-ink">
-                                {cert.name}
+                              <span className="text-sm font-medium text-ink">{cert.name}</span>
+                              <span className="ml-2 font-mono text-xs text-pencil">{cert.provider}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-right">
+                              <span className="font-mono text-xs text-pencil">
+                                {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
                               </span>
-                              <span className="ml-2 font-mono text-xs text-pencil">
-                                {cert.provider}
+                              <span className="font-mono text-xs text-pencil">
+                                ~{Math.round(cert.durationWeeks / 4)} mo
                               </span>
                             </div>
-                            <span className="font-mono text-xs text-pencil">
-                              ~{Math.round(cert.durationWeeks / 4)} mo
-                            </span>
                           </div>
                         ))}
                       </div>
                     </div>
                   ))}
-
-                  {stageNums.length > 2 && (
-                    <p className="text-center font-mono text-xs tracking-wider text-pencil">
-                      + {stageNums.length - 2} more stage
-                      {stageNums.length - 2 > 1 ? "s" : ""} in the full
-                      roadmap
-                    </p>
-                  )}
                 </div>
-              )}
+              </div>
 
               {/* CTAs */}
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: "1200ms" }}>
                 {chosenField && (
                   <Link
                     to={`/fields/${chosenField.slug}`}
-                    className="inline-block rounded bg-rust px-8 py-3.5 font-mono text-sm uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rust/20"
+                    className="inline-block rounded-lg bg-rust px-10 py-4 font-mono text-sm uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rust/20"
                   >
-                    View full roadmap
+                    View full roadmap with resources
                   </Link>
                 )}
                 <button
@@ -890,7 +970,8 @@ export default function Onboarding() {
                 </button>
               </div>
             </div>
-          )}
+            );
+          })()}
         </StepWrapper>
       </div>
     </section>
