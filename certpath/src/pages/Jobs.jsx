@@ -78,12 +78,17 @@ export default function Jobs() {
       </div>
 
       {/* Count */}
-      <p
-        className="mb-4 font-mono text-xs tracking-wider text-pencil animate-fade-in-up"
+      <div
+        className="mb-4 flex items-center gap-2 animate-fade-in-up"
         style={{ animationDelay: "200ms" }}
       >
-        Showing {filtered.length} of {jobs.length} positions
-      </p>
+        <span className="font-serif text-2xl italic text-ink">
+          {filtered.length}
+        </span>
+        <span className="font-mono text-sm tracking-wider text-pencil">
+          of {jobs.length} positions
+        </span>
+      </div>
 
       {/* Job list */}
       <div className="flex flex-col gap-3">
@@ -125,7 +130,7 @@ function FilterTab({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={[
-        "rounded-full border px-3 py-1 font-mono text-[11px] tracking-wider transition-all duration-200",
+        "rounded-full border px-4 py-1.5 font-mono text-xs tracking-wider transition-all duration-200",
         active
           ? "border-rust bg-rust text-white"
           : "border-faint bg-white text-graphite hover:border-pencil/30 hover:text-ink",

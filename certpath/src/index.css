@@ -32,6 +32,8 @@
 
 body {
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
   background-color: var(--color-paper);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;

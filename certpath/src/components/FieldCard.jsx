@@ -16,7 +16,7 @@ export default function FieldCard({ field, index }) {
       className="group relative block rounded-lg border border-faint bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       style={{ animationDelay: `${index * 80}ms` }}
     >
-      {/* Top accent line — reveals on hover */}
+      {/* Top accent line -- reveals on hover */}
       <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-rust transition-transform duration-300 group-hover:scale-x-100" />
 
       {/* Figure number */}
@@ -48,6 +48,11 @@ export default function FieldCard({ field, index }) {
           ~{months} mo
         </span>
       </div>
+
+      {/* View roadmap link */}
+      <p className="mt-3 font-mono text-xs uppercase tracking-wider text-rust transition-colors duration-200 group-hover:underline">
+        View roadmap &rarr;
+      </p>
     </Link>
   );
 }

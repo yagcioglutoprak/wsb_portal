@@ -24,7 +24,7 @@ const steps = [
 export default function Home() {
   return (
     <section className="py-8 sm:py-16">
-      {/* ── Hero ────────────────────────────────────────────────── */}
+      {/* -- Hero -- */}
       <div className="mx-auto max-w-2xl text-center">
         <span
           className="inline-block font-mono text-xs uppercase tracking-widest text-merito animate-fade-in-up"
@@ -67,18 +67,21 @@ export default function Home() {
         </div>
 
         <div
-          className="mt-8 flex items-center justify-center gap-3 font-mono text-xs tracking-wider text-pencil animate-fade-in-up"
+          className="mt-8 flex items-center justify-center gap-4 font-mono text-sm tracking-wider text-pencil animate-fade-in-up"
           style={{ animationDelay: "320ms" }}
         >
-          <span>11 fields</span>
+          <span className="font-semibold text-ink">11</span>
+          <span>fields</span>
           <span className="text-faint">|</span>
-          <span>38 certifications</span>
+          <span className="font-semibold text-ink">38</span>
+          <span>certifications</span>
           <span className="text-faint">|</span>
-          <span>38 open positions in Poland</span>
+          <span className="font-semibold text-ink">38</span>
+          <span>open positions</span>
         </div>
       </div>
 
-      {/* ── How it works ────────────────────────────────────────── */}
+      {/* -- How it works -- */}
       <div className="mx-auto mt-24 max-w-4xl sm:mt-32">
         <div
           className="text-center animate-fade-in-up"
@@ -96,13 +99,13 @@ export default function Home() {
           {steps.map((step, i) => (
             <div
               key={step.num}
-              className="group relative rounded-lg border border-faint bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
+              className="group relative rounded-lg border border-faint bg-white p-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
               style={{ animationDelay: `${480 + i * 80}ms` }}
             >
               {/* Top accent line */}
               <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-rust transition-transform duration-300 group-hover:scale-x-100 rounded-t-lg" />
 
-              <span className="font-mono text-3xl font-light text-pencil/40">
+              <span className="font-mono text-4xl font-light text-pencil/40">
                 {step.num}
               </span>
               <h3 className="mt-4 font-serif text-xl italic text-ink">
@@ -116,7 +119,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Explore fallback ────────────────────────────────────── */}
+      {/* -- Explore fallback -- */}
       <div
         className="mt-20 text-center animate-fade-in-up"
         style={{ animationDelay: "720ms" }}
