@@ -208,7 +208,7 @@ export default function CertDetail() {
                   <Link
                     key={p.id}
                     to={`/fields/${slug}/certs/${p.id}`}
-                    className="rounded-md border border-faint bg-white px-5 py-3 transition-all duration-200 hover:border-rust hover:text-rust"
+                    className="rounded-md border border-faint bg-card px-5 py-3 transition-all duration-200 hover:border-rust hover:text-rust"
                   >
                     <span className="block font-serif text-sm italic text-ink">
                       {p.name}
@@ -264,7 +264,7 @@ export default function CertDetail() {
         <div className="space-y-8">
           {/* Matching jobs panel */}
           <div
-            className="rounded-lg border border-faint bg-white p-6 animate-fade-in-up"
+            className="rounded-lg border border-faint bg-card p-6 animate-fade-in-up"
             style={{ animationDelay: "240ms" }}
           >
             <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
@@ -331,7 +331,7 @@ export default function CertDetail() {
 
 function StatBlock({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-md border border-faint bg-white p-6">
+    <div className="rounded-md border border-faint bg-card p-6">
       {Icon && <Icon className="mb-2 h-5 w-5 text-pencil" />}
       <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
         {label}

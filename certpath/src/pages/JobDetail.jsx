@@ -119,7 +119,7 @@ export default function JobDetail() {
           {field && (
             <Link
               to={`/fields/${field.slug}`}
-              className="rounded-full border border-faint bg-white px-4 py-1.5 font-mono text-xs tracking-wider text-graphite transition-colors hover:border-rust hover:text-rust"
+              className="rounded-full border border-faint bg-card px-4 py-1.5 font-mono text-xs tracking-wider text-graphite transition-colors hover:border-rust hover:text-rust"
             >
               {field.name}
             </Link>
@@ -140,7 +140,7 @@ export default function JobDetail() {
             className="grid grid-cols-1 gap-4 sm:grid-cols-3 animate-fade-in-up"
             style={{ animationDelay: "160ms" }}
           >
-            <div className="rounded-md border border-faint bg-white p-6">
+            <div className="rounded-md border border-faint bg-card p-6">
               <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
                 Location
               </span>
@@ -159,7 +159,7 @@ export default function JobDetail() {
                 Monthly gross, Poland
               </span>
             </div>
-            <div className="rounded-md border border-faint bg-white p-6">
+            <div className="rounded-md border border-faint bg-card p-6">
               <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
                 Experience level
               </span>
@@ -180,7 +180,7 @@ export default function JobDetail() {
             <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
               Job description
             </h2>
-            <div className="rounded-lg border border-faint bg-white p-6">
+            <div className="rounded-lg border border-faint bg-card p-6">
               <p className="text-sm leading-relaxed text-graphite">
                 {generateJobDescription(job, field)}
               </p>
@@ -199,7 +199,7 @@ export default function JobDetail() {
               {job.requiredSkills.map((skill) => (
                 <div
                   key={skill}
-                  className="rounded-md border border-faint bg-white px-5 py-4"
+                  className="rounded-md border border-faint bg-card px-5 py-4"
                 >
                   <span className="block text-sm font-semibold text-ink">
                     {skill}
@@ -242,7 +242,7 @@ export default function JobDetail() {
                   <Link
                     key={sj.id}
                     to={`/jobs/${sj.id}`}
-                    className="group rounded-md border border-faint bg-white px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md"
+                    className="group rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md"
                   >
                     <span className="block text-sm font-semibold text-ink transition-colors duration-200 group-hover:text-rust">
                       {sj.title}
@@ -273,7 +273,7 @@ export default function JobDetail() {
         {/* Right column -- related certs */}
         <div>
           <div
-            className="rounded-lg border border-faint bg-white p-6 animate-fade-in-up"
+            className="rounded-lg border border-faint bg-card p-6 animate-fade-in-up"
             style={{ animationDelay: "240ms" }}
           >
             <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
@@ -287,7 +287,7 @@ export default function JobDetail() {
                   return (
                     <div
                       key={cert.id}
-                      className="group rounded-md border border-faint bg-white px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-pencil/30 animate-fade-in-up"
+                      className="group rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-pencil/30 animate-fade-in-up"
                       style={{ animationDelay: `${(i + 4) * 80}ms` }}
                     >
                       <Link

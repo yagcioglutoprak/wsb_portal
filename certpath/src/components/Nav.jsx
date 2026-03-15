@@ -32,7 +32,7 @@ export default function Nav() {
 
           <button
             type="button"
-            className="ml-2 rounded border border-faint bg-white px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-graphite transition-all duration-200 hover:-translate-y-px hover:border-rust hover:text-rust hover:shadow-sm"
+            className="ml-2 rounded border border-faint bg-card px-4 py-1.5 font-mono text-xs uppercase tracking-wider text-graphite transition-all duration-200 hover:-translate-y-px hover:border-rust hover:text-rust hover:shadow-sm"
           >
             Sign in
           </button>

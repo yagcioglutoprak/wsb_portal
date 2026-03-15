@@ -103,7 +103,7 @@ export default function Jobs() {
             </div>
           ))
         ) : (
-          <div className="rounded-lg border border-faint bg-white p-12 text-center">
+          <div className="rounded-lg border border-faint bg-card p-12 text-center">
             <p className="font-serif text-lg italic text-pencil">
               No jobs match the current filters.
             </p>
@@ -133,7 +133,7 @@ function FilterTab({ active, onClick, children }) {
         "rounded-full border px-4 py-1.5 font-mono text-xs tracking-wider transition-all duration-200",
         active
           ? "border-rust bg-rust text-white"
-          : "border-faint bg-white text-graphite hover:border-pencil/30 hover:text-ink",
+          : "border-faint bg-card text-graphite hover:border-pencil/30 hover:text-ink",
       ].join(" ")}
     >
       {children}

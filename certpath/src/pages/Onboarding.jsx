@@ -501,7 +501,7 @@ function IllustratedCard({ label, selected, onClick, description, Illustration }
         "group/card relative w-full rounded-lg border-2 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         selected
           ? "border-rust bg-rust/5 shadow-lg"
-          : "border-faint bg-white hover:border-pencil/30",
+          : "border-faint bg-card hover:border-pencil/30",
       ].join(" ")}
     >
       {/* Checkmark — top left on select */}
@@ -554,7 +554,7 @@ function FieldSelectCard({ label, selected, onClick, description, slug }) {
         "group/card relative w-full rounded-lg border-2 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         selected
           ? "border-rust bg-rust/5 shadow-lg"
-          : "border-faint bg-white hover:border-pencil/30",
+          : "border-faint bg-card hover:border-pencil/30",
       ].join(" ")}
     >
       {/* Checkmark — top left on select */}
@@ -819,7 +819,7 @@ export default function Onboarding() {
                   {previewStages.map((stageNum) => (
                     <div
                       key={stageNum}
-                      className="rounded-lg border border-faint bg-white p-6"
+                      className="rounded-lg border border-faint bg-card p-6"
                     >
                       <div className="flex items-center gap-3 mb-4">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rust text-white font-mono text-xs font-medium">

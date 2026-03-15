@@ -6,7 +6,7 @@ export default function ResourceRow({ resource }) {
       href={resource.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-start justify-between gap-4 rounded-md border border-faint bg-white px-5 py-4 transition-all duration-200 hover:translate-x-1 hover:border-pencil/30"
+      className="group flex items-start justify-between gap-4 rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:translate-x-1 hover:border-pencil/30"
     >
       <div className="min-w-0 flex-1">
         <h4 className="text-sm font-semibold leading-snug text-ink transition-colors duration-200 group-hover:text-rust">

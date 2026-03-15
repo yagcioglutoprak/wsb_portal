@@ -40,7 +40,7 @@ export default function FieldCard({ field, index }) {
   return (
     <Link
       to={`/fields/${field.slug}`}
-      className="group relative block rounded-lg border border-faint bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+      className="group relative block rounded-lg border border-faint bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
       style={{ animationDelay: `${index * 80}ms` }}
     >
       {/* Top accent line -- reveals on hover */}

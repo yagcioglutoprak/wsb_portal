@@ -19,7 +19,7 @@ export default function JobRow({ job }) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="group flex items-center justify-between gap-4 rounded-md border border-faint bg-white px-5 py-4 transition-all duration-200 hover:translate-x-1 hover:border-pencil/30"
+      className="group flex items-center justify-between gap-4 rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:translate-x-1 hover:border-pencil/30"
     >
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2 mb-1">

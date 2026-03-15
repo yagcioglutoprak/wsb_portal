@@ -2,8 +2,9 @@
 
 @theme {
   --color-ink: #1b2252;
-  --color-paper: #f7f6f3;
-  --color-warm: #eceae5;
+  --color-paper: #edeae4;
+  --color-warm: #e4e0d8;
+  --color-card: #f5f3ef;
   --color-rust: #c4512a;
   --color-graphite: #3d4466;
   --color-pencil: #7a7e96;

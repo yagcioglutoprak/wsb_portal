@@ -21,7 +21,7 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
   const card = (
     <div
       className={[
-        "group relative rounded-md border bg-white px-5 py-5 transition-all duration-300",
+        "group relative rounded-md border bg-card px-5 py-5 transition-all duration-300",
         locked
           ? "cursor-default border-faint opacity-40"
           : "border-faint hover:-translate-y-px hover:shadow-md hover:border-pencil/30",

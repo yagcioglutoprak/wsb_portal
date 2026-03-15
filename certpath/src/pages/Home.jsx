@@ -103,7 +103,7 @@ export default function Home() {
           {steps.map((step, i) => (
             <div
               key={step.num}
-              className="group relative rounded-lg border border-faint bg-white p-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
+              className="group relative rounded-lg border border-faint bg-card p-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-fade-in-up"
               style={{ animationDelay: `${480 + i * 80}ms` }}
             >
               {/* Top accent line */}

@@ -213,7 +213,7 @@ export default function Roadmap() {
 
       {/* Bottom CTA */}
       <div
-        className="mt-16 rounded-lg border border-faint bg-white p-10 text-center animate-fade-in-up"
+        className="mt-16 rounded-lg border border-faint bg-card p-10 text-center animate-fade-in-up"
         style={{ animationDelay: `${(stageNums.length + 4) * 100}ms` }}
       >
         <h2 className="font-serif text-2xl italic text-ink">
