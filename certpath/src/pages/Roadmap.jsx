@@ -18,7 +18,7 @@ export default function Roadmap() {
       <div className="py-24 text-center">
         <h1 className="font-serif text-3xl italic text-ink">Field not found</h1>
         <Link
-          to="/"
+          to="/explore"
           className="mt-4 inline-block font-mono text-xs uppercase tracking-wider text-rust hover:underline"
         >
           Back to fields
@@ -55,7 +55,13 @@ export default function Roadmap() {
         <ol className="flex items-center gap-2 font-mono text-xs tracking-wider text-pencil">
           <li>
             <Link to="/" className="transition-colors hover:text-rust">
-              Fields
+              Home
+            </Link>
+          </li>
+          <li>/</li>
+          <li>
+            <Link to="/explore" className="transition-colors hover:text-rust">
+              Explore
             </Link>
           </li>
           <li>/</li>

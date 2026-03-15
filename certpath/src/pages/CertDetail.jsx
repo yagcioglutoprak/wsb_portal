@@ -22,7 +22,7 @@ export default function CertDetail() {
           Certification not found
         </h1>
         <Link
-          to="/"
+          to="/explore"
           className="mt-4 inline-block font-mono text-xs uppercase tracking-wider text-rust hover:underline"
         >
           Back to fields
@@ -61,7 +61,13 @@ export default function CertDetail() {
         <ol className="flex flex-wrap items-center gap-2 font-mono text-xs tracking-wider text-pencil">
           <li>
             <Link to="/" className="transition-colors hover:text-rust">
-              Fields
+              Home
+            </Link>
+          </li>
+          <li>/</li>
+          <li>
+            <Link to="/explore" className="transition-colors hover:text-rust">
+              Explore
             </Link>
           </li>
           <li>/</li>

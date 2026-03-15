@@ -20,8 +20,8 @@ export default function Nav() {
 
         {/* Navigation links */}
         <nav className="flex items-center gap-6 sm:gap-8">
-          <NavLink to="/" end className={linkClass}>
-            Fields
+          <NavLink to="/explore" className={linkClass}>
+            Explore
           </NavLink>
           <NavLink to="/jobs" className={linkClass}>
             Jobs
