@@ -1,46 +1,173 @@
+import { useState, useEffect } from "react";
 import Quiz from "../../components/widgets/Quiz";
 import InsightBox from "../../components/widgets/InsightBox";
 import CodeBlockPuzzle from "../../components/lesson-widgets/CodeBlockPuzzle";
 
+/* ─── Shared code display helpers ───────────────────────────────── */
+function CodeSnippet({ children, filename = "python", className = "" }) {
+  return (
+    <div className={`overflow-hidden rounded-xl border border-stone-700 shadow-lg ${className}`}>
+      <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2">
+        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
+        <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
+        <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
+        <span className="ml-2 font-mono text-[10px] text-stone-600">{filename}</span>
+      </div>
+      <div className="bg-[#1c1917] p-4 font-mono text-sm leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
+function CodeLine({ children }) {
+  return <p className="font-mono text-sm">{children}</p>;
+}
+
+function Kw({ children }) { return <span style={{ color: "#60a5fa" }}>{children}</span>; }
+function Str({ children }) { return <span style={{ color: "#4ade80" }}>{children}</span>; }
+function Num({ children }) { return <span style={{ color: "#fb923c" }}>{children}</span>; }
+function Var({ children }) { return <span className="text-stone-300">{children}</span>; }
+function Op({ children }) { return <span className="text-stone-500">{children}</span>; }
+function Cmt({ children }) { return <span style={{ color: "#78716c" }}>{children}</span>; }
+
+/* ─── Animated flowchart node ───────────────────────────────────── */
+function FlowNode({ type, children, color = "stone", active = false, delay = 0 }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+
+  const colorMap = {
+    amber: { bg: "bg-amber-500/15", border: "border-amber-500/50", text: "text-amber-400", activeBg: "bg-amber-500/25", activeBorder: "border-amber-500" },
+    green: { bg: "bg-emerald-500/15", border: "border-emerald-500/50", text: "text-emerald-400", activeBg: "bg-emerald-500/25", activeBorder: "border-emerald-500" },
+    red: { bg: "bg-red-500/15", border: "border-red-500/50", text: "text-red-400", activeBg: "bg-red-500/25", activeBorder: "border-red-500" },
+    stone: { bg: "bg-stone-800", border: "border-stone-600", text: "text-stone-300", activeBg: "bg-stone-700", activeBorder: "border-stone-500" },
+  };
+  const c = colorMap[color];
+
+  const shapes = {
+    diamond: `${type === "diamond" ? "rotate-0" : ""} px-6 py-3`,
+    rect: "px-4 py-2",
+    pill: "px-3 py-0.5",
+  };
+
+  return (
+    <div
+      className={[
+        "flex flex-col items-center transition-all duration-500",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
+      ].join(" ")}
+    >
+      <div className={[
+        "rounded-xl border-2 text-center font-mono text-xs transition-all duration-300",
+        active ? `${c.activeBg} ${c.activeBorder} shadow-lg` : `${c.bg} ${c.border}`,
+        shapes[type] || shapes.rect,
+        c.text,
+      ].join(" ")}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FlowArrow({ direction = "down", color = "#57534e", delay = 0 }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+
+  if (direction === "down") {
+    return (
+      <svg width="20" height="24" className={`transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}>
+        <line x1="10" y1="0" x2="10" y2="18" stroke={color} strokeWidth="2" />
+        <polygon points="6,16 10,22 14,16" fill={color} />
+      </svg>
+    );
+  }
+  return null;
+}
+
 /* ─── Learn Step 0: if/else basics ───────────────────────────────── */
 function IfElseBasics({ onComplete }) {
+  const [activePath, setActivePath] = useState(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setActivePath("true"), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">If / Else: Making Decisions</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        Programs need to make decisions. An <strong className="text-ink">if statement</strong> checks a condition — if it is true, it runs one block of code. Otherwise, the <strong className="text-ink">else</strong> block runs.
+        Programs need to make decisions. An <strong className="text-ink">if statement</strong> checks a condition -- if it is true, it runs one block of code. Otherwise, the <strong className="text-ink">else</strong> block runs.
       </p>
 
-      {/* Flowchart visual */}
-      <div className="flex flex-col items-center gap-2 rounded-xl border border-stone-200 bg-card p-6">
-        <div className="rounded-lg bg-stone-800 px-4 py-2 font-mono text-xs text-stone-200">age = 20</div>
-        <svg width="20" height="20"><line x1="10" y1="0" x2="10" y2="20" stroke="#9ca3af" strokeWidth="2" /></svg>
-        <div className="rounded-xl border-2 border-amber-400 bg-amber-50 px-6 py-3 text-center">
-          <p className="font-mono text-xs font-bold text-amber-700">age &gt;= 18 ?</p>
-        </div>
-        <div className="flex items-start gap-8">
-          <div className="flex flex-col items-center gap-2">
-            <span className="rounded-full bg-green-100 px-3 py-0.5 font-mono text-xs font-bold text-green-700">True</span>
-            <svg width="20" height="20"><line x1="10" y1="0" x2="10" y2="20" stroke="#22c55e" strokeWidth="2" /></svg>
-            <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-2 font-mono text-xs text-green-700">print("Adult")</div>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <span className="rounded-full bg-red-100 px-3 py-0.5 font-mono text-xs font-bold text-red-700">False</span>
-            <svg width="20" height="20"><line x1="10" y1="0" x2="10" y2="20" stroke="#ef4444" strokeWidth="2" /></svg>
-            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-2 font-mono text-xs text-red-700">print("Minor")</div>
+      {/* Animated flowchart */}
+      <div className="rounded-xl border border-stone-700 bg-[#1c1917] p-8">
+        <div className="flex flex-col items-center gap-1">
+          {/* Start */}
+          <FlowNode type="rect" color="stone" delay={100}>
+            <span className="font-bold">age = 20</span>
+          </FlowNode>
+          <FlowArrow delay={200} />
+
+          {/* Decision diamond */}
+          <FlowNode type="diamond" color="amber" active={activePath !== null} delay={400}>
+            <span className="font-bold">age &gt;= 18 ?</span>
+          </FlowNode>
+
+          {/* Branches */}
+          <div className="flex items-start gap-12 mt-1">
+            {/* True branch */}
+            <div className="flex flex-col items-center gap-1">
+              <div className={`rounded-full px-3 py-0.5 font-mono text-[10px] font-bold transition-all duration-500 ${
+                activePath === "true" ? "bg-emerald-500/30 text-emerald-400 scale-110" : "bg-emerald-500/10 text-emerald-500/60"
+              }`}>
+                True
+              </div>
+              <FlowArrow color={activePath === "true" ? "#22c55e" : "#57534e"} delay={700} />
+              <FlowNode
+                type="rect"
+                color="green"
+                active={activePath === "true"}
+                delay={900}
+              >
+                <Kw>print</Kw>(<Str>"Adult"</Str>)
+              </FlowNode>
+            </div>
+
+            {/* False branch */}
+            <div className="flex flex-col items-center gap-1">
+              <div className={`rounded-full px-3 py-0.5 font-mono text-[10px] font-bold transition-all duration-500 ${
+                activePath === "false" ? "bg-red-500/30 text-red-400 scale-110" : "bg-red-500/10 text-red-500/60"
+              }`}>
+                False
+              </div>
+              <FlowArrow color={activePath === "false" ? "#ef4444" : "#57534e"} delay={700} />
+              <FlowNode
+                type="rect"
+                color="red"
+                active={activePath === "false"}
+                delay={900}
+              >
+                <Kw>print</Kw>(<Str>"Minor"</Str>)
+              </FlowNode>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-stone-700 bg-stone-900 p-4">
+      <CodeSnippet>
         <div className="space-y-1">
-          <p className="font-mono text-sm"><span className="text-stone-300">age</span> <span className="text-stone-500">=</span> <span className="text-amber-300">20</span></p>
-          <p className="font-mono text-sm"><span className="text-purple-400">if </span><span className="text-stone-300">age</span> <span className="text-stone-500">&gt;=</span> <span className="text-amber-300">18</span><span className="text-stone-400">:</span></p>
-          <p className="font-mono text-sm">    <span className="text-purple-400">print</span><span className="text-stone-400">(</span><span className="text-green-400">"Adult"</span><span className="text-stone-400">)</span></p>
-          <p className="font-mono text-sm"><span className="text-purple-400">else</span><span className="text-stone-400">:</span></p>
-          <p className="font-mono text-sm">    <span className="text-purple-400">print</span><span className="text-stone-400">(</span><span className="text-green-400">"Minor"</span><span className="text-stone-400">)</span></p>
+          <CodeLine><Var>age</Var> <Op>=</Op> <Num>20</Num></CodeLine>
+          <CodeLine><Kw>if </Kw><Var>age</Var> <Op>&gt;=</Op> <Num>18</Num><span className="text-stone-400">:</span></CodeLine>
+          <CodeLine>    <Kw>print</Kw><span className="text-stone-400">(</span><Str>"Adult"</Str><span className="text-stone-400">)</span></CodeLine>
+          <CodeLine><Kw>else</Kw><span className="text-stone-400">:</span></CodeLine>
+          <CodeLine>    <Kw>print</Kw><span className="text-stone-400">(</span><Str>"Minor"</Str><span className="text-stone-400">)</span></CodeLine>
         </div>
-      </div>
+      </CodeSnippet>
 
       <InsightBox title="Indentation matters!">
         Python uses indentation (4 spaces) to define code blocks. The indented lines under <code className="font-mono text-xs">if</code> only run when the condition is true. Forgetting to indent will cause an error.
@@ -48,51 +175,118 @@ function IfElseBasics({ onComplete }) {
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-rust px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-stone-900 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-md"
       >
-        Got it — next
+        Got it -- next
       </button>
     </div>
   );
 }
 
-/* ─── Learn Step 1: Boolean logic ────────────────────────────────── */
+/* ─── Learn Step 1: Boolean logic (logic gates visual) ──────────── */
 function BooleanLogic({ onComplete }) {
+  const gates = [
+    {
+      op: "and", desc: "Both conditions must be true",
+      example: "age >= 18 and has_id == True",
+      truth: [
+        { a: "T", b: "T", out: "T" },
+        { a: "T", b: "F", out: "F" },
+        { a: "F", b: "T", out: "F" },
+        { a: "F", b: "F", out: "F" },
+      ],
+      color: "emerald",
+    },
+    {
+      op: "or", desc: "At least one must be true",
+      example: 'role == "admin" or role == "mod"',
+      truth: [
+        { a: "T", b: "T", out: "T" },
+        { a: "T", b: "F", out: "T" },
+        { a: "F", b: "T", out: "T" },
+        { a: "F", b: "F", out: "F" },
+      ],
+      color: "blue",
+    },
+    {
+      op: "not", desc: "Flips true to false",
+      example: "not is_banned",
+      truth: [
+        { a: "T", out: "F" },
+        { a: "F", out: "T" },
+      ],
+      color: "purple",
+    },
+  ];
+
+  const colorStyles = {
+    emerald: { bg: "bg-emerald-500/10", border: "border-emerald-400/40", accent: "text-emerald-400", pill: "bg-emerald-500/20" },
+    blue: { bg: "bg-blue-500/10", border: "border-blue-400/40", accent: "text-blue-400", pill: "bg-blue-500/20" },
+    purple: { bg: "bg-purple-500/10", border: "border-purple-400/40", accent: "text-purple-400", pill: "bg-purple-500/20" },
+  };
+
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Boolean Logic: and, or, not</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        You can combine conditions using logical operators. This lets you express complex rules in a single line.
+        You can combine conditions using logical operators. Each produces a True or False result.
       </p>
 
       <div className="space-y-3">
-        {[
-          { op: "and", desc: "Both conditions must be true", example: "age >= 18 and has_id == True", result: "True only if BOTH are true" },
-          { op: "or", desc: "At least one condition must be true", example: 'role == "admin" or role == "mod"', result: "True if EITHER is true" },
-          { op: "not", desc: "Flips true to false (and vice versa)", example: "not is_banned", result: "True if is_banned is False" },
-        ].map((item, i) => (
-          <div
-            key={item.op}
-            className="rounded-xl border border-stone-200 bg-card p-4 shadow-sm animate-fade-in-up"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="rounded bg-purple-100 px-2 py-0.5 font-mono text-xs font-bold text-purple-700">{item.op}</span>
-              <span className="text-sm font-semibold text-ink">{item.desc}</span>
+        {gates.map((gate, i) => {
+          const cs = colorStyles[gate.color];
+          return (
+            <div
+              key={gate.op}
+              className={`rounded-xl border-2 ${cs.border} ${cs.bg} p-4 animate-fade-in-up`}
+              style={{ animationDelay: `${i * 120}ms` }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`rounded-lg ${cs.pill} px-2.5 py-1 font-mono text-xs font-bold ${cs.accent}`}>
+                  {gate.op}
+                </span>
+                <span className="text-sm font-semibold text-ink">{gate.desc}</span>
+              </div>
+
+              {/* Mini truth table */}
+              <div className="flex items-start gap-4">
+                <div className="rounded-lg bg-[#1c1917] border border-stone-800 overflow-hidden">
+                  <table className="text-center font-mono text-[11px]">
+                    <thead>
+                      <tr className="bg-stone-800/80">
+                        <th className="px-2.5 py-1 text-stone-500">A</th>
+                        {gate.truth[0].b !== undefined && <th className="px-2.5 py-1 text-stone-500">B</th>}
+                        <th className="px-2.5 py-1 text-amber-500">Out</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {gate.truth.map((row, j) => (
+                        <tr key={j} className="border-t border-stone-800/60">
+                          <td className={`px-2.5 py-1 ${row.a === "T" ? "text-emerald-400" : "text-red-400"}`}>{row.a}</td>
+                          {row.b !== undefined && <td className={`px-2.5 py-1 ${row.b === "T" ? "text-emerald-400" : "text-red-400"}`}>{row.b}</td>}
+                          <td className={`px-2.5 py-1 font-bold ${row.out === "T" ? "text-emerald-400" : "text-red-400"}`}>{row.out}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex-1">
+                  <div className="rounded-lg bg-[#1c1917] border border-stone-800 px-3 py-1.5">
+                    <code className="font-mono text-xs text-stone-300">{gate.example}</code>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-2 rounded-lg bg-stone-900 px-3 py-1.5">
-              <code className="font-mono text-xs text-stone-300">{item.example}</code>
-            </div>
-            <p className="mt-1 text-xs text-pencil">{item.result}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-rust px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-stone-900 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-md"
       >
-        Got it — next
+        Got it -- next
       </button>
     </div>
   );
@@ -101,12 +295,12 @@ function BooleanLogic({ onComplete }) {
 /* ─── Learn Step 2: Comparison operators ─────────────────────────── */
 function ComparisonOps({ onComplete }) {
   const ops = [
-    { symbol: "==", meaning: "Equal to", example: "5 == 5 -> True" },
-    { symbol: "!=", meaning: "Not equal to", example: "3 != 5 -> True" },
-    { symbol: ">", meaning: "Greater than", example: "10 > 3 -> True" },
-    { symbol: "<", meaning: "Less than", example: "2 < 8 -> True" },
-    { symbol: ">=", meaning: "Greater or equal", example: "5 >= 5 -> True" },
-    { symbol: "<=", meaning: "Less or equal", example: "4 <= 9 -> True" },
+    { symbol: "==", meaning: "Equal to", example: "5 == 5", result: true },
+    { symbol: "!=", meaning: "Not equal to", example: "3 != 5", result: true },
+    { symbol: ">", meaning: "Greater than", example: "10 > 3", result: true },
+    { symbol: "<", meaning: "Less than", example: "2 < 8", result: true },
+    { symbol: ">=", meaning: "Greater or equal", example: "5 >= 5", result: true },
+    { symbol: "<=", meaning: "Less or equal", example: "4 <= 9", result: true },
   ];
 
   return (
@@ -116,25 +310,25 @@ function ComparisonOps({ onComplete }) {
         Conditions use <strong className="text-ink">comparison operators</strong> to compare values. Each comparison evaluates to either <code className="font-mono text-xs">True</code> or <code className="font-mono text-xs">False</code>.
       </p>
 
-      <div className="overflow-hidden rounded-xl border border-stone-200 bg-card shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-stone-200 bg-stone-100">
-              <th className="px-4 py-2 text-left font-mono text-xs font-bold text-graphite">Symbol</th>
-              <th className="px-4 py-2 text-left font-mono text-xs font-bold text-graphite">Meaning</th>
-              <th className="px-4 py-2 text-left font-mono text-xs font-bold text-graphite">Example</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ops.map((op) => (
-              <tr key={op.symbol} className="border-b border-stone-100">
-                <td className="px-4 py-2 font-mono text-sm font-bold text-rust">{op.symbol}</td>
-                <td className="px-4 py-2 text-xs text-ink">{op.meaning}</td>
-                <td className="px-4 py-2 font-mono text-xs text-graphite">{op.example}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="overflow-hidden rounded-xl border border-stone-700 bg-[#1c1917] shadow-lg">
+        <div className="grid grid-cols-3 gap-px bg-stone-800/50">
+          {/* Header */}
+          <div className="bg-stone-800 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-stone-500">Symbol</div>
+          <div className="bg-stone-800 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-stone-500">Meaning</div>
+          <div className="bg-stone-800 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-widest text-stone-500">Example</div>
+
+          {/* Rows */}
+          {ops.map((op, i) => (
+            <>
+              <div key={`s-${i}`} className="bg-[#1c1917] px-4 py-2.5 font-mono text-sm font-bold text-amber-400">{op.symbol}</div>
+              <div key={`m-${i}`} className="bg-[#1c1917] px-4 py-2.5 text-xs text-stone-300">{op.meaning}</div>
+              <div key={`e-${i}`} className="bg-[#1c1917] px-4 py-2.5 font-mono text-xs">
+                <span className="text-stone-400">{op.example}</span>
+                <span className="ml-2 text-emerald-400">True</span>
+              </div>
+            </>
+          ))}
+        </div>
       </div>
 
       <InsightBox title="Common mistake: = vs ==">
@@ -143,9 +337,9 @@ function ComparisonOps({ onComplete }) {
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-rust px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-stone-900 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-md"
       >
-        Got it — next
+        Got it -- next
       </button>
     </div>
   );
@@ -153,6 +347,18 @@ function ComparisonOps({ onComplete }) {
 
 /* ─── Learn Step 3: elif ─────────────────────────────────────────── */
 function ElifStep({ onComplete }) {
+  const [activeBlock, setActiveBlock] = useState(null);
+
+  useEffect(() => {
+    // Animate through the elif chain
+    const timers = [
+      setTimeout(() => setActiveBlock("if"), 600),
+      setTimeout(() => setActiveBlock("elif"), 1200),
+      setTimeout(() => setActiveBlock("match"), 1800),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">elif: Multiple Conditions</h2>
@@ -160,17 +366,31 @@ function ElifStep({ onComplete }) {
         When you have more than two options, use <code className="font-mono text-xs font-bold">elif</code> (short for "else if") to check additional conditions. Python checks them top-to-bottom and runs the first one that is true.
       </p>
 
-      <div className="rounded-xl border border-stone-700 bg-stone-900 p-4">
+      <CodeSnippet filename="grading.py">
         <div className="space-y-1">
-          <p className="font-mono text-sm"><span className="text-stone-300">score</span> <span className="text-stone-500">=</span> <span className="text-amber-300">85</span></p>
-          <p className="font-mono text-sm"><span className="text-purple-400">if </span><span className="text-stone-300">score</span> <span className="text-stone-500">&gt;=</span> <span className="text-amber-300">90</span><span className="text-stone-400">:</span></p>
-          <p className="font-mono text-sm">    <span className="text-stone-300">grade</span> <span className="text-stone-500">=</span> <span className="text-green-400">"A"</span></p>
-          <p className="font-mono text-sm"><span className="text-purple-400">elif </span><span className="text-stone-300">score</span> <span className="text-stone-500">&gt;=</span> <span className="text-amber-300">80</span><span className="text-stone-400">:</span></p>
-          <p className="font-mono text-sm">    <span className="text-stone-300">grade</span> <span className="text-stone-500">=</span> <span className="text-green-400">"B"</span>  <span className="text-stone-600"># this runs!</span></p>
-          <p className="font-mono text-sm"><span className="text-purple-400">else</span><span className="text-stone-400">:</span></p>
-          <p className="font-mono text-sm">    <span className="text-stone-300">grade</span> <span className="text-stone-500">=</span> <span className="text-green-400">"F"</span></p>
+          <div className={`rounded px-2 py-0.5 transition-all duration-300 -mx-2 ${activeBlock === "if" ? "bg-red-500/10 border-l-2 border-red-500" : "border-l-2 border-transparent"}`}>
+            <CodeLine><Var>score</Var> <Op>=</Op> <Num>85</Num></CodeLine>
+          </div>
+          <div className={`rounded px-2 py-0.5 transition-all duration-300 -mx-2 ${activeBlock === "if" ? "bg-red-500/10 border-l-2 border-red-500" : "border-l-2 border-transparent"}`}>
+            <CodeLine><Kw>if </Kw><Var>score</Var> <Op>&gt;=</Op> <Num>90</Num><span className="text-stone-400">:</span> <Cmt># 85 &lt; 90, skip</Cmt></CodeLine>
+          </div>
+          <div className={`rounded px-2 py-0.5 transition-all duration-300 -mx-2 ${activeBlock === "if" ? "bg-stone-800/50" : ""} border-l-2 border-transparent`}>
+            <CodeLine>    <Var>grade</Var> <Op>=</Op> <Str>"A"</Str></CodeLine>
+          </div>
+          <div className={`rounded px-2 py-0.5 transition-all duration-300 -mx-2 ${activeBlock === "elif" ? "bg-amber-500/10 border-l-2 border-amber-500" : "border-l-2 border-transparent"}`}>
+            <CodeLine><Kw>elif </Kw><Var>score</Var> <Op>&gt;=</Op> <Num>80</Num><span className="text-stone-400">:</span> <Cmt># 85 &gt;= 80, match!</Cmt></CodeLine>
+          </div>
+          <div className={`rounded px-2 py-0.5 transition-all duration-300 -mx-2 ${activeBlock === "match" ? "bg-emerald-500/15 border-l-2 border-emerald-500" : "border-l-2 border-transparent"}`}>
+            <CodeLine>    <Var>grade</Var> <Op>=</Op> <Str>"B"</Str>  <Cmt># this runs!</Cmt></CodeLine>
+          </div>
+          <div className="border-l-2 border-transparent px-2 py-0.5 -mx-2">
+            <CodeLine><Kw>else</Kw><span className="text-stone-400">:</span></CodeLine>
+          </div>
+          <div className="border-l-2 border-transparent px-2 py-0.5 -mx-2">
+            <CodeLine>    <Var>grade</Var> <Op>=</Op> <Str>"F"</Str></CodeLine>
+          </div>
         </div>
-      </div>
+      </CodeSnippet>
 
       <InsightBox title="Order matters with elif">
         If you put <code className="font-mono text-xs">score &gt;= 70</code> before <code className="font-mono text-xs">score &gt;= 90</code>, a score of 95 would match the first condition and get a C! Always check the most specific condition first.
@@ -178,7 +398,7 @@ function ElifStep({ onComplete }) {
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-rust px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+        className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-bold text-stone-900 shadow-sm transition-all hover:-translate-y-0.5 hover:bg-amber-400 hover:shadow-md"
       >
         Let's practice
       </button>
@@ -225,7 +445,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Grade Calculator</h2>
           <p className="text-sm text-graphite">
-            Build a grade calculator using if/elif/else. The score is 75 — it should assign grade "C".
+            Build a grade calculator using if/elif/else. The score is 75 -- it should assign grade "C".
           </p>
           <CodeBlockPuzzle
             data={{

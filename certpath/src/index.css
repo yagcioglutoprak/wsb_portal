@@ -170,6 +170,12 @@ body {
   animation: correct-flash 0.8s ease-out;
 }
 
+/* ── Python Theme: gear spin animation ─────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ── Cloud Theme: draw-line animation for architecture diagrams ── */
 @keyframes draw-line {
   to { stroke-dashoffset: 0; }
