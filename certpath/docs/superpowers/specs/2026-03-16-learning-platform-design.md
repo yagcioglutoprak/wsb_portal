@@ -29,28 +29,37 @@ The platform's primary focus is helping WSB Merito students find internships and
 - Lesson metadata (titles, skill mapping, completion tracking) lives in `mock.js`
 
 ### State Management
-- User profile and progress stored in `localStorage`
+- User profile and progress stored in `localStorage` under two keys
 - No backend changes needed for the demo (Supabase available for future)
 
-### localStorage Schema
+### localStorage Keys & Schema
+
+Two separate keys for independent read/write:
+
+**Key: `certpath:profile`**
+```js
+{ "year": "2nd", "program": "computer-science", "field": "cybersecurity" }
+```
+
+**Key: `certpath:progress`**
 ```js
 {
-  profile: { year, program, field },
-  progress: {
-    completedSteps: ["network-1-learn-1", "network-1-learn-2", ...],
-    completedLessons: ["network-1", "network-2"],
-    completedSkills: ["network-security"],
-    earnedBadges: ["network-security-foundations"],
-    xp: 420
-  }
+  "completedSteps": ["network-1-learn-1", "network-1-learn-2"],
+  "completedLessons": ["network-1", "network-2"],
+  "completedSkills": ["network-security"],
+  "earnedBadges": ["network-security-foundations"],
+  "xp": 420
 }
 ```
+
+Badge IDs use slug form (`skill.id + "-foundations"`). Display names come from `skill.badgeName` in mock data.
 
 ## 3. New Pages
 
 ### 3.1 Personal Dashboard (`/dashboard`)
 
-**Layout:** Action-plan centered, two-column.
+**Wrapping layout:** Standard `Layout` (max-w-6xl container).
+**Internal layout:** Action-plan centered, two-column.
 
 **Left column (wider):** "Your Action Plan"
 - Step-by-step journey with states: completed (green, strikethrough), in-progress (amber, progress bar), upcoming (gray)
@@ -67,7 +76,11 @@ The platform's primary focus is helping WSB Merito students find internships and
 - Not onboarded: redirected to `/onboarding`
 - Onboarded: full dashboard with personalized content
 
+**"Continue Learning" empty state:** When user has zero progress, shows "Start your first lesson" with a link to the first recommended skill based on their field.
+
 ### 3.2 Skill Overview (`/skills/:skillSlug`)
+
+**Wrapping layout:** Standard `Layout` (max-w-6xl container).
 
 - Skill title, description, badge status
 - List of lessons with progress indicators
@@ -75,9 +88,15 @@ The platform's primary focus is helping WSB Merito students find internships and
 - Locked/unlocked states based on prerequisite completion
 - Badge display when skill is completed
 
+**Locking rules:**
+- Within a lesson: Apply phase locks until all Learn steps are completed. Challenge phase locks until all Apply steps are completed.
+- Within a skill: Lessons unlock sequentially — Lesson N+1 unlocks when Lesson N's Challenge phase is completed. Lesson 1 is always unlocked.
+- Across skills: Skills with `prerequisites: []` are unlocked from the start. Skills listing other skill IDs in `prerequisites` unlock when those skills are completed.
+
 ### 3.3 Lesson Viewer (`/skills/:skillSlug/:lessonId`)
 
-**Layout:** Sidebar + content panel.
+**Wrapping layout:** Custom `LessonLayout` — full-width, no max-w container (the sidebar + content panel needs the full viewport width). Includes Nav but no footer.
+**Internal layout:** Sidebar + content panel.
 
 **Left sidebar:**
 - Full lesson structure showing all 3 phases (Learn, Apply, Challenge)
@@ -97,8 +116,8 @@ The platform's primary focus is helping WSB Merito students find internships and
 
 ### 4.1 Onboarding (`/onboarding`)
 - Same 4 steps: year, program, field, results
-- On completion: saves `{ year, program, field }` to `localStorage`
-- Results page updated: "Here's your personalized plan" with redirect to `/dashboard`
+- On reaching step 4 (results): immediately calls `localStorage.setItem('certpath:profile', JSON.stringify({ year, program, field }))` — this must happen when the results page mounts, not on CTA click, so the profile is always persisted even if the user navigates away
+- Results page updated: "Here's your personalized plan" with CTA linking to `/dashboard`
 - The onboarding choices drive all personalization downstream
 
 ### 4.2 Jobs → Opportunities (`/jobs`)
@@ -108,9 +127,11 @@ The platform's primary focus is helping WSB Merito students find internships and
 - Existing filter UI (field tabs, experience level) remains
 
 ### 4.3 Navigation
-- Before onboarding: `Explore | Opportunities | Get Started`
+- Nav reads `certpath:profile` from localStorage on mount to determine onboarding state (use `useProgress` hook)
+- Before onboarding: `Explore | Opportunities | Get Started` — "Get Started" links to `/onboarding`
 - After onboarding: `Dashboard | Explore | Opportunities`
 - Dashboard becomes the primary navigation item for onboarded users
+- The existing "Sign in" button is removed for the demo (no auth system). It is replaced by "Get Started" pre-onboarding, and removed entirely post-onboarding.
 
 ## 5. Learning Content — 5 Skills, 16 Lessons
 
@@ -185,8 +206,8 @@ The platform's primary focus is helping WSB Merito students find internships and
 ### 5.4 Cloud Architecture (3 lessons)
 
 **Unique interactive widgets:**
-- `<ArchitectureCanvas>` — drag cloud components onto a canvas, connect with arrows
-- `<TrafficSimulator>` — watch user requests flow through architecture, bottlenecks light up
+- `<ArchitectureCanvas>` — simplified for demo: a fixed grid of labeled slots where the user drags components into predefined positions (not arbitrary canvas placement or arrow-drawing). Validates correct placement.
+- `<TrafficSimulator>` — CSS animation on a static/predefined architecture layout showing request flow with color-coded bottleneck highlights. Not a dynamic graph traversal.
 
 **Lesson 1: Cloud Basics**
 - Learn: what is cloud? Visual comparison — on-premise server room vs cloud provider
@@ -236,8 +257,8 @@ The platform's primary focus is helping WSB Merito students find internships and
 | `<VariableVisualizer>` | Python | Step-through variable state changes |
 | `<QueryBuilder>` | SQL | Drag SQL clauses, see live result table |
 | `<TableRelationships>` | SQL | Visual ER diagram with clickable tables |
-| `<ArchitectureCanvas>` | Cloud | Drag components onto canvas, connect arrows |
-| `<TrafficSimulator>` | Cloud | Animated request flow, bottleneck detection |
+| `<ArchitectureCanvas>` | Cloud | Drag components into predefined grid slots |
+| `<TrafficSimulator>` | Cloud | CSS-animated request flow on static layout |
 | `<InteractiveChart>` | Data Analysis | Manipulate chart type, filters, axes |
 | `<DataFilterPuzzle>` | Data Analysis | Apply transforms to answer questions |
 
@@ -251,12 +272,30 @@ The platform's primary focus is helping WSB Merito students find internships and
 | `<ProgressBar>` | Phase and lesson progress indicator |
 | `<InsightBox>` | Highlighted key takeaway callout box |
 
+### 6.3 Widget Completion Contract
+
+All interactive widgets (unique and shared) follow one contract for signaling completion:
+
+```jsx
+// Every interactive widget receives these props:
+<SomeWidget
+  data={...}              // Widget-specific config/content
+  onComplete={() => {}}   // Called when user answers correctly / completes interaction
+  onSkip={() => {}}       // Optional: called if user skips (only for Apply/Challenge)
+/>
+```
+
+- `onComplete()` triggers: XP award for the current step, step marked as completed in progress, Next button becomes enabled
+- Widgets manage their own internal state (attempts, feedback display, animation state)
+- The parent `LessonViewer` orchestrates step progression and calls `useProgress` to persist
+
 ## 7. Gamification
 
-**XP system:**
+**XP system (single source of truth — compute per step, no pre-computed aggregates):**
 - +10 XP per Learn step completed
 - +20 XP per Apply exercise completed
 - +30 XP per Challenge completed
+- `useProgress` hook computes XP on the fly from `completedSteps` using these rates
 - Shown in dashboard header and lesson viewer top bar
 
 **Levels:**
@@ -310,7 +349,7 @@ The platform's primary focus is helping WSB Merito students find internships and
 ### New mock data additions to `mock.js`:
 
 ```js
-// Skills metadata
+// Skills metadata — all 5 skills with their field mappings
 export const skills = [
   {
     id: "network-security",
@@ -318,16 +357,64 @@ export const skills = [
     slug: "network-security",
     description: "Understand how networks are protected...",
     icon: "shield",
-    fieldIds: ["cybersecurity"],
+    fieldIds: ["cybersecurity", "networking"],
     certIds: ["sec-plus"],
     lessonCount: 3,
     badgeName: "Network Security Foundations",
     prerequisites: []
   },
-  // ... 4 more skills
+  {
+    id: "python-basics",
+    name: "Python Basics",
+    slug: "python-basics",
+    description: "Learn Python fundamentals for data and automation...",
+    icon: "code",
+    fieldIds: ["data-science", "backend-development", "devops"],
+    certIds: [],
+    lessonCount: 4,
+    badgeName: "Python Basics Foundations",
+    prerequisites: []
+  },
+  {
+    id: "sql-databases",
+    name: "SQL & Databases",
+    slug: "sql-databases",
+    description: "Query, filter, and join data in relational databases...",
+    icon: "database",
+    fieldIds: ["data-science", "backend-development", "finance-accounting"],
+    certIds: [],
+    lessonCount: 3,
+    badgeName: "SQL & Databases Foundations",
+    prerequisites: ["python-basics"]
+  },
+  {
+    id: "cloud-architecture",
+    name: "Cloud Architecture",
+    slug: "cloud-architecture",
+    description: "Design and understand cloud infrastructure...",
+    icon: "cloud",
+    fieldIds: ["cloud-engineering", "devops"],
+    certIds: ["aws-cloud-practitioner"],
+    lessonCount: 3,
+    badgeName: "Cloud Architecture Foundations",
+    prerequisites: []
+  },
+  {
+    id: "data-analysis",
+    name: "Data Analysis",
+    slug: "data-analysis",
+    description: "Read, visualize, and draw conclusions from data...",
+    icon: "chart",
+    fieldIds: ["data-science", "finance-accounting", "management"],
+    certIds: [],
+    lessonCount: 3,
+    badgeName: "Data Analysis Foundations",
+    prerequisites: []
+  }
 ];
 
 // Lesson metadata (content lives in React components)
+// XP is NOT stored here — computed on the fly by useProgress from per-step rates
 export const lessons = [
   {
     id: "network-1",
@@ -340,19 +427,43 @@ export const lessons = [
       learn: { steps: 4 },
       apply: { steps: 2 },
       challenge: { steps: 1 }
-    },
-    xpReward: { learn: 40, apply: 40, challenge: 30 }
+    }
   },
-  // ... 15 more lessons
+  // ... 15 more lessons following same shape
 ];
 
-// Skill-to-job mapping (which jobs benefit from which skills)
+// Skill-to-job mapping
+// IMPORTANT: Use actual job IDs from the existing `jobs` array in mock.js
+// These are placeholders — replace with real IDs during implementation
 export const skillJobMap = {
-  "network-security": ["job-1", "job-5", "job-12"],
-  "python-basics": ["job-3", "job-7", "job-15", "job-22"],
-  // ...
+  "network-security": [/* real job IDs from mock.js */],
+  "python-basics": [/* real job IDs from mock.js */],
+  "sql-databases": [/* real job IDs from mock.js */],
+  "cloud-architecture": [/* real job IDs from mock.js */],
+  "data-analysis": [/* real job IDs from mock.js */]
 };
 ```
+
+### Lesson Component Registry
+
+`LessonViewer.jsx` maps route params to lesson components via a static registry:
+
+```js
+// src/lessons/registry.js
+import NetworkLesson1 from './network-security/Lesson1';
+import NetworkLesson2 from './network-security/Lesson2';
+// ... etc
+
+export const lessonRegistry = {
+  'network-1': NetworkLesson1,
+  'network-2': NetworkLesson2,
+  'network-3': NetworkLesson3,
+  'python-1': PythonLesson1,
+  // ... all 16 lessons
+};
+```
+
+`LessonViewer` looks up `lessonRegistry[lessonId]` to render the correct component.
 
 ## 10. Component File Structure
 
@@ -376,6 +487,7 @@ src/
 │   │   ├── TrafficSimulator.jsx
 │   │   ├── InteractiveChart.jsx
 │   │   └── DataFilterPuzzle.jsx
+│   ├── LessonLayout.jsx      # Full-width layout for lesson viewer (Nav, no footer)
 │   ├── LessonSidebar.jsx     # Lesson viewer sidebar
 │   ├── ActionPlan.jsx        # Dashboard action plan
 │   ├── SkillCard.jsx         # Dashboard skill card
@@ -398,10 +510,11 @@ src/
 │   │   ├── Lesson1.jsx
 │   │   ├── Lesson2.jsx
 │   │   └── Lesson3.jsx
-│   └── data-analysis/
-│       ├── Lesson1.jsx
-│       ├── Lesson2.jsx
-│       └── Lesson3.jsx
+│   ├── data-analysis/
+│   │   ├── Lesson1.jsx
+│   │   ├── Lesson2.jsx
+│   │   └── Lesson3.jsx
+│   └── registry.js           # Static map: lessonId → component
 ├── pages/
 │   ├── Dashboard.jsx         # New
 │   ├── SkillOverview.jsx     # New
