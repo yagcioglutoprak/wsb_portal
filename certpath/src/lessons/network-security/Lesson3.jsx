@@ -11,13 +11,13 @@ import InsightBox from "../../components/widgets/InsightBox";
 function DarkPanel({ children, className = "" }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-slate-200 ${className}`}
       style={{
         background: `
-          radial-gradient(circle at 30% 20%, rgba(6,182,212,0.04) 0%, transparent 50%),
-          linear-gradient(rgba(6,182,212,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(6,182,212,0.025) 1px, transparent 1px),
-          #0f172a
+          radial-gradient(circle at 30% 20%, rgba(40,86,166,0.02) 0%, transparent 50%),
+          linear-gradient(rgba(40,86,166,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(40,86,166,0.03) 1px, transparent 1px),
+          #fdfcfa
         `,
         backgroundSize: "100% 100%, 32px 32px, 32px 32px, 100% 100%",
       }}
@@ -31,14 +31,14 @@ function CyberButton({ onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className="group flex items-center gap-2 rounded-xl px-6 py-3 font-mono text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+      className="group flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
       style={{
-        background: "linear-gradient(135deg, #06b6d4 0%, #22c55e 100%)",
-        color: "#0f172a",
-        boxShadow: "0 0 24px rgba(6,182,212,0.3), 0 4px 12px rgba(0,0,0,0.3)",
+        background: "#2856a6",
+        color: "#fff",
+        boxShadow: "0 4px 12px rgba(40,86,166,0.2)",
       }}
     >
-      <span style={{ color: "#064e3b" }}>$</span> {children}
+      {children}
     </button>
   );
 }
@@ -52,7 +52,7 @@ function ThreatBox({ children }) {
       <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#ef444470" }}>
         How it works
       </p>
-      <p className="text-xs leading-relaxed" style={{ color: "#fca5a5" }}>
+      <p className="text-sm leading-relaxed text-red-700">
         {children}
       </p>
     </div>
@@ -65,10 +65,10 @@ function DefenseBox({ children }) {
       className="rounded-xl p-3.5"
       style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)" }}
     >
-      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#22c55e70" }}>
+      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#16a34a70" }}>
         Defense strategy
       </p>
-      <p className="text-xs leading-relaxed" style={{ color: "#86efac" }}>
+      <p className="text-sm leading-relaxed text-green-700">
         {children}
       </p>
     </div>
@@ -101,16 +101,16 @@ function DDoSStep({ onComplete }) {
         <div className="p-5 sm:p-8">
           <div className="flex items-center gap-3 mb-1">
             <span
-              className="rounded-full px-3 py-1 font-mono text-[10px] font-bold"
+              className="rounded-full px-3 py-1 font-mono text-xs font-bold"
               style={{ background: "rgba(239,68,68,0.12)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }}
             >
               THREAT #1
             </span>
           </div>
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             DDoS Attack
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
+          <p className="mb-5 text-base text-graphite leading-relaxed">
             A <strong style={{ color: "#f87171" }}>Distributed Denial of Service</strong>{" "}
             attack floods a target server with massive amounts of fake traffic from thousands
             of compromised devices (a botnet), making the service unavailable.
@@ -140,7 +140,7 @@ function DDoSStep({ onComplete }) {
               <g key={i}>
                 <rect
                   x={s.x - 14} y={s.y - 14} width={28} height={28} rx={8}
-                  fill="#1e293b" stroke="rgba(239,68,68,0.3)" strokeWidth="1"
+                  fill="#fdfcfa" stroke="rgba(239,68,68,0.3)" strokeWidth="1"
                   style={{ opacity: entered ? 1 : 0, transition: `opacity 0.3s ease ${i * 60}ms` }}
                 />
                 {/* Bot icon */}
@@ -175,7 +175,7 @@ function DDoSStep({ onComplete }) {
             <g style={{ animation: entered ? "l3-serverShake 0.15s ease-in-out infinite" : "none" }}>
               <rect
                 x={targetX - 35} y={targetY - 35} width={70} height={70} rx={16}
-                fill="#1e293b" stroke="#ef4444" strokeWidth="2.5"
+                fill="#fdfcfa" stroke="#ef4444" strokeWidth="2.5"
                 filter="url(#ddos-red-glow)"
                 style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 400ms" }}
               />
@@ -199,7 +199,7 @@ function DDoSStep({ onComplete }) {
           </svg>
 
           {/* ── Traffic Bar Chart ─────────────────────────────────── */}
-          <div className="rounded-xl p-4" style={{ background: "#1e293b", border: "1px solid #334155" }}>
+          <div className="rounded-xl p-4" style={{ background: "#fdfcfa", border: "1px solid #334155" }}>
             <p className="mb-3 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
               Traffic volume
             </p>
@@ -212,7 +212,7 @@ function DDoSStep({ onComplete }) {
                     height: entered ? `${h}%` : "0%",
                     background: h > 60
                       ? "linear-gradient(to top, #ef4444, #f87171)"
-                      : "linear-gradient(to top, #06b6d4, #22c55e)",
+                      : "linear-gradient(to top, #2856a6, #16a34a)",
                     boxShadow: h > 60 ? "0 0 10px rgba(239,68,68,0.3)" : "0 0 6px rgba(6,182,212,0.1)",
                     transition: `height 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${i * 80}ms`,
                   }}
@@ -220,7 +220,7 @@ function DDoSStep({ onComplete }) {
               ))}
             </div>
             <div className="mt-2 flex justify-between font-mono text-[9px]">
-              <span style={{ color: "#475569" }}>Normal traffic</span>
+              <span className="text-pencil">Normal traffic</span>
               <span className="font-bold" style={{ color: "#ef4444" }}>DDoS attack begins</span>
             </div>
           </div>
@@ -271,16 +271,16 @@ function MITMStep({ onComplete }) {
         <div className="p-5 sm:p-8">
           <div className="flex items-center gap-3 mb-1">
             <span
-              className="rounded-full px-3 py-1 font-mono text-[10px] font-bold"
+              className="rounded-full px-3 py-1 font-mono text-xs font-bold"
               style={{ background: "rgba(168,85,247,0.12)", color: "#c084fc", border: "1px solid rgba(168,85,247,0.2)" }}
             >
               THREAT #2
             </span>
           </div>
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             Man-in-the-Middle
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
+          <p className="mb-5 text-base text-graphite leading-relaxed">
             In a <strong style={{ color: "#c084fc" }}>MITM attack</strong>, the attacker
             secretly intercepts communication between two parties. Both sides think they are
             talking directly to each other.
@@ -298,7 +298,7 @@ function MITMStep({ onComplete }) {
             </defs>
 
             {/* ── Expected direct path (crossed out) ──────────────── */}
-            <line x1={100} y1={150} x2={400} y2={150} stroke="#334155" strokeWidth="1" strokeDasharray="4 6" opacity="0.4" />
+            <line x1={100} y1={150} x2={400} y2={150} stroke="rgba(40,86,166,0.2)" strokeWidth="1" strokeDasharray="4 6" opacity="0.4" />
             <g style={{ opacity: entered ? 1 : 0, transition: "opacity 0.5s ease 800ms" }}>
               <line x1={210} y1={145} x2={290} y2={155} stroke="#ef4444" strokeWidth="1.5" opacity="0.5" />
               <text x={250} y={172} textAnchor="middle" fill="#334155" fontSize="7" fontFamily="IBM Plex Mono">
@@ -307,9 +307,9 @@ function MITMStep({ onComplete }) {
             </g>
 
             {/* ── You ─────────────────────────────────────────────── */}
-            <rect x={30} y={55} width={80} height={70} rx={16} fill="#1e293b" stroke="#334155" strokeWidth="1.5"
+            <rect x={30} y={55} width={80} height={70} rx={16} fill="#fdfcfa" stroke="rgba(40,86,166,0.2)" strokeWidth="1.5"
               style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease" }} />
-            <g transform="translate(50, 68)" stroke="#06b6d4" strokeWidth="1.5" fill="none" strokeLinecap="round">
+            <g transform="translate(50, 68)" stroke="#2856a6" strokeWidth="1.5" fill="none" strokeLinecap="round">
               <rect x="2" y="2" width="20" height="14" rx="2" />
               <line x1="7" y1="20" x2="17" y2="20" />
               <line x1="12" y1="16" x2="12" y2="20" />
@@ -317,7 +317,7 @@ function MITMStep({ onComplete }) {
             <text x={70} y={115} textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="IBM Plex Mono" fontWeight="600">You</text>
 
             {/* ── Attacker ────────────────────────────────────────── */}
-            <rect x={205} y={25} width={90} height={80} rx={16} fill="#0f172a" stroke="#a855f7" strokeWidth="2" filter="url(#mitm-glow)"
+            <rect x={205} y={25} width={90} height={80} rx={16} fill="#fdfcfa" stroke="#a855f7" strokeWidth="2" filter="url(#mitm-glow)"
               style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 200ms" }} />
             {/* Eye/spy icon */}
             <g transform="translate(232, 40)" stroke="#c084fc" strokeWidth="1.5" fill="none" strokeLinecap="round">
@@ -331,9 +331,9 @@ function MITMStep({ onComplete }) {
             </rect>
 
             {/* ── Bank ────────────────────────────────────────────── */}
-            <rect x={390} y={55} width={80} height={70} rx={16} fill="#1e293b" stroke="#334155" strokeWidth="1.5"
+            <rect x={390} y={55} width={80} height={70} rx={16} fill="#fdfcfa" stroke="rgba(40,86,166,0.2)" strokeWidth="1.5"
               style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 400ms" }} />
-            <g transform="translate(412, 68)" stroke="#22c55e" strokeWidth="1.5" fill="none" strokeLinecap="round">
+            <g transform="translate(412, 68)" stroke="#16a34a" strokeWidth="1.5" fill="none" strokeLinecap="round">
               <path d="M3 21h18M3 10h18M5 6l7-3 7 3" />
               <line x1="5" y1="10" x2="5" y2="21" />
               <line x1="9" y1="10" x2="9" y2="21" />
@@ -413,16 +413,16 @@ function PhishingStep({ onComplete }) {
         <div className="p-5 sm:p-8">
           <div className="flex items-center gap-3 mb-1">
             <span
-              className="rounded-full px-3 py-1 font-mono text-[10px] font-bold"
+              className="rounded-full px-3 py-1 font-mono text-xs font-bold"
               style={{ background: "rgba(56,189,248,0.12)", color: "#38bdf8", border: "1px solid rgba(56,189,248,0.2)" }}
             >
               THREAT #3
             </span>
           </div>
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             Phishing
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
+          <p className="mb-5 text-base text-graphite leading-relaxed">
             <strong style={{ color: "#38bdf8" }}>Phishing</strong> tricks people into revealing
             sensitive information by impersonating a trusted entity.
           </p>
@@ -433,7 +433,7 @@ function PhishingStep({ onComplete }) {
             <div
               className="rounded-xl overflow-hidden"
               style={{
-                background: "#1e293b",
+                background: "#fdfcfa",
                 border: "1px solid rgba(34,197,94,0.2)",
                 opacity: entered ? 1 : 0,
                 transform: entered ? "translateX(0)" : "translateX(-20px)",
@@ -441,21 +441,21 @@ function PhishingStep({ onComplete }) {
               }}
             >
               <div className="flex items-center gap-2 px-3 py-2" style={{ background: "rgba(34,197,94,0.06)", borderBottom: "1px solid rgba(34,197,94,0.1)" }}>
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#22c55e" }} />
-                <span className="font-mono text-[9px] font-bold" style={{ color: "#22c55e" }}>LEGITIMATE</span>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#16a34a" }} />
+                <span className="font-mono text-[9px] font-bold" style={{ color: "#16a34a" }}>LEGITIMATE</span>
               </div>
               <div className="p-3 space-y-2">
-                <p className="font-mono text-[10px]" style={{ color: "#22c55e" }}>
+                <p className="font-mono text-[10px]" style={{ color: "#16a34a" }}>
                   From: support@mybank.com
                 </p>
-                <p className="font-mono text-[10px] font-bold" style={{ color: "#cbd5e1" }}>
+                <p className="font-mono text-xs font-bold" style={{ color: "#cbd5e1" }}>
                   Your statement is ready
                 </p>
-                <p className="font-mono text-[9px]" style={{ color: "#64748b" }}>
+                <p className="font-mono text-[9px] text-pencil">
                   Dear John, your monthly statement for March is now available in your account dashboard.
                 </p>
                 <div className="rounded px-2 py-1 text-center" style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)" }}>
-                  <span className="font-mono text-[9px] font-bold" style={{ color: "#22c55e" }}>View in app</span>
+                  <span className="font-mono text-[9px] font-bold" style={{ color: "#16a34a" }}>View in app</span>
                 </div>
               </div>
             </div>
@@ -464,7 +464,7 @@ function PhishingStep({ onComplete }) {
             <div
               className="rounded-xl overflow-hidden"
               style={{
-                background: "#1e293b",
+                background: "#fdfcfa",
                 border: "1px solid rgba(239,68,68,0.2)",
                 opacity: entered ? 1 : 0,
                 transform: entered ? "translateX(0)" : "translateX(20px)",
@@ -480,11 +480,11 @@ function PhishingStep({ onComplete }) {
                   From: support@myb<span style={{ color: "#fbbf24", textDecoration: "underline" }}>a</span>nk-secure.com
                   <span className="ml-1 rounded px-1 text-[8px]" style={{ background: "rgba(239,68,68,0.15)", color: "#f87171" }}>FAKE</span>
                 </p>
-                <p className="font-mono text-[10px] font-bold" style={{ color: "#cbd5e1" }}>
+                <p className="font-mono text-xs font-bold" style={{ color: "#cbd5e1" }}>
                   URGENT: Account Compromised!
                   <span className="ml-1 rounded px-1 text-[8px]" style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}>URGENCY</span>
                 </p>
-                <p className="font-mono text-[9px]" style={{ color: "#64748b" }}>
+                <p className="font-mono text-[9px] text-pencil">
                   Click here immediately to verify your identity or your account will be locked.
                 </p>
                 <div className="rounded px-2 py-1 text-center" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
@@ -507,7 +507,7 @@ function PhishingStep({ onComplete }) {
             ].map((flag, i) => (
               <span
                 key={i}
-                className="rounded-lg px-2.5 py-1 font-mono text-[10px] font-bold"
+                className="rounded-lg px-2.5 py-1 font-mono text-xs font-bold"
                 style={{
                   background: `${flag.color}10`,
                   color: flag.color,
@@ -586,8 +586,8 @@ function RansomwareStep({ onComplete }) {
   }, [entered]);
 
   const files = [
-    { name: "documents/", icon: "D", color: "#06b6d4" },
-    { name: "photos/", icon: "P", color: "#22c55e" },
+    { name: "documents/", icon: "D", color: "#2856a6" },
+    { name: "photos/", icon: "P", color: "#16a34a" },
     { name: "database.sql", icon: "S", color: "#a78bfa" },
     { name: "emails.pst", icon: "E", color: "#fbbf24" },
     { name: "backup.zip", icon: "B", color: "#f472b6" },
@@ -607,16 +607,16 @@ function RansomwareStep({ onComplete }) {
         <div className="p-5 sm:p-8">
           <div className="flex items-center gap-3 mb-1">
             <span
-              className="rounded-full px-3 py-1 font-mono text-[10px] font-bold"
+              className="rounded-full px-3 py-1 font-mono text-xs font-bold"
               style={{ background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.2)" }}
             >
               THREAT #4
             </span>
           </div>
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             Ransomware
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
+          <p className="mb-5 text-base text-graphite leading-relaxed">
             <strong style={{ color: "#fbbf24" }}>Ransomware</strong> encrypts all your files
             and demands payment (usually in cryptocurrency) to unlock them.
           </p>
@@ -677,7 +677,7 @@ function RansomwareStep({ onComplete }) {
               }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-mono text-[10px] font-bold" style={{ color: "#ef4444" }}>RANSOM NOTE</span>
+                <span className="font-mono text-xs font-bold" style={{ color: "#ef4444" }}>RANSOM NOTE</span>
                 <span className="font-mono text-lg font-bold" style={{ color: "#fbbf24", textShadow: "0 0 12px rgba(251,191,36,0.4)" }}>
                   {formatTime(timer)}
                 </span>
@@ -685,7 +685,7 @@ function RansomwareStep({ onComplete }) {
               <p className="font-mono text-xs" style={{ color: "#f87171" }}>
                 Your files have been encrypted. Pay 2 BTC to unlock. You have 48 hours.
               </p>
-              <p className="mt-1 font-mono text-[10px]" style={{ color: "#475569" }}>
+              <p className="mt-1 font-mono text-[10px] text-pencil">
                 {"// Do NOT pay -- there is no guarantee you will get your files back."}
               </p>
             </div>
@@ -749,7 +749,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-4 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-4 text-xl font-bold text-ink">
                 Match the Defense
               </h2>
               <Quiz
@@ -776,7 +776,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-4 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-4 text-xl font-bold text-ink">
                 Defense Strategy
               </h2>
               <Quiz
@@ -806,17 +806,17 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-2 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-2 text-xl font-bold text-ink">
                 Scenario Challenge
               </h2>
               <div
                 className="mb-5 rounded-xl p-4"
-                style={{ background: "#1e293b", border: "1px solid #334155" }}
+                style={{ background: "#fdfcfa", border: "1px solid #334155" }}
               >
                 <p className="mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
                   Incident report
                 </p>
-                <p className="text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+                <p className="text-base leading-relaxed text-graphite">
                   A university's student portal suddenly becomes extremely slow. The IT team
                   notices incoming traffic has spiked from 100 requests/second to 50,000
                   requests/second. The traffic comes from IP addresses spread across 40

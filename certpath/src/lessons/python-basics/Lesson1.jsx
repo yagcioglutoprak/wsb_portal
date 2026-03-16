@@ -57,7 +57,7 @@ function WhatIsVariable({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">What is a Variable?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">variable</strong> is like a labeled box that stores a value. You give it a name, put something inside, and can use or change it later.
       </p>
 
@@ -142,7 +142,7 @@ function WhatIsVariable({ onComplete }) {
         </div>
       </CodeSnippet>
 
-      <p className="text-sm text-graphite">
+      <p className="text-base text-graphite leading-relaxed">
         In Python, you create a variable by writing its name, an equals sign, and the value. No special keywords needed -- Python figures out the type automatically.
       </p>
 
@@ -212,7 +212,7 @@ function DataTypes({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Data Types</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Every value in Python has a <strong className="text-ink">type</strong>. The type determines what operations you can perform on it.
       </p>
 
@@ -276,7 +276,7 @@ function VariableStep({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Step Through Code</h2>
-      <p className="text-sm text-graphite">
+      <p className="text-base text-graphite leading-relaxed">
         Let's trace through some code line by line. Watch how variables get created and change as Python executes each line.
       </p>
       <VariableVisualizer
@@ -305,7 +305,7 @@ function TypeErrors({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Watch Out: Type Errors</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Python will not let you mix types in ways that do not make sense. Trying to add a string and a number causes a <strong className="text-ink">TypeError</strong>.
       </p>
 

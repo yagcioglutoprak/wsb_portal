@@ -56,7 +56,7 @@ function BarCharts({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Bar Charts -- Comparing Categories</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Use a <strong className="text-violet-700">bar chart</strong> when you want to compare values across different categories. Each bar represents a separate group. Watch the bars grow:
       </p>
 
@@ -176,7 +176,7 @@ function LineCharts({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Line Charts -- Trends Over Time</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Use a <strong className="text-violet-700">line chart</strong> to show how values change over time. The connected line reveals the direction and momentum of change. Watch the path draw itself:
       </p>
 
@@ -318,7 +318,7 @@ function PieCharts({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Pie Charts -- Parts of a Whole</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Use a <strong className="text-violet-700">pie chart</strong> when you want to show how a whole is divided into proportional parts. Watch the segments expand:
       </p>
 
@@ -471,7 +471,7 @@ function ChartDecisionTree({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Choosing the Right Chart</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         The type of chart you choose depends on the <strong className="text-violet-700">question</strong> you are trying to answer. Follow this decision tree:
       </p>
 
@@ -578,7 +578,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Pick the Right Chart</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             You need to visualize quarterly revenue growth over the past 2 years. Which chart best shows the trend?
           </p>
           <InteractiveChart
@@ -606,7 +606,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Category Comparison</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             The HR team wants to compare headcount across departments. Which chart best shows the comparison?
           </p>
           <InteractiveChart
@@ -639,7 +639,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-sm font-bold shadow-md shadow-violet-200">C</span>
               <div>
                 <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-violet-500 mb-1">CEO request</p>
-                <p className="text-sm text-graphite">"Show me how our budget is split across departments AND how it changed over the last 4 quarters. What's the best single chart to answer my primary question about the budget split?"</p>
+                <p className="text-base text-graphite leading-relaxed">"Show me how our budget is split across departments AND how it changed over the last 4 quarters. What's the best single chart to answer my primary question about the budget split?"</p>
               </div>
             </div>
           </div>

@@ -53,7 +53,7 @@ function WhatIsList({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">What is a List?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">list</strong> is an ordered collection of values. Think of it as a row of connected train cars -- each car holds a value and has a number (index) starting from 0.
       </p>
 
@@ -175,7 +175,7 @@ function AccessingElements({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Accessing Elements</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Use square brackets with an index to access a specific element. Python also supports <strong className="text-ink">negative indexing</strong> -- <code className="font-mono text-xs">-1</code> gets the last item.
       </p>
 
@@ -262,7 +262,7 @@ function ForLoopVisualizer({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">For Loops: Repeating Actions</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">for loop</strong> lets you do something with each item in a list. Watch how the loop variable takes on each value one at a time.
       </p>
       <VariableVisualizer
@@ -310,7 +310,7 @@ function RangeAndOps({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">range() and List Operations</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Use <code className="font-mono text-xs font-bold">range(n)</code> to generate a sequence of numbers from 0 to n-1. It is often paired with for loops.
       </p>
 
@@ -363,7 +363,7 @@ function RangeAndOps({ onComplete }) {
             >
               {op.method}
             </code>
-            <span className="text-xs text-graphite flex-1">{op.desc}</span>
+            <span className="text-sm text-graphite flex-1">{op.desc}</span>
             <div className="rounded px-2 py-0.5" style={{ background: DARK }}>
               <code className="font-mono text-[10px]" style={{ color: SUBTEXT }}>{op.example}</code>
             </div>
@@ -421,7 +421,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Build a Loop</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Arrange the blocks to create a loop that doubles each number in a list and prints the results.
           </p>
           <CodeBlockPuzzle
@@ -446,7 +446,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Challenge: Filter a List</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build a program that loops through scores, finds only passing grades (60 or above), and adds them to a new list.
           </p>
           <CodeBlockPuzzle

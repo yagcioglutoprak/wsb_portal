@@ -179,7 +179,7 @@ function SelectBasics({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">SELECT: Reading Data</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-ink">SELECT</strong> is the most fundamental SQL command -- it
         retrieves data from a table. Every query starts with SELECT.
       </p>
@@ -282,7 +282,7 @@ function FromClause({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">FROM: Which Table?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-ink">FROM</strong> tells SQL which table to read from. A database
         can have dozens of tables -- FROM specifies the one you want.
       </p>
@@ -356,7 +356,7 @@ function WhereFiltering({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">WHERE: Filtering Rows</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-ink">WHERE</strong> filters which rows are returned. Only rows
         matching the condition appear in the result.
       </p>
@@ -428,7 +428,7 @@ function WhereFiltering({ onComplete }) {
                   >
                     <td className="px-4 py-2 font-mono text-xs font-bold text-blue-700">{e.id}</td>
                     <td className="px-4 py-2 text-xs text-slate-700">{e.name}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-slate-600">{e.department}</td>
+                    <td className="px-4 py-2 font-mono text-sm text-slate-600">{e.department}</td>
                     <td className={`px-4 py-2 font-mono text-xs transition-all duration-500 ${
                       filterActive && isMatch ? "font-bold text-emerald-700" : "text-slate-700"
                     }`}>
@@ -476,7 +476,7 @@ function AndOrOperators({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">AND / OR: Combining Conditions</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Combine conditions with <strong className="text-ink">AND</strong> (both must be true) or{" "}
         <strong className="text-ink">OR</strong> (either can be true).
       </p>
@@ -620,7 +620,7 @@ function OrderByStep({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">ORDER BY: Sorting Results</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-ink">ORDER BY</strong> sorts your results. Use{" "}
         <code className="font-mono text-xs bg-slate-100 px-1 rounded">ASC</code> for ascending or{" "}
         <code className="font-mono text-xs bg-slate-100 px-1 rounded">DESC</code> for descending.
@@ -733,7 +733,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Build a Query</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Get all employees with salary greater than 5000. Arrange the SQL clauses in the correct order.
           </p>
           <QueryBuilder
@@ -756,7 +756,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Complex Query</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Find employees in IT who earn more than 6000, sorted by salary descending.
           </p>
           <QueryBuilder
@@ -795,7 +795,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
                 Manager request
               </p>
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-base text-slate-600 leading-relaxed leading-relaxed">
               "I need a list of all IT employees hired after 2023-01-01 who earn over 5000 PLN.
               Show me their names and salaries, sorted by salary from highest to lowest."
             </p>

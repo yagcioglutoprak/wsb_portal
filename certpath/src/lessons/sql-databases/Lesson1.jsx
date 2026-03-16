@@ -203,7 +203,7 @@ function WhatIsTable({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">What is a Database Table?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">database</strong> stores data in{" "}
         <strong className="text-ink">tables</strong> -- structured grids of rows and columns, like
         a spreadsheet but with superpowers.
@@ -254,7 +254,7 @@ function WhatIsTable({ onComplete }) {
               >
                 <td className="px-3 py-2 font-mono text-xs font-bold text-blue-700">{row.id}</td>
                 <td className="px-3 py-2 text-xs text-slate-700">{row.name}</td>
-                <td className="px-3 py-2 font-mono text-xs text-slate-600">{row.department}</td>
+                <td className="px-3 py-2 font-mono text-sm text-slate-600">{row.department}</td>
                 <td className="px-3 py-2 font-mono text-xs text-slate-700">{row.salary.toLocaleString()} PLN</td>
                 <td className="px-3 py-2 font-mono text-xs text-slate-500">{row.hire_date}</td>
               </tr>
@@ -320,7 +320,7 @@ function ColumnsAndTypes({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Columns and Data Types</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Each column has a <strong className="text-ink">data type</strong> that defines what kind of
         values it stores. Hover a column to highlight all its cells.
       </p>
@@ -406,7 +406,7 @@ function ColumnsAndTypes({ onComplete }) {
             >
               {COLUMNS.find((c) => c.name === hoveredCol)?.type}
             </span>
-            <span className="text-xs text-slate-600">
+            <span className="text-sm text-slate-600">
               Column "{hoveredCol}" stores{" "}
               {COLUMNS.find((c) => c.name === hoveredCol)?.type === "VARCHAR"
                 ? "text values"
@@ -440,7 +440,7 @@ function ColumnsAndTypes({ onComplete }) {
             <span className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold ${t.color.bg} ${t.color.text} ${t.color.border}`}>
               {t.name}
             </span>
-            <span className="flex-1 text-xs text-slate-600">{t.desc}</span>
+            <span className="flex-1 text-sm text-slate-600">{t.desc}</span>
             <code className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{t.example}</code>
           </div>
         ))}
@@ -475,7 +475,7 @@ function PrimaryKeys({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Primary Keys</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Every table needs a <strong className="text-ink">primary key (PK)</strong> -- a column
         whose value is unique for every row and never null.
       </p>
@@ -606,7 +606,7 @@ function Relationships({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Relationships Between Tables</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Instead of repeating "IT" everywhere, we store departments in a separate table and use a{" "}
         <strong className="text-ink">foreign key</strong> to connect them.
       </p>
@@ -785,7 +785,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Challenge: Design a Table</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             A university needs a table to store course information. Drag each column to its correct
             data type slot.
           </p>

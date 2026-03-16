@@ -12,13 +12,13 @@ import InsightBox from "../../components/widgets/InsightBox";
 function DarkPanel({ children, className = "" }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-slate-200 ${className}`}
       style={{
         background: `
-          radial-gradient(circle at 30% 20%, rgba(6,182,212,0.04) 0%, transparent 50%),
-          linear-gradient(rgba(6,182,212,0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(6,182,212,0.025) 1px, transparent 1px),
-          #0f172a
+          radial-gradient(circle at 30% 20%, rgba(40,86,166,0.02) 0%, transparent 50%),
+          linear-gradient(rgba(40,86,166,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(40,86,166,0.03) 1px, transparent 1px),
+          #fdfcfa
         `,
         backgroundSize: "100% 100%, 32px 32px, 32px 32px, 100% 100%",
       }}
@@ -33,14 +33,14 @@ function CyberButton({ onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className="group flex items-center gap-2 rounded-xl px-6 py-3 font-mono text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+      className="group flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
       style={{
-        background: "linear-gradient(135deg, #06b6d4 0%, #22c55e 100%)",
-        color: "#0f172a",
-        boxShadow: "0 0 24px rgba(6,182,212,0.3), 0 4px 12px rgba(0,0,0,0.3)",
+        background: "#2856a6",
+        color: "#fff",
+        boxShadow: "0 4px 12px rgba(40,86,166,0.2)",
       }}
     >
-      <span style={{ color: "#064e3b" }}>$</span> {children}
+      {children}
     </button>
   );
 }
@@ -58,9 +58,9 @@ function NetworkDiagram({ onComplete }) {
   }, []);
 
   const nodes = [
-    { x: 250, y: 40, label: "Router", color: "#06b6d4" },
+    { x: 250, y: 40, label: "Router", color: "#2856a6" },
     { x: 440, y: 125, label: "Cloud", color: "#a78bfa" },
-    { x: 380, y: 275, label: "Server", color: "#22c55e" },
+    { x: 380, y: 275, label: "Server", color: "#16a34a" },
     { x: 120, y: 275, label: "Phone", color: "#fbbf24" },
     { x: 60, y: 125, label: "Laptop", color: "#f472b6" },
   ];
@@ -82,11 +82,11 @@ function NetworkDiagram({ onComplete }) {
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             What is a network?
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
-            A <strong style={{ color: "#06b6d4" }}>computer network</strong> is a group of
+          <p className="mb-6 text-base leading-relaxed text-graphite">
+            A <strong style={{ color: "#2856a6" }}>computer network</strong> is a group of
             devices connected together so they can share data. Your phone, laptop, a
             company server, and a cloud database all talk to each other through networks.
           </p>
@@ -95,7 +95,7 @@ function NetworkDiagram({ onComplete }) {
             <defs>
               <filter id="nd-glow">
                 <feGaussianBlur stdDeviation="4" />
-                <feFlood floodColor="#06b6d4" floodOpacity="0.3" />
+                <feFlood floodColor="#2856a6" floodOpacity="0.3" />
                 <feComposite in2="SourceGraphic" operator="in" />
                 <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
@@ -111,10 +111,10 @@ function NetworkDiagram({ onComplete }) {
 
             {/* ── Circuit board decorative lines ─────────────────── */}
             {[80, 160, 240].map((y, i) => (
-              <line key={`c-h-${i}`} x1={0} y1={y} x2={500} y2={y} stroke="#06b6d4" strokeWidth="0.3" opacity="0.04" />
+              <line key={`c-h-${i}`} x1={0} y1={y} x2={500} y2={y} stroke="#2856a6" strokeWidth="0.3" opacity="0.04" />
             ))}
             {[100, 200, 300, 400].map((x, i) => (
-              <line key={`c-v-${i}`} x1={x} y1={0} x2={x} y2={320} stroke="#06b6d4" strokeWidth="0.3" opacity="0.04" />
+              <line key={`c-v-${i}`} x1={x} y1={0} x2={x} y2={320} stroke="#2856a6" strokeWidth="0.3" opacity="0.04" />
             ))}
 
             {/* ── Connection lines with draw-in ──────────────────── */}
@@ -124,7 +124,7 @@ function NetworkDiagram({ onComplete }) {
                 <line
                   key={i}
                   x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y}
-                  stroke="#06b6d4" strokeWidth="1.5"
+                  stroke="#2856a6" strokeWidth="1.5"
                   strokeDasharray={len}
                   strokeDashoffset={entered ? 0 : len}
                   opacity="0.2"
@@ -136,7 +136,7 @@ function NetworkDiagram({ onComplete }) {
             {/* ── Traveling data dots ─────────────────────────────── */}
             {edges.slice(0, 5).map(([a, b], i) => (
               <g key={`dot-${i}`}>
-                <circle r="3" fill="#06b6d4" opacity="0.6" filter="url(#nd-glow)">
+                <circle r="3" fill="#2856a6" opacity="0.6" filter="url(#nd-glow)">
                   <animateMotion
                     dur={`${2.5 + i * 0.4}s`}
                     repeatCount="indefinite"
@@ -144,7 +144,7 @@ function NetworkDiagram({ onComplete }) {
                   />
                 </circle>
                 {/* Second dot, reverse direction */}
-                <circle r="2" fill="#22c55e" opacity="0.35">
+                <circle r="2" fill="#16a34a" opacity="0.35">
                   <animateMotion
                     dur={`${3 + i * 0.3}s`}
                     repeatCount="indefinite"
@@ -166,7 +166,7 @@ function NetworkDiagram({ onComplete }) {
                 {/* Node body */}
                 <circle
                   cx={n.x} cy={n.y} r="26"
-                  fill="#0f172a" stroke={n.color} strokeWidth="1.5"
+                  fill="#fdfcfa" stroke={n.color} strokeWidth="1.5"
                   filter={`url(#nd-glow-${i})`}
                   style={{
                     opacity: entered ? 1 : 0,
@@ -206,9 +206,9 @@ function NetworkDiagram({ onComplete }) {
             ))}
           </svg>
 
-          <p className="mt-6 text-sm" style={{ color: "#94a3b8" }}>
+          <p className="mt-6 text-base text-graphite leading-relaxed">
             Data moves between devices as small chunks called{" "}
-            <strong style={{ color: "#06b6d4" }}>packets</strong>. Every time you load a
+            <strong style={{ color: "#2856a6" }}>packets</strong>. Every time you load a
             webpage, send an email, or stream music, packets travel across the network.
           </p>
 
@@ -242,7 +242,7 @@ function NetworkLayers({ onComplete }) {
       iconPath: "M4 4h16v16H4zM4 9h16M9 4v16",
     },
     {
-      name: "Transport", num: 3, color: "#22c55e",
+      name: "Transport", num: 3, color: "#16a34a",
       protocols: ["TCP", "UDP"],
       desc: "Ensures data arrives completely and in order",
       detail: "TCP provides reliable delivery with error checking. UDP is faster but less reliable -- used for video streaming and gaming.",
@@ -268,11 +268,11 @@ function NetworkLayers({ onComplete }) {
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             The 4 Network Layers
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
-            Networks are organized into <strong style={{ color: "#06b6d4" }}>layers</strong>,
+          <p className="mb-6 text-base leading-relaxed text-graphite">
+            Networks are organized into <strong style={{ color: "#2856a6" }}>layers</strong>,
             each with a specific job. Think of them as floors in a building -- each floor
             handles a different task, and they work together to move data.
           </p>
@@ -286,7 +286,7 @@ function NetworkLayers({ onComplete }) {
                   className="overflow-hidden rounded-xl cursor-pointer"
                   onClick={() => setExpanded(isExpanded ? null : i)}
                   style={{
-                    background: "#1e293b",
+                    background: "#fdfcfa",
                     border: `1px solid ${isExpanded ? `${layer.color}60` : `${layer.color}20`}`,
                     opacity: entered ? 1 : 0,
                     transform: entered ? "translateX(0)" : "translateX(-30px)",
@@ -313,21 +313,21 @@ function NetworkLayers({ onComplete }) {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] font-bold" style={{ color: `${layer.color}90` }}>
+                          <span className="font-mono text-xs font-bold" style={{ color: `${layer.color}90` }}>
                             L{layer.num}
                           </span>
-                          <span className="text-sm font-bold" style={{ color: "#e2e8f0" }}>
+                          <span className="text-sm font-bold text-ink">
                             {layer.name}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-xs" style={{ color: "#94a3b8" }}>
+                        <p className="mt-0.5 text-xs text-graphite">
                           {layer.desc}
                         </p>
                         <div className="mt-1.5 flex flex-wrap gap-1.5">
                           {layer.protocols.map((p) => (
                             <span
                               key={p}
-                              className="rounded px-1.5 py-0.5 font-mono text-[10px] font-bold"
+                              className="rounded px-1.5 py-0.5 font-mono text-xs font-bold"
                               style={{
                                 background: `${layer.color}10`,
                                 color: `${layer.color}cc`,
@@ -351,7 +351,7 @@ function NetworkLayers({ onComplete }) {
                     }}
                   >
                     <div className="px-5 pb-3.5 pt-1" style={{ borderTop: `1px solid ${layer.color}15` }}>
-                      <p className="text-xs leading-relaxed" style={{ color: "#cbd5e1" }}>
+                      <p className="text-sm leading-relaxed text-graphite">
                         {layer.detail}
                       </p>
                     </div>
@@ -393,7 +393,7 @@ function AttackLayers({ onComplete }) {
 
   const attacks = [
     { layer: "Application", color: "#38bdf8", attack: "Phishing", desc: "Fake emails or websites trick you into giving up passwords", severity: "HIGH" },
-    { layer: "Transport", color: "#22c55e", attack: "DDoS", desc: "Floods a server with fake traffic until it crashes", severity: "CRITICAL" },
+    { layer: "Transport", color: "#16a34a", attack: "DDoS", desc: "Floods a server with fake traffic until it crashes", severity: "CRITICAL" },
     { layer: "Network", color: "#fbbf24", attack: "IP Spoofing", desc: "Attacker fakes their IP address to bypass security", severity: "MEDIUM" },
     { layer: "Link", color: "#f87171", attack: "MAC Spoofing", desc: "Attacker impersonates a trusted device on the local network", severity: "MEDIUM" },
   ];
@@ -401,20 +401,20 @@ function AttackLayers({ onComplete }) {
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
-        {/* Scan-line overlay */}
+        {/* Subtle scan-line overlay */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(239,68,68,0.015) 2px, rgba(239,68,68,0.015) 4px)",
+            background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(239,68,68,0.008) 2px, rgba(239,68,68,0.008) 4px)",
             animation: "l1-scanline 8s linear infinite",
           }}
         />
 
         <div className="relative p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             Where Attacks Happen
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+          <p className="mb-6 text-base leading-relaxed text-graphite">
             Every network layer has its own vulnerabilities. Attackers exploit weaknesses at
             specific layers -- understanding <em style={{ color: "#ef4444" }}>where</em> an
             attack happens helps you pick the right defense.
@@ -444,7 +444,7 @@ function AttackLayers({ onComplete }) {
                   {/* Layer bar */}
                   <rect
                     x={40} y={y} width={300} height={30} rx={6}
-                    fill={isHovered ? "#1e293b" : "#0f172a"}
+                    fill={isHovered ? "rgba(40,86,166,0.04)" : "#fdfcfa"}
                     stroke={`${a.color}30`} strokeWidth="1"
                     style={{
                       opacity: entered ? 1 : 0,
@@ -490,7 +490,7 @@ function AttackLayers({ onComplete }) {
                 key={a.layer}
                 className="relative overflow-hidden rounded-xl cursor-default"
                 style={{
-                  background: hoveredIdx === i ? "#1e293b" : "#0f172a",
+                  background: hoveredIdx === i ? "rgba(40,86,166,0.04)" : "#fdfcfa",
                   border: `1px solid ${hoveredIdx === i ? "#ef444440" : a.color + "15"}`,
                   opacity: entered ? 1 : 0,
                   transform: entered ? "translateX(0)" : "translateX(-30px)",
@@ -525,9 +525,9 @@ function AttackLayers({ onComplete }) {
                       </span>
                     </div>
                     <p
-                      className="mt-1.5 text-xs leading-relaxed"
+                      className="mt-1.5 text-sm leading-relaxed"
                       style={{
-                        color: hoveredIdx === i ? "#cbd5e1" : "#64748b",
+                        color: hoveredIdx === i ? "#3d3d3a" : "#7a7a76",
                         transition: "color 0.3s ease",
                       }}
                     >
@@ -623,18 +623,18 @@ function WhyItMatters({ onComplete }) {
   const stats = [
     { value: 2200, prefix: "", suffix: "+", label: "Cyberattacks happen every day worldwide", color: "#ef4444" },
     { value: 4.45, prefix: "$", suffix: "M", label: "Average cost of a single data breach", color: "#fbbf24" },
-    { value: 95, prefix: "", suffix: "%", label: "Of breaches are caused by human error", color: "#06b6d4" },
-    { value: 43, prefix: "", suffix: "%", label: "Of cyberattacks target small businesses", color: "#22c55e" },
+    { value: 95, prefix: "", suffix: "%", label: "Of breaches are caused by human error", color: "#2856a6" },
+    { value: 43, prefix: "", suffix: "%", label: "Of cyberattacks target small businesses", color: "#16a34a" },
   ];
 
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
+          <h2 className="mb-1 text-2xl font-bold text-ink">
             Why Network Security Matters
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+          <p className="mb-6 text-base leading-relaxed text-graphite">
             Network security is not just for big corporations. Every organization -- and every
             individual -- is a potential target. The numbers tell the story:
           </p>
@@ -645,7 +645,7 @@ function WhyItMatters({ onComplete }) {
                 key={i}
                 className="rounded-xl p-4 text-center"
                 style={{
-                  background: "#1e293b",
+                  background: "#fdfcfa",
                   border: `1px solid ${s.color}20`,
                   opacity: entered ? 1 : 0,
                   transform: entered ? "translateY(0)" : "translateY(16px)",
@@ -656,8 +656,7 @@ function WhyItMatters({ onComplete }) {
                   className="text-2xl font-bold font-mono"
                   style={{
                     color: s.color,
-                    textShadow: `0 0 24px ${s.color}40`,
-                  }}
+                                      }}
                 >
                   {entered && (
                     <AnimatedCounter
@@ -668,7 +667,7 @@ function WhyItMatters({ onComplete }) {
                     />
                   )}
                 </div>
-                <p className="mt-1.5 text-xs leading-snug" style={{ color: "#64748b" }}>
+                <p className="mt-1.5 text-xs leading-snug" style={{ color: "#7a7a76" }}>
                   {s.label}
                 </p>
               </div>
@@ -710,7 +709,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-4 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-4 text-xl font-bold text-ink">
                 Quick Check
               </h2>
               <Quiz
@@ -737,7 +736,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-4 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-4 text-xl font-bold text-ink">
                 Attack Identification
               </h2>
               <Quiz
@@ -768,17 +767,17 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-2 text-xl font-bold" style={{ color: "#e2e8f0" }}>
+              <h2 className="mb-2 text-xl font-bold text-ink">
                 Challenge
               </h2>
               <div
                 className="mb-5 rounded-xl p-4"
-                style={{ background: "#1e293b", border: "1px solid #334155" }}
+                style={{ background: "rgba(40,86,166,0.03)", border: "1px solid rgba(214,211,205,0.5)" }}
               >
-                <p className="mb-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#475569" }}>
+                <p className="mb-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-pencil">
                   Scenario
                 </p>
-                <p className="text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+                <p className="text-base leading-relaxed text-graphite">
                   Your company's website is loading slowly, and logs show thousands of requests
                   from different IP addresses across 30 countries. Meanwhile, employees report
                   receiving emails asking them to "verify their credentials" via a link. IT

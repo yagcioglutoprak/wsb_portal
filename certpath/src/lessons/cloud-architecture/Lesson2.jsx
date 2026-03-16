@@ -145,7 +145,7 @@ function StepLoadBalancer({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Load Balancer</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         A <strong className="text-indigo-900">load balancer</strong> distributes incoming requests across multiple servers. Think of it as a traffic controller -- it ensures no single server gets overwhelmed.
       </p>
 
@@ -237,7 +237,7 @@ function StepCDN({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">CDN (Content Delivery Network)</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         A <strong className="text-indigo-900">CDN</strong> stores copies of your static files (images, CSS, JavaScript) on servers around the world. Users get content from the nearest server instead of your main server thousands of miles away.
       </p>
 
@@ -337,7 +337,7 @@ function StepDatabase({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Database</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Every application needs persistent storage. A <strong className="text-indigo-900">cloud database</strong> is a managed service -- the provider handles backups, updates, and replication. You just store and query data.
       </p>
 
@@ -448,7 +448,7 @@ function StepCache({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Cache</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         A <strong className="text-indigo-900">cache</strong> stores frequently accessed data in memory for lightning-fast retrieval. Instead of querying the database every time, the app checks the cache first.
       </p>
 
@@ -569,7 +569,7 @@ function StepFullArch({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Full Architecture</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Watch the complete architecture assemble. Each component appears one by one, with connections drawing themselves.
       </p>
 
@@ -680,7 +680,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Build an Architecture</h2>
-          <p className="text-sm text-slate-600">
+          <p className="text-base text-slate-600 leading-relaxed">
             Place each component in the correct tier. Requests flow from top (users) to bottom (data).
           </p>
           <ArchitectureCanvas
@@ -712,7 +712,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Add a Cache Layer</h2>
-          <p className="text-sm text-slate-600">
+          <p className="text-base text-slate-600 leading-relaxed">
             Now add a cache between the app server and the database to speed up read operations.
           </p>
           <ArchitectureCanvas
@@ -749,7 +749,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
           <h2 className="text-xl font-bold text-indigo-900">Design an E-Commerce Backend</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Requirements</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-base text-slate-600 leading-relaxed">
               Design a complete e-commerce backend with: global content delivery, traffic distribution, application processing, fast data caching, and persistent storage. No hints this time.
             </p>
           </div>

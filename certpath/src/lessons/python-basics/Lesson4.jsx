@@ -51,7 +51,7 @@ function FunctionMachine({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Functions: Reusable Machines</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">function</strong> is like a machine: you feed it input, it processes it, and it produces output. Once you build the machine, you can use it as many times as you want.
       </p>
 
@@ -233,7 +233,7 @@ function DefiningFunction({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Defining a Function</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A function definition has distinct parts. Let's label them:
       </p>
 
@@ -329,7 +329,7 @@ function DefiningFunction({ onComplete }) {
             >
               {part.label}
             </span>
-            <span className="text-xs text-graphite">{part.desc}</span>
+            <span className="text-sm text-graphite">{part.desc}</span>
           </div>
         ))}
       </div>
@@ -360,7 +360,7 @@ function CallingFunction({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Calling a Function</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         When you call a function, the argument value flows in, the function processes it, and the result flows back out.
       </p>
 
@@ -455,7 +455,7 @@ function CallingFunction({ onComplete }) {
         </div>
         <div className="rounded-xl p-4" style={{ background: `rgba(137, 180, 250, 0.05)`, border: `1px solid rgba(137, 180, 250, 0.2)` }}>
           <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#89b4fa" }}>Why functions?</p>
-          <ul className="space-y-1.5 text-xs text-graphite">
+          <ul className="space-y-1.5 text-sm text-graphite">
             <li className="flex items-start gap-2">
               <span style={{ color: "#a6e3a1" }}>1.</span> Write once, use many times
             </li>
@@ -484,7 +484,7 @@ function Scope({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Scope: Where Variables Live</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Variables created inside a function only exist within that function -- this is called <strong className="text-ink">local scope</strong>. Variables outside functions are in <strong className="text-ink">global scope</strong>.
       </p>
 
@@ -576,7 +576,7 @@ export default function Lesson4({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Assemble a Function</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build a function called <code className="font-mono text-xs font-bold" style={{ color: "#cba6f7" }}>area</code> that takes width and height as parameters and returns the area (width * height).
           </p>
           <CodeBlockPuzzle
@@ -599,7 +599,7 @@ export default function Lesson4({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Temperature Converter</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build a function that converts Celsius to Fahrenheit using the formula: <code className="font-mono text-xs font-bold">F = C * 9/5 + 32</code>
           </p>
           <CodeBlockPuzzle
@@ -625,7 +625,7 @@ export default function Lesson4({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Challenge: Is It Prime?</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build a function <code className="font-mono text-xs font-bold" style={{ color: "#cba6f7" }}>is_prime</code> that checks if a number is prime. A prime number is only divisible by 1 and itself.
           </p>
           <CodeBlockPuzzle

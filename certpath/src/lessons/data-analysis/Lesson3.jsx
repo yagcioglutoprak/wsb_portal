@@ -57,7 +57,7 @@ function CorrelationCausation({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Correlation vs Causation</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Just because two things happen together does <strong className="text-red-600">not</strong> mean one <em>causes</em> the other. This is the most common and most dangerous mistake in data analysis.
       </p>
 
@@ -222,7 +222,7 @@ function SamplingBias({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Sampling Bias</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-violet-700">Sampling bias</strong> occurs when your data does not represent the full population. Who you ask determines what answers you get.
       </p>
 
@@ -307,7 +307,7 @@ function SamplingBias({ onComplete }) {
             <span className="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: b.color }}></span>
             <div>
               <span className="font-mono text-xs font-bold text-violet-700">{b.name}:</span>{" "}
-              <span className="text-xs text-graphite">{b.desc}</span>
+              <span className="text-sm text-graphite">{b.desc}</span>
             </div>
           </div>
         ))}
@@ -344,7 +344,7 @@ function MisleadingCharts({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Misleading Visualizations</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Charts can tell very different stories depending on their design. The same data can look <strong className="text-red-600">dramatically different</strong> based on a single axis choice. Try the slider:
       </p>
 
@@ -475,7 +475,7 @@ function ConfirmationBias({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Confirmation Bias</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         <strong className="text-violet-700">Confirmation bias</strong> is the tendency to look for data that supports what you already believe -- and ignore data that contradicts it. It is the most dangerous bias in data analysis.
       </p>
 
@@ -554,7 +554,7 @@ function ConfirmationBias({ onComplete }) {
           "Define your metrics BEFORE looking at the data",
           "Consider alternative explanations for every finding",
         ].map((tip, i) => (
-          <div key={i} className="flex items-start gap-3 rounded-xl border border-violet-200/60 bg-white px-4 py-2.5 shadow-sm text-xs text-graphite animate-lesson-enter"
+          <div key={i} className="flex items-start gap-3 rounded-xl border border-violet-200/60 bg-white px-4 py-2.5 shadow-sm text-sm text-graphite animate-lesson-enter"
             style={{ animationDelay: `${i * 100}ms` }}>
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 font-mono text-[10px] font-bold text-white shadow-sm">{i + 1}</span>
             <span className="pt-0.5">{tip}</span>
@@ -591,7 +591,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Spot the Error</h2>
           <div className="rounded-xl border border-violet-200/60 bg-violet-50/40 p-4 shadow-sm mb-2">
-            <p className="text-sm text-graphite leading-relaxed">
+            <p className="text-base text-graphite leading-relaxed leading-relaxed">
               A study finds that ice cream sales and drowning rates both increase during summer months. A news headline declares: <strong className="text-red-600">"Ice cream causes drowning!"</strong>
             </p>
           </div>
@@ -617,7 +617,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Chart Critique</h2>
           <div className="rounded-xl border border-violet-200/60 bg-violet-50/40 p-4 shadow-sm mb-2">
-            <p className="text-sm text-graphite leading-relaxed">
+            <p className="text-base text-graphite leading-relaxed leading-relaxed">
               A company presents a bar chart comparing Product A (98% satisfaction) vs Product B (95% satisfaction). The Y-axis starts at 93% instead of 0%, and the title reads <strong className="text-red-600">"Product A is dramatically more popular."</strong>
             </p>
           </div>
@@ -650,7 +650,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-sm font-bold shadow-md shadow-violet-200">R</span>
               <div>
                 <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-violet-500 mb-1">Research finding</p>
-                <p className="text-sm text-graphite leading-relaxed">
+                <p className="text-base text-graphite leading-relaxed leading-relaxed">
                   "A study finds that students who eat breakfast score 15% higher on tests than students who skip breakfast. The researchers conclude that eating breakfast improves test performance and recommend a mandatory breakfast program."
                 </p>
               </div>

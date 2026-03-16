@@ -36,7 +36,7 @@ function UnderLoad({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">What Happens Under Load?</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Before we discuss scaling, let's see what happens when traffic increases. Watch the simulation: traffic starts normal, then spikes. Pay attention to which component fails first.
       </p>
       <TrafficSimulator
@@ -77,7 +77,7 @@ function ScalingTypes({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Two Ways to Scale</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         When your app needs more power, you have two fundamental approaches. One has limits; the other scales without bound.
       </p>
 
@@ -127,7 +127,7 @@ function ScalingTypes({ onComplete }) {
             </div>
           </div>
 
-          <p className="text-xs text-slate-600 mb-2">Make your server <strong className="text-indigo-900">bigger</strong> -- more CPU, more RAM.</p>
+          <p className="text-sm text-slate-600 mb-2">Make your server <strong className="text-indigo-900">bigger</strong> -- more CPU, more RAM.</p>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-[11px]"><span className="text-emerald-500 font-bold">+</span><span className="text-slate-500">Simple, no code changes</span></div>
             <div className="flex items-center gap-1.5 text-[11px]"><span className="text-red-400 font-bold">-</span><span className="text-slate-500">Has physical limits</span></div>
@@ -179,7 +179,7 @@ function ScalingTypes({ onComplete }) {
             </div>
           </div>
 
-          <p className="text-xs text-slate-600 mb-2">Add <strong className="text-indigo-900">more servers</strong>. Load balancer distributes traffic.</p>
+          <p className="text-sm text-slate-600 mb-2">Add <strong className="text-indigo-900">more servers</strong>. Load balancer distributes traffic.</p>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-[11px]"><span className="text-emerald-500 font-bold">+</span><span className="text-slate-500">No limits -- keep adding</span></div>
             <div className="flex items-center gap-1.5 text-[11px]"><span className="text-emerald-500 font-bold">+</span><span className="text-slate-500">Built-in redundancy</span></div>
@@ -225,7 +225,7 @@ function AutoScaling({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Auto-Scaling</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         <strong className="text-indigo-900">Auto-scaling</strong> automatically adds or removes servers based on demand. You set rules, the cloud provider handles the rest -- no manual intervention needed.
       </p>
 
@@ -324,7 +324,7 @@ function AutoScaling({ onComplete }) {
                   }
                 </svg>
               </div>
-              <span className="flex-1 font-mono text-xs text-slate-600">{rule.condition}</span>
+              <span className="flex-1 font-mono text-sm text-slate-600">{rule.condition}</span>
               <svg viewBox="0 0 16 8" className="w-4 text-indigo-200"><path d="M0 4h16M12 1l4 3-4 3" fill="none" stroke="currentColor" strokeWidth="1.5"/></svg>
               <span className="font-mono text-xs font-bold text-indigo-900">{rule.action}</span>
             </div>
@@ -390,7 +390,7 @@ function Reliability({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Reliability Patterns</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         A reliable system stays running even when things break. Here are the key patterns used by companies like Netflix, Spotify, and AWS.
       </p>
 
@@ -406,7 +406,7 @@ function Reliability({ onComplete }) {
             </div>
             <div>
               <p className="text-sm font-bold text-indigo-900 mb-0.5">{p.name}</p>
-              <p className="text-xs leading-relaxed text-slate-600">{p.desc}</p>
+              <p className="text-sm leading-relaxed text-slate-600">{p.desc}</p>
             </div>
           </div>
         ))}
@@ -435,7 +435,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Add Scaling Components</h2>
-          <p className="text-sm text-slate-600">
+          <p className="text-base text-slate-600 leading-relaxed">
             This architecture needs scaling components. Place the auto-scaler and read replica in the correct positions.
           </p>
           <ArchitectureCanvas
@@ -493,7 +493,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
           <h2 className="text-xl font-bold text-indigo-900">Design for 10,000 Users</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Requirements</p>
-            <p className="text-sm text-slate-600">
+            <p className="text-base text-slate-600 leading-relaxed">
               Design an architecture that can handle 10,000 concurrent users. You need: global content delivery, load balancing, auto-scaled compute, fast caching, and reliable database storage.
             </p>
           </div>

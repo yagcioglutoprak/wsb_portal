@@ -45,7 +45,7 @@ function WhatIsCloud({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">What is Cloud Computing?</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Traditionally, companies bought and maintained their own servers. <strong className="text-indigo-900">Cloud computing</strong> lets you rent computing resources over the internet -- pay only for what you use, scale in minutes.
       </p>
 
@@ -271,7 +271,7 @@ function WhyCloud({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Why Cloud?</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Cloud computing has transformed how we build software. Here are the three main reasons companies are moving to the cloud.
       </p>
 
@@ -291,7 +291,7 @@ function WhyCloud({ onComplete }) {
                   <span className="text-sm font-bold text-indigo-900">{b.title}</span>
                   <span className="font-mono text-[10px] text-indigo-400">{b.subtitle}</span>
                 </div>
-                <p className="text-xs leading-relaxed text-slate-600">{b.desc}</p>
+                <p className="text-sm leading-relaxed text-slate-600">{b.desc}</p>
               </div>
             </div>
           </div>
@@ -362,7 +362,7 @@ function ServiceModels({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">IaaS, PaaS, SaaS</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         Cloud services come in three layers. The higher you go, the less you manage -- and the more the provider handles for you.
       </p>
 
@@ -398,7 +398,7 @@ function ServiceModels({ onComplete }) {
                     <span className={`text-base font-bold ${layer.text}`}>{layer.name}</span>
                     <span className={`rounded-md ${layer.badge} px-2 py-0.5 font-mono text-[9px] font-bold`}>{layer.full}</span>
                   </div>
-                  <p className="text-xs text-slate-600 mb-2">{layer.desc}</p>
+                  <p className="text-sm text-slate-600 mb-2">{layer.desc}</p>
 
                   {/* Examples (expand on hover) */}
                   <div className={`flex flex-wrap gap-1.5 transition-all duration-300 ${
@@ -446,7 +446,7 @@ function SharedResponsibility({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-indigo-900">Shared Responsibility Model</h2>
-      <p className="text-sm leading-relaxed text-slate-600">
+      <p className="text-base leading-relaxed text-slate-600">
         In cloud computing, security and management are <strong className="text-indigo-900">shared</strong> between you and the provider. Who manages what depends on the service model you choose.
       </p>
 
@@ -530,7 +530,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Categorize the Services</h2>
-          <p className="text-sm text-slate-600">
+          <p className="text-base text-slate-600 leading-relaxed">
             Drag each service to its correct cloud model category.
           </p>
           <DragDrop
@@ -565,7 +565,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
           <h2 className="text-xl font-bold text-indigo-900">Scenario Challenge</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Business case</p>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-base text-slate-600 leading-relaxed leading-relaxed">
               A startup needs to deploy a web application quickly. They have developers who write code, but they do not want to manage servers, operating systems, or middleware. They expect unpredictable traffic patterns.
             </p>
           </div>

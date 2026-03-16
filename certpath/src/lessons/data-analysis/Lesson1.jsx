@@ -73,7 +73,7 @@ function WhatIsDataset({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">What is a Dataset?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-violet-700">dataset</strong> is a structured collection of data, organized in rows and columns -- like a spreadsheet. Watch as one gets built before your eyes:
       </p>
 
@@ -224,7 +224,7 @@ function DataTypesExplorer({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Data Types in Datasets</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Every column has a <strong className="text-violet-700">data type</strong> that determines what operations you can perform. Watch each type highlight in sequence:
       </p>
 
@@ -351,7 +351,7 @@ function MissingValuesAndOutliers({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Missing Values & Outliers</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Real-world data is messy. Two common issues are <strong className="text-red-600">missing values</strong> (empty cells) and <strong className="text-amber-600">outliers</strong> (extreme values that do not fit the pattern).
       </p>
 
@@ -512,7 +512,7 @@ function SummaryStats({ onComplete }) {
   return (
     <div className="skill-theme-data space-y-6 animate-lesson-enter">
       <h2 className="text-xl font-bold text-ink">Summary Statistics</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Before diving into analysis, get a quick overview with <strong className="text-violet-700">summary statistics</strong>. These numbers describe the center, spread, and shape of your data.
       </p>
 
@@ -623,7 +623,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Filter the Data</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Use the filters to explore the dataset and answer the question.
           </p>
           <DataFilterPuzzle
@@ -645,7 +645,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-data space-y-6 animate-lesson-enter">
           <h2 className="text-xl font-bold text-ink">Data Challenge</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             This one requires filtering AND mental calculation. Take your time.
           </p>
           <DataFilterPuzzle

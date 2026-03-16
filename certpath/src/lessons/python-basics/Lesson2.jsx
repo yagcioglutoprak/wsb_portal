@@ -49,7 +49,7 @@ function IfElseBasics({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">If / Else: Making Decisions</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Programs need to make decisions. An <strong className="text-ink">if statement</strong> checks a condition -- if it is true, it runs one block of code. Otherwise, the <strong className="text-ink">else</strong> block runs.
       </p>
 
@@ -195,7 +195,7 @@ function IfElseExtended({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">If-Else in Action</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         When the <strong className="text-ink">if</strong> condition is False, Python jumps to the <strong className="text-ink">else</strong> block. Every if can have one else -- it handles "everything else".
       </p>
 
@@ -296,7 +296,7 @@ function ComparisonOps({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Comparison Operators</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Conditions use <strong className="text-ink">comparison operators</strong> to compare values. Each comparison evaluates to either <code className="font-mono text-xs">True</code> or <code className="font-mono text-xs">False</code>.
       </p>
 
@@ -357,17 +357,15 @@ function ElifStep({ onComplete }) {
 
   const lineStyle = (target) => ({
     background: activeBlock === target ? "rgba(249, 226, 175, 0.06)" : "transparent",
-    borderLeft: activeBlock === target ? "3px solid #f9e2af" : "3px solid transparent",
     paddingLeft: "8px",
-    marginLeft: "-11px",
-    borderRadius: "4px",
+    borderRadius: "6px",
     transition: "all 0.3s ease-out",
   });
 
   return (
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">elif: Multiple Conditions</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         When you have more than two options, use <code className="font-mono text-xs font-bold">elif</code> (short for "else if") to check additional conditions. Python checks them top-to-bottom and runs the first one that is true.
       </p>
 
@@ -457,7 +455,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Build an If/Else</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Arrange the code blocks to create a program that checks if a temperature is above 30 and prints the right message.
           </p>
           <CodeBlockPuzzle
@@ -481,7 +479,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Grade Calculator</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build a grade calculator using if/elif/else. The score is 75 -- it should assign grade "C".
           </p>
           <CodeBlockPuzzle
@@ -512,7 +510,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Challenge: Categorize Users</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Build logic that categorizes users by age. Under 13 = "child", 13-17 = "teen", 18+ = "adult". The test age is 15.
           </p>
           <CodeBlockPuzzle

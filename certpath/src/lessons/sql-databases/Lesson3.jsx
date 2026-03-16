@@ -120,7 +120,7 @@ function WhyJoins({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Why JOINs?</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         Data is split across multiple tables to avoid repetition. But when you need to see data
         from two tables together -- like employee names with their department names -- you need a{" "}
         <strong className="text-ink">JOIN</strong>.
@@ -180,7 +180,7 @@ function WhyJoins({ onComplete }) {
         {/* Question overlay */}
         {showConnection && (
           <div className="mt-4 animate-lesson-enter text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-base text-slate-600 leading-relaxed">
               <strong className="text-blue-700">How do we combine them?</strong> -- The{" "}
               <code className="font-mono text-xs bg-blue-50 px-1 rounded text-blue-700">dept_id</code>{" "}
               column connects to{" "}
@@ -234,7 +234,7 @@ function InnerJoinViz({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">INNER JOIN Visualized</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         An <strong className="text-ink">INNER JOIN</strong> combines rows from two tables based on
         matching column values. Watch the tables come together:
       </p>
@@ -416,7 +416,7 @@ function LeftVsInner({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">LEFT JOIN vs INNER JOIN</h2>
-      <p className="text-sm leading-relaxed text-graphite">
+      <p className="text-base leading-relaxed text-graphite">
         A <strong className="text-ink">LEFT JOIN</strong> keeps ALL rows from the left table, even
         if there is no match in the right table. Unmatched cells show NULL.
       </p>
@@ -509,7 +509,7 @@ function LeftVsInner({ onComplete }) {
                   <td className={`px-4 py-2 text-xs ${isNull ? "italic text-slate-400" : "text-slate-700"}`}>
                     {isNull ? "NULL" : row.department_name}
                   </td>
-                  <td className="px-4 py-2 font-mono text-xs text-slate-600">{row.salary.toLocaleString()}</td>
+                  <td className="px-4 py-2 font-mono text-sm text-slate-600">{row.salary.toLocaleString()}</td>
                 </tr>
               );
             })}
@@ -557,7 +557,7 @@ function ERDiagramStep({ onComplete }) {
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">Entity-Relationship Diagram</h2>
-      <p className="text-sm text-graphite">
+      <p className="text-base text-graphite leading-relaxed">
         Click the relationship buttons to see how the tables connect. The lines show which columns
         link together.
       </p>
@@ -670,7 +670,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Build a JOIN Query</h2>
-          <p className="text-sm text-graphite">
+          <p className="text-base text-graphite leading-relaxed">
             Get all employee names with their department names using a JOIN.
           </p>
           <QueryBuilder
@@ -708,7 +708,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
                 Manager request
               </p>
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-base text-slate-600 leading-relaxed leading-relaxed">
               "Show me employee names with their department names, sorted by salary from highest to
               lowest. I need to see the salary too."
             </p>

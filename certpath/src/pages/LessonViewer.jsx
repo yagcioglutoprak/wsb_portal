@@ -290,9 +290,9 @@ export default function LessonViewer() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-8 py-6">
-          <div className="mx-auto max-w-2xl">
-            <p className="mb-1.5 font-mono text-xs font-bold uppercase tracking-wider text-rust">
+        <div className="flex-1 px-6 py-4">
+          <div className="mx-auto max-w-4xl">
+            <p className="mb-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-rust/70">
               {currentPhase} &middot; Step {currentStepIndex + 1}
             </p>
 
