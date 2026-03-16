@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function DragDrop({
   items,
@@ -15,6 +15,9 @@ export default function DragDrop({
   const [wrongZones, setWrongZones] = useState([]);
   const [correctZones, setCorrectZones] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [dragOverZone, setDragOverZone] = useState(null);
+  const [removingZone, setRemovingZone] = useState(null);
+  const [showRipple, setShowRipple] = useState(false);
 
   const availableItems = items.filter(
     (item) => !Object.values(placements).includes(item.id)
@@ -29,6 +32,7 @@ export default function DragDrop({
   const handleDragEnd = () => {
     setIsDragging(false);
     setDraggedItem(null);
+    setDragOverZone(null);
   };
 
   const handleDrop = (e, zoneId) => {
@@ -38,21 +42,31 @@ export default function DragDrop({
     setPlacements(next);
     setDraggedItem(null);
     setIsDragging(false);
+    setDragOverZone(null);
     onDrop?.(next);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, zoneId) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
+    setDragOverZone(zoneId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverZone(null);
   };
 
   const handleRemove = (zoneId) => {
-    const next = { ...placements };
-    delete next[zoneId];
-    setPlacements(next);
-    setFeedback(null);
-    setWrongZones([]);
-    setCorrectZones([]);
+    setRemovingZone(zoneId);
+    setTimeout(() => {
+      const next = { ...placements };
+      delete next[zoneId];
+      setPlacements(next);
+      setFeedback(null);
+      setWrongZones([]);
+      setCorrectZones([]);
+      setRemovingZone(null);
+    }, 250);
   };
 
   const handleCheck = () => {
@@ -60,7 +74,8 @@ export default function DragDrop({
     setFeedback(isCorrect);
 
     if (isCorrect) {
-      // Staggered green reveals
+      setShowRipple(true);
+      setTimeout(() => setShowRipple(false), 800);
       zones.forEach((z, i) => {
         setTimeout(() => {
           setCorrectZones((prev) => [...prev, z.id]);
@@ -68,13 +83,8 @@ export default function DragDrop({
       });
       setTimeout(() => onComplete?.(), zones.length * 200 + 300);
     } else {
-      // Find which zones are wrong for shaking
       const wrongIds = zones
-        .filter((z) => {
-          const correctPlacements = {};
-          // We don't know exact correctness per zone, so shake all on wrong
-          return placements[z.id] !== undefined;
-        })
+        .filter((z) => placements[z.id] !== undefined)
         .map((z) => z.id);
       setWrongZones(wrongIds);
       setTimeout(() => setWrongZones([]), 500);
@@ -91,37 +101,69 @@ export default function DragDrop({
   const allPlaced = zones.every((z) => placements[z.id]);
 
   return (
-    <div className="space-y-6">
+    <div
+      className={[
+        "relative space-y-6 rounded-2xl p-1 transition-all duration-300",
+        showRipple ? "animate-ripple-green" : "",
+        feedback === false ? "animate-red-flash" : "",
+      ].filter(Boolean).join(" ")}
+    >
       {/* Drop zones */}
       <div className="flex flex-wrap gap-4">
         {zones.map((zone) => {
           const placedItem = items.find((i) => i.id === placements[zone.id]);
           const isWrong = wrongZones.includes(zone.id);
           const isCorrectZone = correctZones.includes(zone.id);
+          const isOver = dragOverZone === zone.id && isDragging;
+          const isRemoving = removingZone === zone.id;
 
           return (
             <div
               key={zone.id}
               onDrop={(e) => handleDrop(e, zone.id)}
-              onDragOver={handleDragOver}
+              onDragOver={(e) => handleDragOver(e, zone.id)}
+              onDragLeave={handleDragLeave}
               className={[
-                "relative min-h-[72px] min-w-[140px] rounded-xl border-2 border-dashed p-4 transition-all duration-300",
+                "relative min-h-[80px] min-w-[150px] rounded-xl p-4 transition-all duration-300",
                 isCorrectZone
-                  ? "border-emerald-400 bg-emerald-50/70 shadow-sm shadow-emerald-100"
+                  ? "border-2 border-emerald-400 bg-gradient-to-br from-emerald-50/80 to-teal-50/60 shadow-md shadow-emerald-100"
                   : placedItem
-                    ? "border-rust/30 bg-rust/5"
+                    ? "border-2 border-rust/30 bg-gradient-to-br from-rust/5 to-blue-50/30"
+                    : "border-2 border-dashed",
+                !placedItem && !isCorrectZone
+                  ? isOver
+                    ? "border-rust/60 bg-rust/8 shadow-lg shadow-rust/10"
                     : isDragging
-                      ? "border-rust/50 bg-rust/5"
-                      : "border-stone-300 bg-stone-50/60",
+                      ? "border-rust/30 bg-rust/3"
+                      : "border-stone-300 bg-stone-50/60"
+                  : "",
                 isWrong ? "animate-shake" : "",
-                isDragging && !placedItem ? "animate-glow-pulse" : "",
+                isOver && !placedItem ? "scale-[1.02]" : "",
               ]
                 .filter(Boolean)
                 .join(" ")}
+              style={
+                !placedItem && !isCorrectZone && isDragging && !isOver
+                  ? {
+                      borderImage: "none",
+                    }
+                  : undefined
+              }
             >
+              {/* Glow effect when dragging over */}
+              {isOver && !placedItem && (
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-xl"
+                  style={{
+                    background: "radial-gradient(circle at 50% 50%, rgba(40, 86, 166, 0.08) 0%, transparent 70%)",
+                    animation: "glow-pulse 1.5s ease-in-out infinite",
+                  }}
+                />
+              )}
+
               {/* Correct checkmark overlay */}
               {isCorrectZone && (
-                <div className="animate-lesson-enter absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 shadow-sm">
+                <div className="animate-snap-in absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 shadow-md shadow-emerald-200">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M3 8.5L6.5 12L13 4"
@@ -129,6 +171,11 @@ export default function DragDrop({
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      style={{
+                        strokeDasharray: 24,
+                        strokeDashoffset: 0,
+                        animation: "checkDraw 0.4s ease-out forwards",
+                      }}
                     />
                   </svg>
                 </div>
@@ -142,26 +189,28 @@ export default function DragDrop({
                     {zone.label}
                   </p>
                   {placedItem ? (
-                    <div className="flex items-center justify-between gap-2">
-                      <span
-                        className="text-sm font-semibold text-ink"
-                        style={{
-                          animation: "counter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
-                        }}
-                      >
+                    <div
+                      className={[
+                        "flex items-center justify-between gap-2",
+                        isRemoving ? "animate-scale-out" : "animate-snap-in",
+                      ].join(" ")}
+                    >
+                      <span className="text-sm font-semibold text-ink">
                         {placedItem.label}
                       </span>
                       {!feedback && (
                         <button
                           onClick={() => handleRemove(zone.id)}
-                          className="flex h-5 w-5 items-center justify-center rounded-full bg-stone-200/80 text-xs text-graphite transition-colors hover:bg-red-100 hover:text-red-500"
+                          className="flex h-6 w-6 items-center justify-center rounded-full bg-stone-200/80 text-xs text-graphite transition-all duration-200 hover:bg-red-100 hover:text-red-500 hover:scale-110"
                         >
                           &times;
                         </button>
                       )}
                     </div>
                   ) : (
-                    <p className="text-xs italic text-pencil/60">Drop here</p>
+                    <p className="text-xs italic text-pencil/50">
+                      {isDragging ? "Drop here" : "Waiting for item..."}
+                    </p>
                   )}
                 </>
               )}
@@ -173,30 +222,49 @@ export default function DragDrop({
       {/* Available items */}
       {availableItems.length > 0 && (
         <div>
-          <p className="mb-2.5 text-xs font-bold uppercase tracking-wider text-pencil/60">
-            Available pieces
+          <p className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-pencil/60">
+            <span>Drag these</span>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none" className="text-pencil/40">
+              <path d="M0 6h12M9 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </p>
           <div className="flex flex-wrap gap-3">
-            {availableItems.map((item) => (
-              <div
-                key={item.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, item)}
-                onDragEnd={handleDragEnd}
-                className={[
-                  "cursor-grab select-none rounded-xl border bg-white px-4 py-3 text-sm font-semibold text-ink shadow-sm transition-all duration-200",
-                  "hover:scale-105 hover:shadow-lg hover:border-rust/30",
-                  "active:cursor-grabbing active:scale-100",
-                  draggedItem?.id === item.id
-                    ? "scale-105 border-rust/50 shadow-lg opacity-60"
-                    : "border-stone-200",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                {renderItem ? renderItem(item) : item.label}
-              </div>
-            ))}
+            {availableItems.map((item) => {
+              const isBeingDragged = draggedItem?.id === item.id;
+              return (
+                <div
+                  key={item.id}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, item)}
+                  onDragEnd={handleDragEnd}
+                  className={[
+                    "cursor-grab select-none rounded-xl border px-5 py-3 text-sm font-semibold text-ink transition-all duration-200",
+                    // Frosted glass look
+                    "bg-white/80 backdrop-blur-sm shadow-sm",
+                    // Hover
+                    "hover:scale-105 hover:shadow-lg hover:shadow-rust/10 hover:border-rust/30",
+                    // Active
+                    "active:cursor-grabbing active:scale-100",
+                    // Dragging state
+                    isBeingDragged
+                      ? "scale-105 border-rust/50 shadow-xl shadow-rust/20 opacity-60 rotate-1"
+                      : "border-stone-200/80",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  style={
+                    !isBeingDragged
+                      ? {
+                          background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(253,252,250,0.8) 100%)",
+                          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6), 0 1px 3px rgba(0,0,0,0.06)",
+                        }
+                      : undefined
+                  }
+                >
+                  {renderItem ? renderItem(item) : item.label}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -217,15 +285,15 @@ export default function DragDrop({
           className={[
             "animate-lesson-enter rounded-2xl border p-5",
             feedback
-              ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50/40"
-              : "border-red-200 bg-gradient-to-br from-red-50 to-orange-50/30",
+              ? "border-emerald-200 bg-gradient-to-br from-emerald-50 via-emerald-50/60 to-teal-50/40"
+              : "border-red-200 bg-gradient-to-br from-red-50 via-red-50/60 to-orange-50/30",
           ].join(" ")}
         >
           <div className="flex items-start gap-3">
             <span
               className={[
-                "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm text-white",
-                feedback ? "bg-emerald-500" : "bg-red-400",
+                "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm text-white shadow-sm",
+                feedback ? "bg-emerald-500 shadow-emerald-200" : "bg-red-400 shadow-red-200",
               ].join(" ")}
             >
               {feedback ? (
@@ -263,7 +331,7 @@ export default function DragDrop({
               {!feedback && (
                 <button
                   onClick={handleReset}
-                  className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-rust/10 px-4 py-2 text-sm font-semibold text-rust transition-colors hover:bg-rust/20"
+                  className="animate-pulse-try-again mt-3 inline-flex items-center gap-2 rounded-xl bg-rust/10 px-5 py-2.5 text-sm font-semibold text-rust transition-all duration-200 hover:bg-rust/20 hover:shadow-md hover:shadow-rust/10"
                 >
                   <svg
                     width="14"
