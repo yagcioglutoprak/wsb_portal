@@ -2682,3 +2682,243 @@ export const certKeywords = {
     "cilt professional diploma",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// 6. SKILLS (Learning Platform)
+// ---------------------------------------------------------------------------
+
+export const skills = [
+  {
+    id: "network-security",
+    name: "Network Security",
+    slug: "network-security",
+    description:
+      "Understand how networks are protected from digital threats. Learn about firewalls, packet filtering, and common attack patterns.",
+    icon: "shield",
+    fieldIds: ["cybersecurity", "networking"],
+    certIds: ["security-plus"],
+    lessonCount: 3,
+    badgeName: "Network Security Foundations",
+    prerequisites: [],
+  },
+  {
+    id: "python-basics",
+    name: "Python Basics",
+    slug: "python-basics",
+    description:
+      "Learn Python fundamentals — variables, loops, functions, and data structures. The most in-demand programming language for data and automation.",
+    icon: "code",
+    fieldIds: ["data-science", "backend-development", "devops"],
+    certIds: [],
+    lessonCount: 4,
+    badgeName: "Python Basics Foundations",
+    prerequisites: [],
+  },
+  {
+    id: "sql-databases",
+    name: "SQL & Databases",
+    slug: "sql-databases",
+    description:
+      "Query, filter, and join data in relational databases. Essential for every data role and most backend positions.",
+    icon: "database",
+    fieldIds: ["data-science", "backend-development", "finance-accounting"],
+    certIds: [],
+    lessonCount: 3,
+    badgeName: "SQL & Databases Foundations",
+    prerequisites: ["python-basics"],
+  },
+  {
+    id: "cloud-architecture",
+    name: "Cloud Architecture",
+    slug: "cloud-architecture",
+    description:
+      "Design and understand cloud infrastructure. Learn about load balancers, scaling, and the services that power modern applications.",
+    icon: "cloud",
+    fieldIds: ["cloud-engineering", "devops"],
+    certIds: ["aws-cloud-practitioner"],
+    lessonCount: 3,
+    badgeName: "Cloud Architecture Foundations",
+    prerequisites: [],
+  },
+  {
+    id: "data-analysis",
+    name: "Data Analysis",
+    slug: "data-analysis",
+    description:
+      "Read, visualize, and draw conclusions from data. Learn to pick the right chart, spot patterns, and communicate insights.",
+    icon: "chart",
+    fieldIds: ["data-science", "finance-accounting", "management"],
+    certIds: [],
+    lessonCount: 3,
+    badgeName: "Data Analysis Foundations",
+    prerequisites: [],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 7. LESSONS (Learning Platform)
+// ---------------------------------------------------------------------------
+
+export const lessons = [
+  // ── Network Security ───────────────────────────────────────────────
+  {
+    id: "network-1",
+    skillId: "network-security",
+    number: 1,
+    title: "What is Network Security?",
+    description: "Visual walkthrough of network layers and attack surfaces",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "network-2",
+    skillId: "network-security",
+    number: 2,
+    title: "How Firewalls Work",
+    description: "Trace packets through firewall rules and configure defenses",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 5 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "network-3",
+    skillId: "network-security",
+    number: 3,
+    title: "Threats & Defense",
+    description: "Identify common attacks and match them to defensive strategies",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  // ── Python Basics ──────────────────────────────────────────────────
+  {
+    id: "python-1",
+    skillId: "python-basics",
+    number: 1,
+    title: "Variables & Data Types",
+    description: "Variables as labeled boxes and data types as shapes that fit",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "python-2",
+    skillId: "python-basics",
+    number: 2,
+    title: "Conditionals & Logic",
+    description: "Flowchart animation showing if/else branching and boolean logic",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "python-3",
+    skillId: "python-basics",
+    number: 3,
+    title: "Lists & Loops",
+    description: "Visual arrays and loop cursors moving through collections",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "python-4",
+    skillId: "python-basics",
+    number: 4,
+    title: "Functions",
+    description: "Functions as machines — input goes in, output comes out",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  // ── SQL & Databases ────────────────────────────────────────────────
+  {
+    id: "sql-1",
+    skillId: "sql-databases",
+    number: 1,
+    title: "Tables & Data",
+    description: "Visual representation of database tables, rows, and columns",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "sql-2",
+    skillId: "sql-databases",
+    number: 2,
+    title: "SELECT & WHERE",
+    description: "Visual query execution — highlight which rows match your filters",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 5 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "sql-3",
+    skillId: "sql-databases",
+    number: 3,
+    title: "JOINs & Relationships",
+    description: "Animated visualization of how JOIN combines two tables",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  // ── Cloud Architecture ─────────────────────────────────────────────
+  {
+    id: "cloud-1",
+    skillId: "cloud-architecture",
+    number: 1,
+    title: "Cloud Basics",
+    description: "Visual comparison — on-premise server rooms vs cloud providers",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "cloud-2",
+    skillId: "cloud-architecture",
+    number: 2,
+    title: "Architecture Components",
+    description: "Load balancers, CDNs, databases, and caches — what they do and where they go",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 5 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "cloud-3",
+    skillId: "cloud-architecture",
+    number: 3,
+    title: "Scaling & Reliability",
+    description: "Watch what happens when traffic increases and learn to design for it",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  // ── Data Analysis ──────────────────────────────────────────────────
+  {
+    id: "data-1",
+    skillId: "data-analysis",
+    number: 1,
+    title: "Reading Data",
+    description: "Anatomy of a dataset — rows, columns, types, and missing values",
+    estimatedMinutes: 15,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "data-2",
+    skillId: "data-analysis",
+    number: 2,
+    title: "Visualization",
+    description: "When to use bar, line, pie, or scatter — and why it matters",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+  {
+    id: "data-3",
+    skillId: "data-analysis",
+    number: 3,
+    title: "Drawing Conclusions",
+    description: "Correlation vs causation, sampling bias, and communicating insights",
+    estimatedMinutes: 20,
+    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 8. SKILL-TO-JOB MAPPING
+// ---------------------------------------------------------------------------
+
+export const skillJobMap = {
+  "network-security": ["job-1", "job-2", "job-3", "job-4", "job-5"],
+  "python-basics": ["job-2", "job-5", "job-14", "job-15", "job-16", "job-17"],
+  "sql-databases": ["job-14", "job-15", "job-16", "job-31", "job-32", "job-33"],
+  "cloud-architecture": ["job-6", "job-7", "job-8", "job-9"],
+  "data-analysis": ["job-14", "job-15", "job-16", "job-17", "job-31", "job-32"],
+};
