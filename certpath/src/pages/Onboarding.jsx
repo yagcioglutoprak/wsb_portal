@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { fields, certifications, jobs } from "../data/mock";
 import { programs } from "../data/programs";
+import useProgress from "../hooks/useProgress";
 import {
   CybersecurityIcon,
   CloudIcon,
@@ -516,9 +517,9 @@ function IllustratedCard({ label, selected, onClick, description, Illustration }
 
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <span className="block font-serif text-lg italic text-ink">{label}</span>
+          <span className="block font-sans text-lg font-semibold text-ink">{label}</span>
           {description && (
-            <span className="mt-1 block text-sm leading-relaxed text-graphite">
+            <span className="mt-1 block text-base leading-relaxed text-graphite">
               {description}
             </span>
           )}
@@ -579,9 +580,9 @@ function FieldSelectCard({ label, selected, onClick, description, slug }) {
         />
       )}
 
-      <span className="block pr-10 font-serif text-lg italic text-ink">{label}</span>
+      <span className="block pr-10 font-sans text-lg font-semibold text-ink">{label}</span>
       {description && (
-        <span className="mt-1 block pr-10 text-sm leading-relaxed text-graphite">
+        <span className="mt-1 block pr-10 text-base leading-relaxed text-graphite">
           {description}
         </span>
       )}
@@ -617,6 +618,8 @@ function StepWrapper({ visible, direction, children }) {
 /* ──────────────────────────────────────────────────────────────────── */
 
 export default function Onboarding() {
+  const { saveProfile } = useProgress();
+
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState("forward");
   const [visible, setVisible] = useState(true);
@@ -624,6 +627,12 @@ export default function Onboarding() {
   const [year, setYear] = useState(null);
   const [program, setProgram] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
+
+  useEffect(() => {
+    if (step === 4 && year && program && selectedField) {
+      saveProfile({ year, program, field: selectedField });
+    }
+  }, [step, year, program, selectedField, saveProfile]);
 
   /* Advance with animation */
   const goToStep = useCallback(
@@ -686,14 +695,14 @@ export default function Onboarding() {
           <button
             type="button"
             onClick={goBack}
-            className="font-mono text-xs uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
+            className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
           >
             &larr; Back
           </button>
         ) : (
           <Link
             to="/"
-            className="font-mono text-xs uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
+            className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
           >
             &larr; Home
           </Link>
@@ -707,15 +716,14 @@ export default function Onboarding() {
           {/* ── Step 1: Year ──────────────────────────────── */}
           {step === 1 && (
             <div>
-              <span className="block font-mono text-xs tracking-widest text-pencil">
+              <span className="block font-mono text-sm tracking-widest text-pencil">
                 01
               </span>
-              <h1 className="mt-3 font-serif text-3xl italic text-ink sm:text-4xl">
+              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
                 What year are you in?
               </h1>
-              <p className="mt-3 text-base leading-relaxed text-graphite">
-                This helps us recommend the right starting point for your
-                certification journey.
+              <p className="mt-3 text-lg leading-relaxed text-graphite">
+                This helps us tailor everything to where you are in your studies.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {years.map((y) => (
@@ -734,15 +742,14 @@ export default function Onboarding() {
           {/* ── Step 2: Program ──────────────────────────── */}
           {step === 2 && (
             <div>
-              <span className="block font-mono text-xs tracking-widest text-pencil">
+              <span className="block font-mono text-sm tracking-widest text-pencil">
                 02
               </span>
-              <h1 className="mt-3 font-serif text-3xl italic text-ink sm:text-4xl">
+              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
                 What are you studying?
               </h1>
-              <p className="mt-3 text-base leading-relaxed text-graphite">
-                Your program shapes which certifications are most valuable for
-                your career.
+              <p className="mt-3 text-lg leading-relaxed text-graphite">
+                Your program helps us recommend the right certifications and opportunities for you.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {programs.map((p) => (
@@ -761,15 +768,14 @@ export default function Onboarding() {
           {/* ── Step 3: Field ────────────────────────────── */}
           {step === 3 && (
             <div>
-              <span className="block font-mono text-xs tracking-widest text-pencil">
+              <span className="block font-mono text-sm tracking-widest text-pencil">
                 03
               </span>
-              <h1 className="mt-3 font-serif text-3xl italic text-ink sm:text-4xl">
+              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
                 What excites you most?
               </h1>
-              <p className="mt-3 text-base leading-relaxed text-graphite">
-                Pick the field that sparks your curiosity. You can always explore
-                others later.
+              <p className="mt-3 text-lg leading-relaxed text-graphite">
+                Go with what excites you — you can always explore other fields later.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {availableFields.map((f) => (
@@ -808,17 +814,17 @@ export default function Onboarding() {
                   </div>
                 )}
                 <div>
-                  <span className="block font-mono text-xs tracking-widest text-pencil">
-                    Your personalized path
+                  <span className="block font-mono text-sm tracking-widest text-pencil">
+                    Here's your plan
                   </span>
-                  <h1 className="mt-1 font-serif text-3xl italic text-ink sm:text-4xl">
+                  <h1 className="mt-1 font-sans text-4xl font-bold text-ink sm:text-5xl">
                     {chosenField?.name || "Your path"}
                   </h1>
                   {chosenField && (
-                    <p className="mt-2 text-base leading-relaxed text-graphite">
+                    <p className="mt-2 text-lg leading-relaxed text-graphite">
                       Tailored for a <span className="font-medium text-ink">{yearLabel}</span>{" "}
                       {programLabel !== "Other" ? <><span className="font-medium text-ink">{programLabel}</span> </> : ""}student.
-                      Here is where we recommend you start.
+                      Here's what we recommend based on your profile.
                     </p>
                   )}
                 </div>
@@ -844,11 +850,11 @@ export default function Onboarding() {
                 ].map(({ value, label, color, delay }) => (
                   <div
                     key={label}
-                    className="rounded-lg border border-faint bg-card p-4 text-center animate-scale-in"
+                    className="rounded-lg border border-faint bg-card p-4 text-center shadow-sm animate-scale-in"
                     style={{ animationDelay: `${delay}ms` }}
                   >
-                    <span className={`block font-serif text-2xl italic ${color}`}>{value}</span>
-                    <span className="block font-mono text-xs tracking-wider text-pencil mt-1">{label}</span>
+                    <span className={`block font-sans text-2xl font-bold ${color}`}>{value}</span>
+                    <span className="block font-mono text-sm tracking-wider text-pencil mt-1">{label}</span>
                   </div>
                 ))}
               </div>
@@ -856,40 +862,40 @@ export default function Onboarding() {
               {/* Salary + cost summary */}
               {fieldJobs.length > 0 && (
                 <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg border border-success/20 bg-success/5 p-4 animate-slide-in-right" style={{ animationDelay: "700ms" }}>
-                    <span className="block font-mono text-xs tracking-widest text-success">Salary range in Poland</span>
-                    <span className="mt-1 block font-serif text-xl italic text-ink">
+                  <div className="rounded-lg border border-success/20 bg-success/5 p-4 shadow-sm animate-slide-in-right" style={{ animationDelay: "700ms" }}>
+                    <span className="block font-mono text-sm tracking-widest text-success">Salary range in Poland</span>
+                    <span className="mt-1 block font-sans text-xl font-bold text-ink">
                       {salaryMin.toLocaleString("pl-PL")} - {salaryMax.toLocaleString("pl-PL")} PLN/month
                     </span>
                   </div>
-                  <div className="rounded-lg border border-faint bg-card p-4 animate-slide-in-right" style={{ animationDelay: "800ms" }}>
-                    <span className="block font-mono text-xs tracking-widest text-pencil">Total certification cost</span>
-                    <span className="mt-1 block font-serif text-xl italic text-ink">
+                  <div className="rounded-lg border border-faint bg-card p-4 shadow-sm animate-slide-in-right" style={{ animationDelay: "800ms" }}>
+                    <span className="block font-mono text-sm tracking-widest text-pencil">Total certification cost</span>
+                    <span className="mt-1 block font-sans text-xl font-bold text-ink">
                       ~{totalCost.toLocaleString("pl-PL")} PLN
                     </span>
-                    <span className="block text-xs text-graphite mt-0.5">Many free alternatives available</span>
+                    <span className="block text-sm text-graphite mt-0.5">Many free alternatives available</span>
                   </div>
                 </div>
               )}
 
               {/* Start here highlight */}
               {firstCert && (
-                <div className="mt-8 rounded-xl border-2 border-rust/20 bg-rust/5 p-6 animate-fade-in-up animate-pulse-soft" style={{ animationDelay: "900ms" }}>
-                  <span className="block font-mono text-xs tracking-widest text-rust">Start here</span>
-                  <span className="mt-2 block font-serif text-xl italic text-ink">{firstCert.name}</span>
-                  <p className="mt-1 text-sm leading-relaxed text-graphite">{firstCert.description}</p>
+                <div className="mt-8 rounded-xl border-2 border-rust/20 bg-rust/5 p-6 shadow-sm animate-fade-in-up animate-pulse-soft" style={{ animationDelay: "900ms" }}>
+                  <span className="block font-mono text-sm tracking-widest text-rust">Start here</span>
+                  <span className="mt-2 block font-sans text-xl font-semibold text-ink">{firstCert.name}</span>
+                  <p className="mt-1 text-base leading-relaxed text-graphite">{firstCert.description}</p>
                   <div className="mt-3 flex flex-wrap gap-3">
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
                       {firstCert.provider}
                     </span>
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
                       {firstCert.costPln > 0 ? `~${firstCert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
                     </span>
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
                       ~{Math.round(firstCert.durationWeeks / 4)} months
                     </span>
                     {firstCert.examCode && (
-                      <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-xs text-graphite">
+                      <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
                         {firstCert.examCode}
                       </span>
                     )}
@@ -899,7 +905,7 @@ export default function Onboarding() {
 
               {/* Full stage overview */}
               <div className="mt-8 animate-fade-in-up" style={{ animationDelay: "1000ms" }}>
-                <span className="block font-mono text-xs tracking-widest text-pencil mb-4">Full roadmap overview</span>
+                <span className="block font-mono text-sm tracking-widest text-pencil mb-4">Your full roadmap</span>
                 <div className="space-y-3">
                   {stageNums.map((stageNum, idx) => (
                     <div
@@ -908,20 +914,20 @@ export default function Onboarding() {
                       style={{ animationDelay: `${(idx + 3) * 100}ms` }}
                     >
                       <div className="flex items-center gap-3 mb-3">
-                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-xs font-medium ${
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-medium ${
                           idx === 0 ? "bg-rust text-white" : "border-2 border-pencil/20 text-pencil"
                         }`}>
                           {stageNum}
                         </div>
                         <div className="flex-1">
-                          <span className="block font-serif text-lg italic text-ink">
+                          <span className="block font-sans text-lg font-semibold text-ink">
                             {stages[stageNum][0]?.stageName || `Stage ${stageNum}`}
                           </span>
-                          <span className="block font-mono text-xs text-pencil">
+                          <span className="block font-mono text-sm text-pencil">
                             ~{Math.round(stages[stageNum].reduce((s, c) => s + c.durationWeeks, 0) / 4)} months
                           </span>
                         </div>
-                        <span className="font-mono text-xs text-pencil">
+                        <span className="font-mono text-sm text-pencil">
                           {stages[stageNum].length} cert{stages[stageNum].length !== 1 ? "s" : ""}
                         </span>
                       </div>
@@ -929,14 +935,14 @@ export default function Onboarding() {
                         {stages[stageNum].map((cert) => (
                           <div key={cert.id} className="flex items-center justify-between py-1.5 border-b border-faint last:border-0">
                             <div>
-                              <span className="text-sm font-medium text-ink">{cert.name}</span>
-                              <span className="ml-2 font-mono text-xs text-pencil">{cert.provider}</span>
+                              <span className="text-base font-medium text-ink">{cert.name}</span>
+                              <span className="ml-2 font-mono text-sm text-pencil">{cert.provider}</span>
                             </div>
                             <div className="flex items-center gap-3 text-right">
-                              <span className="font-mono text-xs text-pencil">
+                              <span className="font-mono text-sm text-pencil">
                                 {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
                               </span>
-                              <span className="font-mono text-xs text-pencil">
+                              <span className="font-mono text-sm text-pencil">
                                 ~{Math.round(cert.durationWeeks / 4)} mo
                               </span>
                             </div>
@@ -950,23 +956,21 @@ export default function Onboarding() {
 
               {/* CTAs */}
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: "1200ms" }}>
-                {chosenField && (
-                  <Link
-                    to={`/fields/${chosenField.slug}`}
-                    className="inline-block rounded-lg bg-rust px-10 py-4 font-mono text-sm uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rust/20"
-                  >
-                    View full roadmap with resources
-                  </Link>
-                )}
+                <Link
+                  to="/dashboard"
+                  className="inline-block rounded-lg bg-rust px-10 py-4 font-mono text-base uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rust/20"
+                >
+                  See your personalized plan
+                </Link>
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedField(null);
                     goToStep(3);
                   }}
-                  className="font-mono text-xs uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
+                  className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
                 >
-                  Choose a different path
+                  Try a different field
                 </button>
               </div>
             </div>
