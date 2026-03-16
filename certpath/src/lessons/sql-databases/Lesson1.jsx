@@ -3,78 +3,228 @@ import Quiz from "../../components/widgets/Quiz";
 import InsightBox from "../../components/widgets/InsightBox";
 import DragDrop from "../../components/widgets/DragDrop";
 
-const STUDENT_ROWS = [
-  { id: 1, name: "Anna Kowalska", email: "anna@wsb.pl", year: 2 },
-  { id: 2, name: "Jan Nowak", email: "jan@wsb.pl", year: 3 },
-  { id: 3, name: "Maria Wisniewska", email: "maria@wsb.pl", year: 1 },
-  { id: 4, name: "Piotr Lewandowski", email: "piotr@wsb.pl", year: 2 },
+/* ── Shared data ────────────────────────────────────────────── */
+const EMPLOYEES = [
+  { id: 1, name: "Anna Kowalska", department: "IT", salary: 6500, hire_date: "2022-03-15" },
+  { id: 2, name: "Jan Nowak", department: "Marketing", salary: 4800, hire_date: "2023-07-01" },
+  { id: 3, name: "Maria Wisniewska", department: "IT", salary: 7200, hire_date: "2021-11-20" },
+  { id: 4, name: "Piotr Lewandowski", department: "HR", salary: 5100, hire_date: "2024-01-10" },
 ];
 
 const COLUMNS = [
-  { name: "id", type: "INTEGER" },
-  { name: "name", type: "VARCHAR(100)" },
-  { name: "email", type: "VARCHAR(200)" },
-  { name: "year", type: "INTEGER" },
+  { name: "id", type: "INT" },
+  { name: "name", type: "VARCHAR" },
+  { name: "department", type: "VARCHAR" },
+  { name: "salary", type: "INT" },
+  { name: "hire_date", type: "DATE" },
 ];
 
 const TYPE_COLORS = {
-  INTEGER: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "VARCHAR(100)": "bg-blue-100 text-blue-700 border-blue-200",
-  "VARCHAR(200)": "bg-blue-100 text-blue-700 border-blue-200",
-  "VARCHAR(50)": "bg-blue-100 text-blue-700 border-blue-200",
-  VARCHAR: "bg-blue-100 text-blue-700 border-blue-200",
-  "DECIMAL": "bg-amber-100 text-amber-700 border-amber-200",
-  "DECIMAL(3,2)": "bg-amber-100 text-amber-700 border-amber-200",
-  DATE: "bg-purple-100 text-purple-700 border-purple-200",
-  BOOLEAN: "bg-pink-100 text-pink-700 border-pink-200",
+  INT:     { bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-200", full: "bg-orange-500" },
+  VARCHAR: { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-emerald-200", full: "bg-emerald-500" },
+  DATE:    { bg: "bg-blue-100", text: "text-blue-700", border: "border-blue-200", full: "bg-blue-500" },
+  DECIMAL: { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-200", full: "bg-amber-500" },
+  BOOLEAN: { bg: "bg-pink-100", text: "text-pink-700", border: "border-pink-200", full: "bg-pink-500" },
 };
 
-/* ─── Learn Step 0: Animated table construction ────────────── */
-function AnimatedTable({ onComplete }) {
+const getTypeColor = (type) => TYPE_COLORS[type] || TYPE_COLORS.VARCHAR;
+
+/* ── Shared styled table component ──────────────────────────── */
+function DataTable({ tableName, columns, rows, highlightCol, highlightPK, dimRows }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+      {/* Table name header bar */}
+      <div className="flex items-center gap-2 bg-[#2856a6] px-4 py-2.5">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="text-blue-200">
+          <rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+          <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
+          <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
+        </svg>
+        <span className="font-mono text-xs font-bold text-white">{tableName}</span>
+        <span className="ml-auto rounded-full bg-white/15 px-1.5 py-0.5 font-mono text-[8px] font-bold text-blue-100">
+          TABLE
+        </span>
+      </div>
+
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-slate-200 bg-slate-50">
+            {columns.map((col) => {
+              const isHL = highlightCol === col.name;
+              const isPK = highlightPK && col.name === "id";
+              const tc = getTypeColor(col.type);
+              return (
+                <th
+                  key={col.name}
+                  className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                    isPK
+                      ? "bg-amber-50 text-amber-700"
+                      : isHL
+                        ? `${tc.bg}/50 ${tc.text}`
+                        : "text-slate-500"
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    {col.name}
+                    {isPK && (
+                      <span className="rounded bg-amber-200 px-1 py-0.5 font-mono text-[8px] font-bold text-amber-800 shadow-sm shadow-amber-200/50">
+                        <span className="flex items-center gap-0.5">
+                          <svg width="8" height="8" viewBox="0 0 16 16" fill="none">
+                            <path d="M10 2a3 3 0 00-2.83 4L3 10v3h3l1-1 1 1h2v-2l-1-1 .83-.83A3 3 0 0010 2zm1 3a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor" />
+                          </svg>
+                          PK
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr
+              key={row.id}
+              className={`border-b border-slate-100 transition-all duration-300 ${
+                i % 2 === 0 ? "bg-white" : "bg-slate-50/40"
+              }`}
+            >
+              {columns.map((col) => {
+                const isPK = highlightPK && col.name === "id";
+                const isHL = highlightCol === col.name;
+                return (
+                  <td
+                    key={col.name}
+                    className={`px-4 py-2 font-mono text-xs transition-all duration-500 ${
+                      isPK
+                        ? "font-bold text-amber-600 bg-amber-50/40"
+                        : isHL
+                          ? `font-semibold ${getTypeColor(col.type).text}`
+                          : col.type === "INT" || col.type === "DATE"
+                            ? "text-slate-600"
+                            : "text-slate-700"
+                    }`}
+                  >
+                    {row[col.name]}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/* ── SQL Code Block ─────────────────────────────────────────── */
+function SQLBlock({ filename, children }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-700 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 shadow-lg">
+      <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2">
+        <div className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+          <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+        </div>
+        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          {filename}
+        </span>
+      </div>
+      <div className="px-4 py-3 space-y-0.5 font-mono text-sm">{children}</div>
+    </div>
+  );
+}
+
+function SQLLine({ num, children }) {
+  return (
+    <p>
+      <span className="text-slate-600 mr-3 select-none inline-block w-3 text-right">{num}</span>
+      {children}
+    </p>
+  );
+}
+
+function Kw({ children, color = "text-blue-400" }) {
+  return <span className={`font-bold ${color}`}>{children}</span>;
+}
+
+function Str({ children }) {
+  return <span className="text-green-400">{children}</span>;
+}
+
+function Num({ children }) {
+  return <span className="text-orange-300">{children}</span>;
+}
+
+function Id({ children }) {
+  return <span className="text-slate-300">{children}</span>;
+}
+
+function Typ({ children }) {
+  return <span className="text-emerald-400">{children}</span>;
+}
+
+function Cmt({ children }) {
+  return <span className="text-slate-600">{children}</span>;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 0: "What is a database table?"
+   Animated SVG table construction
+   ═══════════════════════════════════════════════════════════════ */
+function WhatIsTable({ onComplete }) {
+  const [gridDrawn, setGridDrawn] = useState(false);
   const [colsVisible, setColsVisible] = useState(0);
   const [rowsVisible, setRowsVisible] = useState(0);
   const [showLabels, setShowLabels] = useState(false);
 
   useEffect(() => {
-    // Stagger column headers first
-    const colTimers = COLUMNS.map((_, i) =>
-      setTimeout(() => setColsVisible(i + 1), 300 + i * 250)
+    const timers = [];
+    timers.push(setTimeout(() => setGridDrawn(true), 200));
+    COLUMNS.forEach((_, i) => {
+      timers.push(setTimeout(() => setColsVisible(i + 1), 600 + i * 200));
+    });
+    EMPLOYEES.forEach((_, i) => {
+      timers.push(
+        setTimeout(() => setRowsVisible(i + 1), 600 + COLUMNS.length * 200 + 300 + i * 250)
+      );
+    });
+    timers.push(
+      setTimeout(
+        () => setShowLabels(true),
+        600 + COLUMNS.length * 200 + 300 + EMPLOYEES.length * 250 + 400
+      )
     );
-    // Then rows one by one
-    const rowTimers = STUDENT_ROWS.map((_, i) =>
-      setTimeout(() => setRowsVisible(i + 1), 300 + COLUMNS.length * 250 + 200 + i * 300)
-    );
-    // Then show labels
-    const labelTimer = setTimeout(
-      () => setShowLabels(true),
-      300 + COLUMNS.length * 250 + 200 + STUDENT_ROWS.length * 300 + 300
-    );
-
-    return () => {
-      colTimers.forEach(clearTimeout);
-      rowTimers.forEach(clearTimeout);
-      clearTimeout(labelTimer);
-    };
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">What is a Database Table?</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        A <strong className="text-ink">database</strong> stores data in <strong className="text-ink">tables</strong> -- structured grids of rows and columns, just like a spreadsheet but with superpowers.
+        A <strong className="text-ink">database</strong> stores data in{" "}
+        <strong className="text-ink">tables</strong> -- structured grids of rows and columns, like
+        a spreadsheet but with superpowers.
       </p>
 
-      {/* Animated table build */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-        {/* Table name header */}
-        <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-slate-400">
-            <rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
-            <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2"/>
-            <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2"/>
+      {/* Animated table construction */}
+      <div
+        className={`overflow-hidden rounded-xl border border-slate-200 shadow-sm transition-all duration-700 ${
+          gridDrawn ? "opacity-100" : "opacity-0 scale-95"
+        }`}
+      >
+        <div className="flex items-center gap-2 bg-[#2856a6] px-4 py-2.5">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="text-blue-200">
+            <rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
           </svg>
-          <span className="font-mono text-xs font-bold text-slate-200">students</span>
-          <span className="rounded-full bg-slate-600 px-2 py-0.5 font-mono text-[9px] text-slate-300">TABLE</span>
+          <span className="font-mono text-xs font-bold text-white">employees</span>
+          <span className="ml-auto rounded-full bg-white/15 px-1.5 py-0.5 font-mono text-[8px] font-bold text-blue-100">
+            TABLE
+          </span>
         </div>
 
         <table className="w-full text-sm">
@@ -83,61 +233,69 @@ function AnimatedTable({ onComplete }) {
               {COLUMNS.map((col, i) => (
                 <th
                   key={col.name}
-                  className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
-                    i < colsVisible
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 -translate-y-3"
+                  className={`px-3 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
+                    i < colsVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
                   } ${col.name === "id" ? "text-amber-600" : "text-slate-500"}`}
-                  style={{ transitionDelay: `${i * 50}ms` }}
+                  style={{ transitionDelay: `${i * 40}ms` }}
                 >
-                  <div className="flex items-center gap-1.5">
-                    {col.name}
-                    {col.name === "id" && colsVisible > 0 && (
-                      <span className="rounded bg-amber-100 px-1 py-0.5 font-mono text-[8px] font-bold text-amber-700">PK</span>
-                    )}
-                  </div>
+                  {col.name}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {STUDENT_ROWS.map((row, i) => (
+            {EMPLOYEES.map((row, i) => (
               <tr
                 key={row.id}
                 className={`border-b border-slate-100 transition-all duration-400 ${
-                  i < rowsVisible
-                    ? "opacity-100 translate-x-0"
-                    : "opacity-0 -translate-x-4"
-                } ${i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}
-                style={{ transitionDelay: `${i * 60}ms` }}
+                  i < rowsVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
+                } ${i % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}
+                style={{ transitionDelay: `${i * 50}ms` }}
               >
-                <td className="px-4 py-2 font-mono text-xs font-bold text-indigo-600">{row.id}</td>
-                <td className="px-4 py-2 text-xs text-slate-700">{row.name}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-500">{row.email}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-700">{row.year}</td>
+                <td className="px-3 py-2 font-mono text-xs font-bold text-blue-700">{row.id}</td>
+                <td className="px-3 py-2 text-xs text-slate-700">{row.name}</td>
+                <td className="px-3 py-2 font-mono text-xs text-slate-600">{row.department}</td>
+                <td className="px-3 py-2 font-mono text-xs text-slate-700">{row.salary.toLocaleString()} PLN</td>
+                <td className="px-3 py-2 font-mono text-xs text-slate-500">{row.hire_date}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Column/Row labels */}
+      {/* Anatomy labels */}
       {showLabels && (
-        <div className="grid grid-cols-2 gap-3 animate-lesson-enter">
-          <div className="rounded-lg border border-indigo-200 bg-indigo-50/50 p-3">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-indigo-600">Column (field)</p>
-            <p className="mt-1 text-xs text-indigo-700">A specific attribute -- like "name" or "email"</p>
+        <div className="grid grid-cols-3 gap-3 animate-lesson-enter">
+          <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-600">
+              Column / Field
+            </p>
+            <p className="mt-1 text-xs text-blue-700">
+              A specific attribute -- like "name" or "salary"
+            </p>
           </div>
           <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-600">Row (record)</p>
-            <p className="mt-1 text-xs text-emerald-700">One complete entry -- one student's full data</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+              Row / Record
+            </p>
+            <p className="mt-1 text-xs text-emerald-700">
+              One complete entry -- one employee's full data
+            </p>
+          </div>
+          <div className="rounded-lg border border-purple-200 bg-purple-50/50 p-3">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-purple-600">
+              Cell / Value
+            </p>
+            <p className="mt-1 text-xs text-purple-700">
+              A single piece of data at a row-column intersection
+            </p>
           </div>
         </div>
       )}
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
         Got it -- next
       </button>
@@ -145,165 +303,131 @@ function AnimatedTable({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 1: Primary Keys with gold accent ──────────── */
-function PrimaryKeys({ onComplete }) {
-  const [highlightPK, setHighlightPK] = useState(false);
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 1: "Columns and data types"
+   ═══════════════════════════════════════════════════════════════ */
+function ColumnsAndTypes({ onComplete }) {
+  const [hoveredCol, setHoveredCol] = useState(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setHighlightPK(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">Primary Keys</h2>
-      <p className="text-sm leading-relaxed text-graphite">
-        Every table needs a way to uniquely identify each row. This is the <strong className="text-ink">primary key (PK)</strong> -- a column whose value is unique for every row and never null.
-      </p>
-
-      {/* Table with highlighted PK column */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5">
-          <span className="font-mono text-xs font-bold text-slate-200">students</span>
-        </div>
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-200">
-              {COLUMNS.map((col) => (
-                <th
-                  key={col.name}
-                  className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
-                    col.name === "id" && highlightPK
-                      ? "bg-amber-50 text-amber-700"
-                      : "bg-slate-50 text-slate-500"
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5">
-                    {col.name}
-                    {col.name === "id" && (
-                      <span className={`rounded px-1.5 py-0.5 font-mono text-[8px] font-bold transition-all duration-500 ${
-                        highlightPK
-                          ? "bg-amber-200 text-amber-800 shadow-sm shadow-amber-200"
-                          : "bg-slate-200 text-slate-500"
-                      }`}>
-                        <span className="flex items-center gap-0.5">
-                          <svg width="8" height="8" viewBox="0 0 16 16" fill="none">
-                            <path d="M10 2a3 3 0 00-2.83 4L3 10v3h3l1-1 1 1h2v-2l-1-1 .83-.83A3 3 0 0010 2zm1 3a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor"/>
-                          </svg>
-                          PK
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {STUDENT_ROWS.map((row, i) => (
-              <tr key={row.id} className={`border-b border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}>
-                <td className={`px-4 py-2 font-mono text-xs font-bold transition-all duration-500 ${
-                  highlightPK ? "text-amber-600 bg-amber-50/50" : "text-slate-600"
-                }`}>
-                  {row.id}
-                </td>
-                <td className="px-4 py-2 text-xs text-slate-700">{row.name}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-500">{row.email}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-700">{row.year}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Without vs With PK comparison */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border-2 border-red-200 bg-red-50/30 p-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-red-500 mb-2">Without PK</p>
-          <div className="space-y-1.5">
-            {["Jan Nowak", "Jan Nowak", "Jan Nowak"].map((n, i) => (
-              <div key={i} className="rounded-lg border border-red-200 bg-white px-3 py-1.5 font-mono text-xs text-red-600">
-                {n} <span className="ml-1 text-red-400 italic">Which one?</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/30 p-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-2">With PK</p>
-          <div className="space-y-1.5">
-            {[{ id: 1 }, { id: 2 }, { id: 3 }].map((r) => (
-              <div key={r.id} className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-1.5">
-                <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700">#{r.id}</span>
-                <span className="font-mono text-xs text-emerald-700">Jan Nowak</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <InsightBox title="Auto-increment IDs">
-        Most databases automatically generate primary key values using auto-increment -- the database assigns 1, 2, 3, etc. automatically. You do not need to set the ID yourself when adding a new row.
-      </InsightBox>
-
-      <button
-        onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
-      >
-        Got it -- next
-      </button>
-    </div>
-  );
-}
-
-/* ─── Learn Step 2: Data types with type badges ────────────── */
-function SqlDataTypes({ onComplete }) {
   const types = [
-    { name: "INTEGER", example: "42", desc: "Whole numbers", color: TYPE_COLORS.INTEGER },
-    { name: "VARCHAR(n)", example: "'Anna K.'", desc: "Text up to n characters", color: TYPE_COLORS["VARCHAR(100)"] },
-    { name: "DECIMAL", example: "3500.50", desc: "Precise decimal numbers (money)", color: TYPE_COLORS.DECIMAL },
+    { name: "VARCHAR", example: "'Anna K.'", desc: "Text of variable length", color: TYPE_COLORS.VARCHAR },
+    { name: "INT", example: "6500", desc: "Whole numbers", color: TYPE_COLORS.INT },
     { name: "DATE", example: "'2024-03-15'", desc: "Calendar dates", color: TYPE_COLORS.DATE },
+    { name: "DECIMAL", example: "3500.50", desc: "Precise decimal numbers (money)", color: TYPE_COLORS.DECIMAL },
     { name: "BOOLEAN", example: "TRUE", desc: "True or False values", color: TYPE_COLORS.BOOLEAN },
   ];
 
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">SQL Data Types</h2>
+      <h2 className="text-xl font-bold text-ink">Columns and Data Types</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        When creating a table, you must specify the <strong className="text-ink">data type</strong> for each column. This tells the database what kind of values to expect and enforces data integrity.
+        Each column has a <strong className="text-ink">data type</strong> that defines what kind of
+        values it stores. Hover a column to highlight all its cells.
       </p>
 
-      {/* Table with type badges in column headers */}
+      {/* Table with type badges and hover highlight */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-2.5">
-          <span className="font-mono text-xs font-bold text-slate-200">students</span>
+        <div className="flex items-center gap-2 bg-[#2856a6] px-4 py-2.5">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" className="text-blue-200">
+            <rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
+          </svg>
+          <span className="font-mono text-xs font-bold text-white">employees</span>
         </div>
+
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50">
-              {COLUMNS.map((col) => (
-                <th key={col.name} className="px-4 py-2.5 text-left">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600">{col.name}</span>
-                    <span className={`inline-flex w-fit rounded-full border px-1.5 py-0.5 font-mono text-[9px] font-bold ${TYPE_COLORS[col.type] || "bg-slate-100 text-slate-500 border-slate-200"}`}>
-                      {col.type}
-                    </span>
-                  </div>
-                </th>
-              ))}
+              {COLUMNS.map((col) => {
+                const tc = getTypeColor(col.type);
+                const isHovered = hoveredCol === col.name;
+                return (
+                  <th
+                    key={col.name}
+                    onMouseEnter={() => setHoveredCol(col.name)}
+                    onMouseLeave={() => setHoveredCol(null)}
+                    className={`px-3 py-2.5 text-left cursor-pointer transition-all duration-300 ${
+                      isHovered ? `${tc.bg}` : ""
+                    }`}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                        {col.name}
+                      </span>
+                      <span
+                        className={`inline-flex w-fit rounded-full border px-1.5 py-0.5 font-mono text-[9px] font-bold ${tc.bg} ${tc.text} ${tc.border}`}
+                      >
+                        {col.type}
+                      </span>
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
-            {STUDENT_ROWS.slice(0, 3).map((row, i) => (
-              <tr key={row.id} className={`border-b border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}>
-                <td className="px-4 py-2 font-mono text-xs font-bold text-indigo-600">{row.id}</td>
-                <td className="px-4 py-2 text-xs text-slate-700">{row.name}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-500">{row.email}</td>
-                <td className="px-4 py-2 font-mono text-xs text-slate-700">{row.year}</td>
+            {EMPLOYEES.map((row, i) => (
+              <tr key={row.id} className={`border-b border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/40"}`}>
+                {COLUMNS.map((col) => {
+                  const tc = getTypeColor(col.type);
+                  const isHovered = hoveredCol === col.name;
+                  return (
+                    <td
+                      key={col.name}
+                      onMouseEnter={() => setHoveredCol(col.name)}
+                      onMouseLeave={() => setHoveredCol(null)}
+                      className={`px-3 py-2 font-mono text-xs transition-all duration-300 ${
+                        isHovered
+                          ? `${tc.bg}/40 font-semibold ${tc.text}`
+                          : "text-slate-700"
+                      }`}
+                    >
+                      {col.name === "salary" ? `${row[col.name].toLocaleString()} PLN` : row[col.name]}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Expanded type info when hovering */}
+      {hoveredCol && (
+        <div className="animate-lesson-enter rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span
+              className={`rounded-full border px-2 py-0.5 font-mono text-xs font-bold ${
+                getTypeColor(COLUMNS.find((c) => c.name === hoveredCol)?.type).bg
+              } ${getTypeColor(COLUMNS.find((c) => c.name === hoveredCol)?.type).text} ${
+                getTypeColor(COLUMNS.find((c) => c.name === hoveredCol)?.type).border
+              }`}
+            >
+              {COLUMNS.find((c) => c.name === hoveredCol)?.type}
+            </span>
+            <span className="text-xs text-slate-600">
+              Column "{hoveredCol}" stores{" "}
+              {COLUMNS.find((c) => c.name === hoveredCol)?.type === "VARCHAR"
+                ? "text values"
+                : COLUMNS.find((c) => c.name === hoveredCol)?.type === "INT"
+                  ? "whole numbers"
+                  : "date values"}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE TABLE code */}
+      <SQLBlock filename="create_table.sql">
+        <SQLLine num="1"><Kw>CREATE TABLE</Kw> <Id>employees</Id> <Cmt>(</Cmt></SQLLine>
+        <SQLLine num="2">    <Id>id</Id> <Typ>INT</Typ> <Kw color="text-amber-300">PRIMARY KEY</Kw><Cmt>,</Cmt></SQLLine>
+        <SQLLine num="3">    <Id>name</Id> <Typ>VARCHAR(100)</Typ><Cmt>,</Cmt></SQLLine>
+        <SQLLine num="4">    <Id>department</Id> <Typ>VARCHAR(50)</Typ><Cmt>,</Cmt></SQLLine>
+        <SQLLine num="5">    <Id>salary</Id> <Typ>INT</Typ><Cmt>,</Cmt></SQLLine>
+        <SQLLine num="6">    <Id>hire_date</Id> <Typ>DATE</Typ></SQLLine>
+        <SQLLine num="7"><Cmt>);</Cmt></SQLLine>
+      </SQLBlock>
 
       {/* Type reference cards */}
       <div className="space-y-2">
@@ -313,38 +437,18 @@ function SqlDataTypes({ onComplete }) {
             className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm animate-fade-in-up"
             style={{ animationDelay: `${i * 80}ms` }}
           >
-            <span className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold ${t.color}`}>{t.name}</span>
+            <span className={`rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold ${t.color.bg} ${t.color.text} ${t.color.border}`}>
+              {t.name}
+            </span>
             <span className="flex-1 text-xs text-slate-600">{t.desc}</span>
             <code className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{t.example}</code>
           </div>
         ))}
       </div>
 
-      {/* CREATE TABLE example */}
-      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-lg">
-        <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2">
-          <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
-          </div>
-          <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
-            create_table.sql
-          </span>
-        </div>
-        <div className="px-4 py-3 space-y-0.5 font-mono text-sm">
-          <p><span className="text-slate-600 mr-3 select-none">1</span><span className="text-indigo-400">CREATE TABLE</span> <span className="text-slate-300">students</span> <span className="text-slate-500">(</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">2</span>    <span className="text-slate-300">id</span> <span className="text-emerald-400">INTEGER</span> <span className="text-amber-300">PRIMARY KEY</span><span className="text-slate-500">,</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">3</span>    <span className="text-slate-300">name</span> <span className="text-blue-400">VARCHAR(100)</span><span className="text-slate-500">,</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">4</span>    <span className="text-slate-300">gpa</span> <span className="text-amber-400">DECIMAL(3,2)</span><span className="text-slate-500">,</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">5</span>    <span className="text-slate-300">enrolled</span> <span className="text-purple-400">DATE</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">6</span><span className="text-slate-500">);</span></p>
-        </div>
-      </div>
-
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
         Got it -- next
       </button>
@@ -352,43 +456,272 @@ function SqlDataTypes({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 3: Schema Design InsightBox ───────────────── */
-function SchemaDesign({ onComplete }) {
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 2: "Primary keys"
+   Duplicate ID bounces back with red flash
+   ═══════════════════════════════════════════════════════════════ */
+function PrimaryKeys({ onComplete }) {
+  const [highlightPK, setHighlightPK] = useState(false);
+  const [showDupAttempt, setShowDupAttempt] = useState(false);
+  const [dupBounced, setDupBounced] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setHighlightPK(true), 500);
+    const t2 = setTimeout(() => setShowDupAttempt(true), 2000);
+    const t3 = setTimeout(() => setDupBounced(true), 2800);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">Schema Design Principles</h2>
+      <h2 className="text-xl font-bold text-ink">Primary Keys</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        A <strong className="text-ink">schema</strong> is the blueprint of your database -- which tables exist, what columns they have, and how they relate. Good schema design is the foundation of every reliable application.
+        Every table needs a <strong className="text-ink">primary key (PK)</strong> -- a column
+        whose value is unique for every row and never null.
       </p>
 
-      <div className="space-y-3">
-        {[
-          { name: "NOT NULL", desc: "This column must always have a value", example: "name VARCHAR(100) NOT NULL", badge: "bg-red-100 text-red-600 border-red-200" },
-          { name: "UNIQUE", desc: "No two rows can have the same value", example: "email VARCHAR(200) UNIQUE", badge: "bg-violet-100 text-violet-600 border-violet-200" },
-          { name: "PRIMARY KEY", desc: "Combines NOT NULL + UNIQUE -- the row identifier", example: "id INTEGER PRIMARY KEY", badge: "bg-amber-100 text-amber-600 border-amber-200" },
-          { name: "DEFAULT", desc: "Auto-fill if no value is provided", example: "status VARCHAR(20) DEFAULT 'active'", badge: "bg-emerald-100 text-emerald-600 border-emerald-200" },
-        ].map((c, i) => (
-          <div
-            key={c.name}
-            className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm animate-fade-in-up"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className={`rounded-full border px-2 py-0.5 font-mono text-xs font-bold ${c.badge}`}>{c.name}</span>
-              <span className="text-sm text-slate-700">{c.desc}</span>
-            </div>
-            <code className="block rounded bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">{c.example}</code>
+      {/* Table with highlighted PK column */}
+      <DataTable
+        tableName="employees"
+        columns={COLUMNS}
+        rows={EMPLOYEES}
+        highlightPK={highlightPK}
+      />
+
+      {/* Duplicate attempt animation */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+          What happens when you try to insert a duplicate ID?
+        </p>
+        <div className="space-y-2">
+          {/* Existing row */}
+          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700">id=1</span>
+            <span className="text-xs text-slate-700">Anna Kowalska -- already exists</span>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="ml-auto text-emerald-500">
+              <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
-        ))}
+
+          {/* Attempted duplicate */}
+          {showDupAttempt && (
+            <div
+              className={`flex items-center gap-2 rounded-lg border-2 px-3 py-2 transition-all duration-300 ${
+                dupBounced
+                  ? "border-red-300 bg-red-50/50 animate-sql-bounce"
+                  : "border-blue-300 bg-blue-50/50"
+              }`}
+            >
+              <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                dupBounced ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+              }`}>
+                id=1
+              </span>
+              <span className="text-xs text-slate-700">
+                {dupBounced ? "REJECTED -- duplicate primary key!" : "Trying to insert id=1 again..."}
+              </span>
+              {dupBounced && (
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="ml-auto text-red-500">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      <InsightBox title="Why constraints matter">
-        Without constraints, someone could insert a student with no name, or create two accounts with the same email. Constraints prevent bad data from entering your database -- they are your first line of defense.
+      {/* Without vs With PK comparison */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-xl border-2 border-red-200 bg-red-50/30 p-4">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-red-500 mb-2">
+            Without PK
+          </p>
+          <div className="space-y-1.5">
+            {["Jan Nowak", "Jan Nowak", "Jan Nowak"].map((n, i) => (
+              <div key={i} className="rounded-lg border border-red-200 bg-white px-3 py-1.5 font-mono text-xs text-red-600">
+                {n} <span className="ml-1 text-red-400 italic">Which one?</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/30 p-4">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-2">
+            With PK
+          </p>
+          <div className="space-y-1.5">
+            {[1, 2, 3].map((id) => (
+              <div key={id} className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-1.5">
+                <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700">
+                  #{id}
+                </span>
+                <span className="font-mono text-xs text-emerald-700">Jan Nowak</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <InsightBox title="Auto-increment IDs">
+        Most databases automatically generate primary key values using auto-increment -- the
+        database assigns 1, 2, 3, etc. You do not need to set the ID yourself.
       </InsightBox>
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
+      >
+        Got it -- next
+      </button>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 3: "Relationships between tables"
+   Two tables + animated SVG FK line
+   ═══════════════════════════════════════════════════════════════ */
+function Relationships({ onComplete }) {
+  const [lineDrawn, setLineDrawn] = useState(false);
+  const [highlightFK, setHighlightFK] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setLineDrawn(true), 800);
+    const t2 = setTimeout(() => setHighlightFK(true), 1400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  const DEPT_TABLE = [
+    { id: 1, name: "IT" },
+    { id: 2, name: "Marketing" },
+    { id: 3, name: "HR" },
+  ];
+
+  const EMP_WITH_FK = [
+    { id: 1, name: "Anna Kowalska", dept_id: 1 },
+    { id: 2, name: "Jan Nowak", dept_id: 2 },
+    { id: 3, name: "Maria Wisniewska", dept_id: 1 },
+    { id: 4, name: "Piotr Lewandowski", dept_id: 3 },
+  ];
+
+  return (
+    <div className="skill-theme-sql space-y-6 animate-fade-in-up">
+      <h2 className="text-xl font-bold text-ink">Relationships Between Tables</h2>
+      <p className="text-sm leading-relaxed text-graphite">
+        Instead of repeating "IT" everywhere, we store departments in a separate table and use a{" "}
+        <strong className="text-ink">foreign key</strong> to connect them.
+      </p>
+
+      {/* Two side-by-side mini tables with SVG line */}
+      <div className="relative rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/50 p-6">
+        {/* Grid background */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-xl"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+
+        <div className="relative flex items-start justify-center gap-16">
+          {/* Employees table */}
+          <div className="animate-sql-table-slide w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm z-10" style={{ "--slide-dir": "-40px" }}>
+            <div className="bg-[#2856a6] px-3 py-2">
+              <span className="font-mono text-[11px] font-bold text-white">employees</span>
+            </div>
+            <div className="divide-y divide-slate-100 text-[11px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+                <span className="w-6">id</span>
+                <span className="flex-1">name</span>
+                <span id="emp-dept-id" className={`transition-all duration-500 ${highlightFK ? "text-blue-600 font-bold" : ""}`}>
+                  dept_id
+                </span>
+              </div>
+              {EMP_WITH_FK.map((e) => (
+                <div key={e.id} className="flex items-center gap-2 px-3 py-1.5 font-mono text-slate-600">
+                  <span className="w-6 font-bold text-amber-600">{e.id}</span>
+                  <span className="flex-1 text-slate-700">{e.name.split(" ")[0]}</span>
+                  <span className={`transition-all duration-500 ${highlightFK ? "font-bold text-blue-600" : ""}`}>
+                    {e.dept_id}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SVG connection line */}
+          <svg className="absolute inset-0 pointer-events-none w-full h-full z-20">
+            <path
+              d="M 228 82 C 268 82, 268 52, 308 52"
+              fill="none"
+              stroke={highlightFK ? "#2856a6" : "#94a3b8"}
+              strokeWidth={highlightFK ? 2.5 : 1.5}
+              strokeDasharray="200"
+              strokeDashoffset={lineDrawn ? 0 : 200}
+              style={{ transition: "stroke-dashoffset 0.9s ease-out, stroke 0.3s, stroke-width 0.3s" }}
+              markerEnd="url(#fk-arrow)"
+            />
+            <defs>
+              <marker id="fk-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill={highlightFK ? "#2856a6" : "#94a3b8"} />
+              </marker>
+            </defs>
+            {highlightFK && (
+              <text x="260" y="46" textAnchor="middle" className="font-mono text-[9px] font-bold" fill="#2856a6">
+                FK
+              </text>
+            )}
+          </svg>
+
+          {/* Departments table */}
+          <div className="animate-sql-table-slide w-40 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm z-10" style={{ "--slide-dir": "40px", animationDelay: "150ms" }}>
+            <div className="bg-[#2856a6] px-3 py-2">
+              <span className="font-mono text-[11px] font-bold text-white">departments</span>
+            </div>
+            <div className="divide-y divide-slate-100 text-[11px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+                <span id="dept-id" className={`transition-all duration-500 ${highlightFK ? "text-amber-600" : ""}`}>
+                  id
+                </span>
+                <span className="flex-1">name</span>
+              </div>
+              {DEPT_TABLE.map((d) => (
+                <div key={d.id} className="flex items-center gap-2 px-3 py-1.5 font-mono text-slate-600">
+                  <span className={`font-bold transition-all duration-500 ${highlightFK ? "text-amber-600" : "text-slate-600"}`}>
+                    {d.id}
+                  </span>
+                  <span className="flex-1 text-slate-700">{d.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FK explanation */}
+      {highlightFK && (
+        <div className="animate-lesson-enter rounded-lg border border-blue-200 bg-blue-50/50 px-4 py-3">
+          <p className="text-sm text-slate-700">
+            <code className="rounded bg-white px-1.5 py-0.5 font-mono text-xs font-bold text-blue-700">
+              employees.dept_id
+            </code>{" "}
+            references{" "}
+            <code className="rounded bg-white px-1.5 py-0.5 font-mono text-xs font-bold text-amber-700">
+              departments.id
+            </code>{" "}
+            -- this foreign key links each employee to their department.
+          </p>
+        </div>
+      )}
+
+      <InsightBox title="Data integrity">
+        Foreign keys prevent "orphan" data. You cannot set an employee's dept_id to 99 if no
+        department with id=99 exists. The database enforces this automatically.
+      </InsightBox>
+
+      <button
+        onClick={onComplete}
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
         Let's practice
       </button>
@@ -396,32 +729,29 @@ function SchemaDesign({ onComplete }) {
   );
 }
 
-/* ─── Main Lesson Component ──────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Main Lesson Component
+   ═══════════════════════════════════════════════════════════════ */
 export default function Lesson1({ currentPhase, currentStep, onComplete }) {
   if (currentPhase === "learn") {
-    if (currentStep === 0) return <AnimatedTable onComplete={onComplete} />;
-    if (currentStep === 1) return <PrimaryKeys onComplete={onComplete} />;
-    if (currentStep === 2) return <SqlDataTypes onComplete={onComplete} />;
-    if (currentStep === 3) return <SchemaDesign onComplete={onComplete} />;
+    if (currentStep === 0) return <WhatIsTable onComplete={onComplete} />;
+    if (currentStep === 1) return <ColumnsAndTypes onComplete={onComplete} />;
+    if (currentStep === 2) return <PrimaryKeys onComplete={onComplete} />;
+    if (currentStep === 3) return <Relationships onComplete={onComplete} />;
   }
 
   if (currentPhase === "apply") {
     if (currentStep === 0)
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-ink">Primary Key Check</h2>
+          <h2 className="text-xl font-bold text-ink">Data Type Check</h2>
           <Quiz
             data={{
-              question: "Which of these would make the BEST primary key for a 'students' table?",
-              options: [
-                "Student name",
-                "Email address",
-                "Auto-incrementing ID number",
-                "Date of birth",
-              ],
-              correctIndex: 2,
+              question: "Which data type would you use to store a person's name?",
+              options: ["INT", "VARCHAR", "DATE", "BOOLEAN"],
+              correctIndex: 1,
               explanation:
-                "An auto-incrementing ID is the best primary key because it's guaranteed to be unique and never changes. Names can be duplicated, emails can change, and birth dates are definitely not unique.",
+                "VARCHAR (variable character) stores text strings of variable length. Names are text, so VARCHAR is the correct choice. INT is for numbers, DATE for dates, and BOOLEAN for true/false values.",
             }}
             onComplete={onComplete}
           />
@@ -430,19 +760,19 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
     if (currentStep === 1)
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-ink">Data Type Match</h2>
+          <h2 className="text-xl font-bold text-ink">Primary Key Properties</h2>
           <Quiz
             data={{
-              question: "A column needs to store a student's monthly scholarship amount (e.g., 1500.00 PLN). Which data type is most appropriate?",
+              question: "What makes a primary key special?",
               options: [
-                "VARCHAR(50)",
-                "INTEGER",
-                "DECIMAL",
-                "BOOLEAN",
+                "It can store any data type",
+                "It is always named 'id'",
+                "It must be unique and never null",
+                "It automatically encrypts data",
               ],
               correctIndex: 2,
               explanation:
-                "DECIMAL is the correct choice for monetary values because it stores exact decimal numbers. INTEGER would lose the decimal places (1500 instead of 1500.50), and VARCHAR stores text, not numbers you can calculate with.",
+                "A primary key must be UNIQUE (no two rows can share the same value) and NOT NULL (every row must have a value). This guarantees every row can be uniquely identified.",
             }}
             onComplete={onComplete}
           />
@@ -456,7 +786,8 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Challenge: Design a Table</h2>
           <p className="text-sm text-graphite">
-            A university needs a table to store course information. Drag each column to its correct data type slot.
+            A university needs a table to store course information. Drag each column to its correct
+            data type slot.
           </p>
           <DragDrop
             items={[
@@ -466,9 +797,9 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
               { id: "is_online", label: "is_online (true/false)" },
             ]}
             zones={[
-              { id: "z1", label: "INTEGER PRIMARY KEY" },
+              { id: "z1", label: "INT PRIMARY KEY" },
               { id: "z2", label: "VARCHAR(200)" },
-              { id: "z3", label: "INTEGER" },
+              { id: "z3", label: "INT" },
               { id: "z4", label: "BOOLEAN" },
             ]}
             checkCorrect={(pl) =>

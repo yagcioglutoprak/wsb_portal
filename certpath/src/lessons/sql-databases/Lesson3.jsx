@@ -3,79 +3,201 @@ import InsightBox from "../../components/widgets/InsightBox";
 import TableRelationships from "../../components/lesson-widgets/TableRelationships";
 import QueryBuilder from "../../components/lesson-widgets/QueryBuilder";
 
-const STUDENTS = [
-  { id: 1, name: "Anna Kowalska", program: "Computer Science" },
-  { id: 2, name: "Jan Nowak", program: "Marketing" },
-  { id: 3, name: "Maria Wisniewska", program: "Computer Science" },
+/* ── Shared data ────────────────────────────────────────────── */
+const EMPLOYEES = [
+  { id: 1, name: "Anna Kowalska", dept_id: 1, salary: 6500 },
+  { id: 2, name: "Jan Nowak", dept_id: 2, salary: 4800 },
+  { id: 3, name: "Maria Wisniewska", dept_id: 1, salary: 7200 },
+  { id: 4, name: "Piotr Lewandowski", dept_id: 3, salary: 5100 },
+  { id: 5, name: "Kasia Zielinska", dept_id: 1, salary: 5500 },
+  { id: 6, name: "Tomek Szymanski", dept_id: 2, salary: 5200 },
+  { id: 7, name: "Ola Dabrowska", dept_id: null, salary: 4500 },
 ];
 
-const ENROLLMENTS = [
-  { enrollment_id: 1, student_id: 1, course_id: 101, grade: "A" },
-  { enrollment_id: 2, student_id: 1, course_id: 102, grade: "B" },
-  { enrollment_id: 3, student_id: 2, course_id: 101, grade: "C" },
-  { enrollment_id: 4, student_id: 3, course_id: 103, grade: "A" },
-];
-
-const COURSES = [
-  { course_id: 101, title: "Databases 101", credits: 5 },
-  { course_id: 102, title: "Web Development", credits: 4 },
-  { course_id: 103, title: "Data Structures", credits: 6 },
+const DEPARTMENTS = [
+  { id: 1, name: "IT", budget: 500000 },
+  { id: 2, name: "Marketing", budget: 300000 },
+  { id: 3, name: "HR", budget: 200000 },
+  { id: 4, name: "Finance", budget: 400000 },
 ];
 
 const JOINED_DATA = [
-  { student_name: "Anna Kowalska", course_title: "Databases 101", grade: "A", credits: 5 },
-  { student_name: "Anna Kowalska", course_title: "Web Development", grade: "B", credits: 4 },
-  { student_name: "Jan Nowak", course_title: "Databases 101", grade: "C", credits: 5 },
-  { student_name: "Maria Wisniewska", course_title: "Data Structures", grade: "A", credits: 6 },
+  { employee_name: "Anna Kowalska", department_name: "IT", salary: 6500 },
+  { employee_name: "Jan Nowak", department_name: "Marketing", salary: 4800 },
+  { employee_name: "Maria Wisniewska", department_name: "IT", salary: 7200 },
+  { employee_name: "Piotr Lewandowski", department_name: "HR", salary: 5100 },
+  { employee_name: "Kasia Zielinska", department_name: "IT", salary: 5500 },
+  { employee_name: "Tomek Szymanski", department_name: "Marketing", salary: 5200 },
 ];
 
-/* ─── Learn Step 0: Why relationships? ───────────────────────── */
-function WhyRelationships({ onComplete }) {
+const LEFT_JOINED_DATA = [
+  ...JOINED_DATA,
+  { employee_name: "Ola Dabrowska", department_name: null, salary: 4500 },
+];
+
+/* ── SQL code block helpers ─────────────────────────────────── */
+function SQLBlock({ filename, children }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-700 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 shadow-lg">
+      <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2">
+        <div className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+          <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+        </div>
+        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          {filename}
+        </span>
+      </div>
+      <div className="px-4 py-3 font-mono text-sm leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
+function L({ num, children }) {
+  return (
+    <p>
+      <span className="text-slate-600 mr-3 select-none inline-block w-3 text-right">{num}</span>
+      {children}
+    </p>
+  );
+}
+
+/* ── Mini table card for visual demonstrations ──────────────── */
+function MiniTable({ name, header, rows, highlight, color = "blue", animDelay = 0, slideDir = "0px" }) {
+  const bgMap = { blue: "bg-[#2856a6]", emerald: "bg-emerald-600", violet: "bg-violet-600" };
+  return (
+    <div
+      className="animate-sql-table-slide w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+      style={{ animationDelay: `${animDelay}ms`, "--slide-dir": slideDir }}
+    >
+      <div className={`${bgMap[color] || bgMap.blue} px-3 py-2`}>
+        <span className="font-mono text-[11px] font-bold text-white">{name}</span>
+      </div>
+      <div className="divide-y divide-slate-100 text-[11px]">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+          {header.map((h) => (
+            <span key={h} className={`flex-1 ${highlight?.includes(h) ? "text-blue-700" : ""}`}>
+              {h}
+            </span>
+          ))}
+        </div>
+        {rows.map((row, i) => (
+          <div key={i} className="flex items-center gap-2 px-3 py-1.5 font-mono text-slate-600">
+            {row.map((cell, j) => (
+              <span
+                key={j}
+                className={`flex-1 ${
+                  highlight?.includes(header[j])
+                    ? "font-bold text-blue-600"
+                    : cell === null
+                      ? "italic text-slate-300"
+                      : ""
+                }`}
+              >
+                {cell === null ? "NULL" : cell}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 0: "Why JOINs?"
+   Two separate tables with connecting column highlight
+   ═══════════════════════════════════════════════════════════════ */
+function WhyJoins({ onComplete }) {
+  const [showConnection, setShowConnection] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowConnection(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">Why Tables Need Relationships</h2>
+      <h2 className="text-xl font-bold text-ink">Why JOINs?</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        Storing everything in one giant table leads to repeated data. Instead, we split data into related tables and connect them with <strong className="text-ink">foreign keys</strong>.
+        Data is split across multiple tables to avoid repetition. But when you need to see data
+        from two tables together -- like employee names with their department names -- you need a{" "}
+        <strong className="text-ink">JOIN</strong>.
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border-2 border-red-200 bg-red-50/30 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-400">
-              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-red-500">Bad: One big table</p>
+      {/* Two tables side by side */}
+      <div className="relative rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/50 p-6">
+        {/* Grid background */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-xl"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+
+        <div className="relative flex items-start justify-center gap-12 z-10">
+          <MiniTable
+            name="employees"
+            header={["id", "name", "dept_id"]}
+            rows={[
+              [1, "Anna", 1],
+              [2, "Jan", 2],
+              [3, "Maria", 1],
+              [4, "Piotr", 3],
+            ]}
+            highlight={showConnection ? ["dept_id"] : []}
+            slideDir="-40px"
+          />
+
+          {/* Connection arrow */}
+          <div className={`flex flex-col items-center justify-center self-center transition-all duration-500 ${showConnection ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
+            <div className="rounded-full bg-blue-100 p-2">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-blue-600">
+                <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="mt-1 font-mono text-[9px] font-bold text-blue-600">JOIN ON</span>
+            <span className="font-mono text-[8px] text-slate-400">dept_id = id</span>
           </div>
-          <div className="space-y-1 text-xs text-red-700 font-mono rounded-lg bg-white/60 p-2">
-            <p>Anna | Databases 101 | 5cr | A</p>
-            <p>Anna | Web Dev | 4cr | B</p>
-            <p className="text-red-400 italic">Anna's name stored 2x!</p>
-          </div>
+
+          <MiniTable
+            name="departments"
+            header={["id", "name"]}
+            rows={[
+              [1, "IT"],
+              [2, "Marketing"],
+              [3, "HR"],
+            ]}
+            highlight={showConnection ? ["id"] : []}
+            slideDir="40px"
+            animDelay={150}
+          />
         </div>
-        <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/30 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-500">
-              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M5 8.5L7 11l4-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500">Good: Related tables</p>
+
+        {/* Question overlay */}
+        {showConnection && (
+          <div className="mt-4 animate-lesson-enter text-center">
+            <p className="text-sm text-slate-600">
+              <strong className="text-blue-700">How do we combine them?</strong> -- The{" "}
+              <code className="font-mono text-xs bg-blue-50 px-1 rounded text-blue-700">dept_id</code>{" "}
+              column connects to{" "}
+              <code className="font-mono text-xs bg-blue-50 px-1 rounded text-blue-700">departments.id</code>
+            </p>
           </div>
-          <div className="space-y-1 text-xs text-emerald-700 font-mono rounded-lg bg-white/60 p-2">
-            <p>students: Anna (id=<span className="font-bold text-indigo-600">1</span>)</p>
-            <p>courses: Databases (id=101)</p>
-            <p>enrollments: student_id=<span className="font-bold text-indigo-600">1</span>, course_id=101</p>
-          </div>
-        </div>
+        )}
       </div>
 
-      <InsightBox title="Foreign keys create connections">
-        A <strong>foreign key (FK)</strong> in one table references the primary key of another table. In our example, <code className="font-mono text-xs">enrollments.student_id</code> references <code className="font-mono text-xs">students.id</code> -- linking each enrollment to its student.
+      <InsightBox title="Foreign keys are the bridge">
+        A foreign key in one table references the primary key of another. This relationship is what
+        makes JOINs possible -- it tells the database which rows to match together.
       </InsightBox>
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
         Got it -- next
       </button>
@@ -83,186 +205,193 @@ function WhyRelationships({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 1: Interactive ER Diagram ─────────────────── */
-function ERDiagramStep({ onComplete }) {
-  return (
-    <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">Entity-Relationship Diagram</h2>
-      <p className="text-sm text-graphite">
-        Click on the relationships below to see how the tables connect. The lines show which columns link together.
-      </p>
-      <TableRelationships
-        data={{
-          tables: [
-            {
-              name: "students",
-              columns: [
-                { name: "id", type: "INT", isPK: true },
-                { name: "name", type: "VARCHAR" },
-                { name: "program", type: "VARCHAR" },
-              ],
-            },
-            {
-              name: "enrollments",
-              columns: [
-                { name: "enrollment_id", type: "INT", isPK: true },
-                { name: "student_id", type: "INT", isFK: true },
-                { name: "course_id", type: "INT", isFK: true },
-                { name: "grade", type: "CHAR" },
-              ],
-            },
-            {
-              name: "courses",
-              columns: [
-                { name: "course_id", type: "INT", isPK: true },
-                { name: "title", type: "VARCHAR" },
-                { name: "credits", type: "INT" },
-              ],
-            },
-          ],
-          relationships: [
-            { from: "students.id", to: "enrollments.student_id", label: "One student has many enrollments" },
-            { from: "courses.course_id", to: "enrollments.course_id", label: "One course has many enrollments" },
-          ],
-          question: "What type of relationship exists between students and courses?",
-          options: [
-            "One-to-One",
-            "One-to-Many",
-            "Many-to-Many (through enrollments)",
-            "No relationship",
-          ],
-          correctIndex: 2,
-        }}
-        onComplete={onComplete}
-      />
-    </div>
-  );
-}
-
-/* ─── Learn Step 2: Animated JOIN ──────────────────────────── */
-function AnimatedJoin({ onComplete }) {
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 1: "INNER JOIN visualized"
+   Animated: tables slide together, rows connect like a zipper
+   ═══════════════════════════════════════════════════════════════ */
+function InnerJoinViz({ onComplete }) {
   const [phase, setPhase] = useState(0);
-  // 0: tables separate, 1: tables slide together, 2: lines connect, 3: result table
+  // 0: tables apart, 1: slide together, 2: lines connect, 3: result appears
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 800),
-      setTimeout(() => setPhase(2), 1800),
-      setTimeout(() => setPhase(3), 2800),
+      setTimeout(() => setPhase(1), 600),
+      setTimeout(() => setPhase(2), 1500),
+      setTimeout(() => setPhase(3), 2500),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
 
   const matchPairs = [
-    { studentId: 1, studentName: "Anna", enrollGrade: "A", courseId: 101 },
-    { studentId: 1, studentName: "Anna", enrollGrade: "B", courseId: 102 },
-    { studentId: 2, studentName: "Jan", enrollGrade: "C", courseId: 101 },
-    { studentId: 3, studentName: "Maria", enrollGrade: "A", courseId: 103 },
+    { empName: "Anna", deptId: 1, deptName: "IT", salary: 6500 },
+    { empName: "Jan", deptId: 2, deptName: "Marketing", salary: 4800 },
+    { empName: "Maria", deptId: 1, deptName: "IT", salary: 7200 },
+    { empName: "Piotr", deptId: 3, deptName: "HR", salary: 5100 },
+    { empName: "Kasia", deptId: 1, deptName: "IT", salary: 5500 },
+    { empName: "Tomek", deptId: 2, deptName: "Marketing", salary: 5200 },
   ];
 
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">JOIN: Combining Tables</h2>
+      <h2 className="text-xl font-bold text-ink">INNER JOIN Visualized</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        A <strong className="text-ink">JOIN</strong> combines rows from two tables based on a matching column. Watch the tables come together:
+        An <strong className="text-ink">INNER JOIN</strong> combines rows from two tables based on
+        matching column values. Watch the tables come together:
       </p>
 
-      {/* SQL query */}
-      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
-        <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2">
-          <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
-          </div>
-        </div>
-        <div className="px-4 py-3 font-mono text-sm">
-          <p><span className="text-slate-600 mr-3 select-none">1</span><span className="text-indigo-400">SELECT</span> <span className="text-slate-300">s.name, c.title, e.grade</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">2</span><span className="text-emerald-400">FROM</span> <span className="text-slate-300">students s</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">3</span><span className="text-violet-400">JOIN</span> <span className="text-slate-300">enrollments e</span> <span className="text-violet-400">ON</span> <span className="text-slate-300">s.id = e.student_id</span></p>
-          <p><span className="text-slate-600 mr-3 select-none">4</span><span className="text-violet-400">JOIN</span> <span className="text-slate-300">courses c</span> <span className="text-violet-400">ON</span> <span className="text-slate-300">e.course_id = c.course_id</span><span className="text-slate-500">;</span></p>
-        </div>
-      </div>
+      {/* SQL code */}
+      <SQLBlock filename="join_query.sql">
+        <L num="1"><span className="text-blue-400 font-bold">SELECT</span> <span className="text-slate-300">e.name, d.name, e.salary</span></L>
+        <L num="2"><span className="text-emerald-400 font-bold">FROM</span> <span className="text-slate-300">employees e</span></L>
+        <L num="3"><span className="text-violet-400 font-bold">INNER JOIN</span> <span className="text-slate-300">departments d</span></L>
+        <L num="4">  <span className="text-violet-400 font-bold">ON</span> <span className="text-slate-300">e.dept_id = d.id</span><span className="text-slate-500">;</span></L>
+      </SQLBlock>
 
-      {/* Animated tables sliding together */}
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/50 p-6">
-        <div className="flex items-start justify-center gap-4" style={{ transition: "gap 0.8s ease-out", gap: phase >= 1 ? "16px" : "64px" }}>
-          {/* Students mini-table */}
-          <div className="w-36 overflow-hidden rounded-lg border border-blue-200 bg-white shadow-sm transition-all duration-700" style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(-20px)" }}>
-            <div className="bg-blue-500 px-3 py-1.5">
-              <span className="font-mono text-[10px] font-bold text-white">students</span>
+      {/* Animated join visualization */}
+      <div className="rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/50 p-6 overflow-hidden">
+        <div
+          className="flex items-start justify-center"
+          style={{
+            gap: phase >= 1 ? "16px" : "80px",
+            transition: "gap 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
+        >
+          {/* Employees mini-table */}
+          <div
+            className="w-44 overflow-hidden rounded-xl border border-blue-200 bg-white shadow-sm transition-all duration-700"
+            style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(-20px)" }}
+          >
+            <div className="bg-[#2856a6] px-3 py-2">
+              <span className="font-mono text-[10px] font-bold text-white">employees</span>
             </div>
-            {STUDENTS.map((s) => (
-              <div key={s.id} className={`flex items-center gap-2 border-b border-blue-100 px-3 py-1.5 transition-all duration-500 ${
-                phase >= 2 ? "bg-blue-50/50" : ""
-              }`}>
-                <span className="font-mono text-[10px] font-bold text-indigo-600">id={s.id}</span>
-                <span className="text-[10px] text-slate-600 truncate">{s.name.split(" ")[0]}</span>
+            {EMPLOYEES.slice(0, 6).map((e) => (
+              <div
+                key={e.id}
+                className={`flex items-center gap-2 border-b border-blue-100 px-3 py-1.5 transition-all duration-500 ${
+                  phase >= 2 ? "bg-blue-50/50" : ""
+                }`}
+              >
+                <span className="font-mono text-[10px] font-bold text-blue-700">
+                  dept_id={e.dept_id}
+                </span>
+                <span className="text-[10px] text-slate-600 truncate">{e.name.split(" ")[0]}</span>
               </div>
             ))}
+            {/* Ola has no dept - show she will be excluded */}
+            <div className={`flex items-center gap-2 border-b border-blue-100 px-3 py-1.5 transition-all duration-500 ${
+              phase >= 2 ? "opacity-20 bg-red-50/30" : ""
+            }`}>
+              <span className="font-mono text-[10px] text-slate-400">dept_id=null</span>
+              <span className="text-[10px] text-slate-400">Ola</span>
+              {phase >= 2 && (
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="ml-auto text-red-400">
+                  <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              )}
+            </div>
           </div>
 
-          {/* Connection indicator */}
+          {/* Join connector */}
           <div className={`flex flex-col items-center justify-center self-center transition-all duration-500 ${phase >= 2 ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-indigo-400 animate-pulse">
-              <path d="M8 12h8M12 8v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            <span className="font-mono text-[8px] font-bold text-indigo-400">JOIN</span>
+            <div className="rounded-full bg-violet-100 p-2">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-violet-600">
+                <path d="M4 10h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 6l-4 4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 6l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="mt-1 font-mono text-[8px] font-bold text-violet-600">INNER JOIN</span>
           </div>
 
-          {/* Enrollments mini-table */}
-          <div className="w-44 overflow-hidden rounded-lg border border-emerald-200 bg-white shadow-sm transition-all duration-700" style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(20px)" }}>
-            <div className="bg-emerald-500 px-3 py-1.5">
-              <span className="font-mono text-[10px] font-bold text-white">enrollments</span>
+          {/* Departments mini-table */}
+          <div
+            className="w-36 overflow-hidden rounded-xl border border-emerald-200 bg-white shadow-sm transition-all duration-700"
+            style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(20px)" }}
+          >
+            <div className="bg-emerald-600 px-3 py-2">
+              <span className="font-mono text-[10px] font-bold text-white">departments</span>
             </div>
-            {ENROLLMENTS.map((e) => (
-              <div key={e.enrollment_id} className={`flex items-center gap-2 border-b border-emerald-100 px-3 py-1.5 transition-all duration-500 ${
-                phase >= 2 ? "bg-emerald-50/50" : ""
-              }`}>
-                <span className="font-mono text-[10px] text-indigo-600">s_id={e.student_id}</span>
-                <span className="font-mono text-[10px] text-slate-500">grade={e.grade}</span>
+            {DEPARTMENTS.slice(0, 3).map((d) => (
+              <div
+                key={d.id}
+                className={`flex items-center gap-2 border-b border-emerald-100 px-3 py-1.5 transition-all duration-500 ${
+                  phase >= 2 ? "bg-emerald-50/50" : ""
+                }`}
+              >
+                <span className="font-mono text-[10px] font-bold text-emerald-700">id={d.id}</span>
+                <span className="text-[10px] text-slate-600">{d.name}</span>
               </div>
             ))}
+            {/* Finance dept - no employees reference it */}
+            <div className={`flex items-center gap-2 border-b border-emerald-100 px-3 py-1.5 transition-all duration-500 ${
+              phase >= 2 ? "opacity-20 bg-red-50/30" : ""
+            }`}>
+              <span className="font-mono text-[10px] text-slate-400">id=4</span>
+              <span className="text-[10px] text-slate-400">Finance</span>
+              {phase >= 2 && (
+                <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="ml-auto text-red-400">
+                  <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Result table appears at bottom */}
+        {/* Result table */}
         {phase >= 3 && (
           <div className="mt-6 animate-lesson-enter">
             <div className="mb-2 flex items-center justify-center gap-2">
               <div className="h-px flex-1 bg-slate-200" />
-              <span className="font-mono text-[10px] font-bold text-indigo-500">RESULT</span>
+              <span className="font-mono text-[10px] font-bold text-violet-600">INNER JOIN RESULT</span>
               <div className="h-px flex-1 bg-slate-200" />
             </div>
-            <div className="overflow-hidden rounded-lg border border-indigo-200 shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-violet-200 shadow-sm">
+              <div className="flex items-center justify-between border-b border-violet-100 bg-violet-50/50 px-4 py-2">
+                <span className="font-mono text-[10px] font-bold text-violet-600">Result</span>
+                <span className="rounded-full bg-violet-100 px-2 py-0.5 font-mono text-[10px] font-bold text-violet-700">
+                  {matchPairs.length} rows
+                </span>
+              </div>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-indigo-100 bg-indigo-50/50">
-                    <th className="px-3 py-1.5 text-left font-mono text-[10px] font-bold text-blue-600">s.name</th>
-                    <th className="px-3 py-1.5 text-left font-mono text-[10px] font-bold text-emerald-600">e.grade</th>
+                  <tr className="border-b border-violet-100 bg-white">
+                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-blue-600">e.name</th>
+                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-emerald-600">d.name</th>
+                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-slate-500">salary</th>
                   </tr>
                 </thead>
                 <tbody>
                   {matchPairs.map((p, i) => (
-                    <tr key={i} className="border-b border-indigo-50 animate-sql-row-in" style={{ animationDelay: `${i * 100}ms` }}>
-                      <td className="px-3 py-1 text-[10px] text-slate-700">{p.studentName}</td>
-                      <td className="px-3 py-1 font-mono text-[10px] font-bold text-slate-700">{p.enrollGrade}</td>
+                    <tr
+                      key={i}
+                      className="border-b border-violet-50 animate-sql-row-in"
+                      style={{ animationDelay: `${i * 80}ms` }}
+                    >
+                      <td className="px-3 py-1.5 text-[11px] text-slate-700">{p.empName}</td>
+                      <td className="px-3 py-1.5 text-[11px] text-slate-700">{p.deptName}</td>
+                      <td className="px-3 py-1.5 font-mono text-[11px] text-slate-600">{p.salary.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              <div className="border-t border-violet-100 bg-violet-50/30 px-4 py-2">
+                <p className="font-mono text-[10px] text-slate-500">
+                  Ola (no dept) and Finance (no employees) are <strong className="text-red-500">excluded</strong> from INNER JOIN
+                </p>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      <InsightBox title="INNER JOIN is the most common">
-        An INNER JOIN returns only rows that have matching values in both tables. If a student has no enrollments, they will not appear in the result. Other types (LEFT JOIN, RIGHT JOIN) handle this differently.
+      <InsightBox title="INNER JOIN = only matches">
+        An INNER JOIN returns only rows that have matching values in both tables. If an employee
+        has no department (NULL dept_id), they will not appear in the result.
       </InsightBox>
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
         Got it -- next
       </button>
@@ -270,33 +399,26 @@ function AnimatedJoin({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 3: JOIN types as Venn diagrams ───────────── */
-function JoinTypes({ onComplete }) {
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 2: "LEFT JOIN vs INNER JOIN"
+   Side-by-side comparison
+   ═══════════════════════════════════════════════════════════════ */
+function LeftVsInner({ onComplete }) {
   const [activeType, setActiveType] = useState("inner");
 
   const joinTypes = [
-    { id: "inner", label: "INNER JOIN", desc: "Only rows with matches in BOTH tables" },
-    { id: "left", label: "LEFT JOIN", desc: "All rows from LEFT table, matched rows from right" },
-    { id: "right", label: "RIGHT JOIN", desc: "All rows from RIGHT table, matched rows from left" },
+    { id: "inner", label: "INNER JOIN", desc: "Only rows with matches in BOTH tables", color: "violet" },
+    { id: "left", label: "LEFT JOIN", desc: "All rows from LEFT table, matched rows from right (NULLs for no match)", color: "blue" },
   ];
 
-  // Venn diagram fill logic
-  const getVennStyle = (type) => {
-    switch (type) {
-      case "inner": return { left: "opacity-20", right: "opacity-20", overlap: "opacity-100" };
-      case "left": return { left: "opacity-100", right: "opacity-20", overlap: "opacity-100" };
-      case "right": return { left: "opacity-20", right: "opacity-100", overlap: "opacity-100" };
-      default: return { left: "opacity-20", right: "opacity-20", overlap: "opacity-100" };
-    }
-  };
-
-  const venn = getVennStyle(activeType);
+  const activeData = activeType === "inner" ? JOINED_DATA : LEFT_JOINED_DATA;
 
   return (
     <div className="skill-theme-sql space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">JOIN Types Visualized</h2>
-      <p className="text-sm text-graphite">
-        Different JOIN types control which rows appear when there is no match. Click to compare.
+      <h2 className="text-xl font-bold text-ink">LEFT JOIN vs INNER JOIN</h2>
+      <p className="text-sm leading-relaxed text-graphite">
+        A <strong className="text-ink">LEFT JOIN</strong> keeps ALL rows from the left table, even
+        if there is no match in the right table. Unmatched cells show NULL.
       </p>
 
       {/* Type selector */}
@@ -307,8 +429,10 @@ function JoinTypes({ onComplete }) {
             onClick={() => setActiveType(jt.id)}
             className={`rounded-lg border-2 px-3 py-2 font-mono text-xs font-bold transition-all ${
               activeType === jt.id
-                ? "border-violet-400 bg-violet-50 text-violet-700 shadow-sm"
-                : "border-slate-200 bg-white text-slate-400 hover:border-violet-200"
+                ? jt.id === "inner"
+                  ? "border-violet-400 bg-violet-50 text-violet-700 shadow-sm"
+                  : "border-blue-400 bg-blue-50 text-blue-700 shadow-sm"
+                : "border-slate-200 bg-white text-slate-400 hover:border-blue-200"
             }`}
           >
             {jt.label}
@@ -318,93 +442,182 @@ function JoinTypes({ onComplete }) {
 
       {/* Venn diagram */}
       <div className="flex justify-center rounded-xl border border-slate-200 bg-gradient-to-b from-white to-slate-50/50 py-8">
-        <div className="relative h-40 w-64">
+        <div className="relative h-36 w-56">
           {/* Left circle */}
           <div
-            className={`absolute left-0 top-0 h-40 w-40 rounded-full border-2 border-blue-300 transition-all duration-500 ${venn.left}`}
-            style={{ backgroundColor: "rgba(99, 102, 241, 0.15)" }}
+            className={`absolute left-0 top-0 h-36 w-36 rounded-full border-2 transition-all duration-500 ${
+              activeType === "left" ? "border-blue-400 opacity-100" : "border-violet-300 opacity-40"
+            }`}
+            style={{ backgroundColor: activeType === "left" ? "rgba(37,99,235,0.12)" : "rgba(124,58,237,0.06)" }}
           />
           {/* Right circle */}
           <div
-            className={`absolute right-0 top-0 h-40 w-40 rounded-full border-2 border-emerald-300 transition-all duration-500 ${venn.right}`}
-            style={{ backgroundColor: "rgba(16, 185, 129, 0.15)" }}
+            className={`absolute right-0 top-0 h-36 w-36 rounded-full border-2 transition-all duration-500 ${
+              activeType === "inner" ? "border-violet-300 opacity-40" : "border-blue-300 opacity-40"
+            }`}
+            style={{ backgroundColor: activeType === "left" ? "rgba(37,99,235,0.06)" : "rgba(124,58,237,0.06)" }}
           />
-          {/* Overlap highlight */}
+          {/* Overlap */}
           <div
-            className={`absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500 ${venn.overlap}`}
-            style={{ backgroundColor: "rgba(99, 102, 241, 0.35)" }}
+            className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500"
+            style={{
+              backgroundColor: activeType === "inner" ? "rgba(124,58,237,0.3)" : "rgba(37,99,235,0.2)",
+            }}
           />
           {/* Labels */}
-          <span className="absolute left-6 top-1/2 -translate-y-1/2 font-mono text-[10px] font-bold text-blue-600">
-            students
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-[9px] font-bold text-slate-500">
+            employees
           </span>
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-[10px] font-bold text-emerald-600">
-            enrollments
-          </span>
-          <span className="absolute left-1/2 bottom-1 -translate-x-1/2 font-mono text-[9px] text-indigo-500">
-            matched
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 font-mono text-[9px] font-bold text-slate-500">
+            departments
           </span>
         </div>
       </div>
 
-      {/* Description */}
-      <div className="rounded-lg border border-violet-200 bg-violet-50/50 px-4 py-3">
-        <p className="font-mono text-xs font-bold text-violet-600">
-          {joinTypes.find((jt) => jt.id === activeType)?.label}
-        </p>
-        <p className="mt-1 text-sm text-slate-600">
-          {joinTypes.find((jt) => jt.id === activeType)?.desc}
-        </p>
-      </div>
-
-      {/* Full result table */}
+      {/* Result table */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-        <div className="bg-gradient-to-r from-slate-100 to-slate-50 px-4 py-2">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">Result of 3-table JOIN</span>
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            {activeType === "inner" ? "INNER JOIN" : "LEFT JOIN"} Result
+          </span>
+          <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
+            activeType === "inner" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"
+          }`}>
+            {activeData.length} rows
+          </span>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-white">
-              <th className="px-3 py-2 text-left font-mono text-[11px] font-bold text-blue-600">student_name</th>
-              <th className="px-3 py-2 text-left font-mono text-[11px] font-bold text-emerald-600">course_title</th>
-              <th className="px-3 py-2 text-left font-mono text-[11px] font-bold text-violet-600">grade</th>
-              <th className="px-3 py-2 text-left font-mono text-[11px] font-bold text-amber-600">credits</th>
+            <tr className="border-b border-slate-200">
+              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold text-blue-600 bg-slate-50/80">employee_name</th>
+              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold text-emerald-600 bg-slate-50/80">department_name</th>
+              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold text-slate-500 bg-slate-50/80">salary</th>
             </tr>
           </thead>
           <tbody>
-            {JOINED_DATA.map((row, i) => (
-              <tr key={i} className={`border-b border-slate-100 animate-sql-row-in ${i % 2 === 0 ? "bg-white" : "bg-slate-50/30"}`} style={{ animationDelay: `${i * 80}ms` }}>
-                <td className="px-3 py-2 text-xs text-slate-700">{row.student_name}</td>
-                <td className="px-3 py-2 text-xs text-slate-700">{row.course_title}</td>
-                <td className="px-3 py-2 font-mono text-xs font-bold text-slate-700">{row.grade}</td>
-                <td className="px-3 py-2 font-mono text-xs text-slate-700">{row.credits}</td>
-              </tr>
-            ))}
+            {activeData.map((row, i) => {
+              const isNull = row.department_name === null;
+              return (
+                <tr
+                  key={i}
+                  className={`border-b border-slate-100 animate-sql-row-in ${
+                    isNull ? "bg-amber-50/40" : i % 2 === 0 ? "bg-white" : "bg-slate-50/30"
+                  }`}
+                  style={{ animationDelay: `${i * 60}ms` }}
+                >
+                  <td className="px-4 py-2 text-xs text-slate-700">{row.employee_name}</td>
+                  <td className={`px-4 py-2 text-xs ${isNull ? "italic text-slate-400" : "text-slate-700"}`}>
+                    {isNull ? "NULL" : row.department_name}
+                  </td>
+                  <td className="px-4 py-2 font-mono text-xs text-slate-600">{row.salary.toLocaleString()}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {activeType === "left" && (
+          <div className="border-t border-slate-100 bg-amber-50/30 px-4 py-2">
+            <p className="font-mono text-[10px] text-slate-500">
+              Ola has <strong className="text-amber-600">NULL</strong> for department -- LEFT JOIN
+              keeps her even without a match
+            </p>
+          </div>
+        )}
       </div>
 
-      <InsightBox title="Anna appears twice">
-        Anna has two enrollments, so she appears in two rows. This is normal and expected -- the JOIN produces one row for each matching combination.
-      </InsightBox>
+      {/* Comparison summary */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className={`rounded-xl border-2 p-3 transition-all ${activeType === "inner" ? "border-violet-300 bg-violet-50/50" : "border-slate-200 bg-white"}`}>
+          <p className="font-mono text-xs font-bold text-violet-600">INNER JOIN</p>
+          <p className="mt-1 text-[11px] text-slate-600">Only matched rows</p>
+          <p className="mt-1 font-mono text-lg font-bold text-violet-500">{JOINED_DATA.length} rows</p>
+        </div>
+        <div className={`rounded-xl border-2 p-3 transition-all ${activeType === "left" ? "border-blue-300 bg-blue-50/50" : "border-slate-200 bg-white"}`}>
+          <p className="font-mono text-xs font-bold text-blue-600">LEFT JOIN</p>
+          <p className="mt-1 text-[11px] text-slate-600">All left + matched right</p>
+          <p className="mt-1 font-mono text-lg font-bold text-blue-500">{LEFT_JOINED_DATA.length} rows</p>
+        </div>
+      </div>
 
       <button
         onClick={onComplete}
-        className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-indigo-300"
+        className="rounded-lg bg-[#2856a6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-300"
       >
-        Let's practice
+        Got it -- next
       </button>
     </div>
   );
 }
 
-/* ─── Main Lesson Component ──────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Learn Step 3: Interactive ER Diagram + InsightBox
+   Uses the TableRelationships widget
+   ═══════════════════════════════════════════════════════════════ */
+function ERDiagramStep({ onComplete }) {
+  return (
+    <div className="skill-theme-sql space-y-6 animate-fade-in-up">
+      <h2 className="text-xl font-bold text-ink">Entity-Relationship Diagram</h2>
+      <p className="text-sm text-graphite">
+        Click the relationship buttons to see how the tables connect. The lines show which columns
+        link together.
+      </p>
+      <TableRelationships
+        data={{
+          tables: [
+            {
+              name: "employees",
+              columns: [
+                { name: "id", type: "INT", isPK: true },
+                { name: "name", type: "VARCHAR" },
+                { name: "dept_id", type: "INT", isFK: true },
+                { name: "salary", type: "INT" },
+              ],
+            },
+            {
+              name: "departments",
+              columns: [
+                { name: "id", type: "INT", isPK: true },
+                { name: "name", type: "VARCHAR" },
+                { name: "budget", type: "DECIMAL" },
+              ],
+            },
+          ],
+          relationships: [
+            {
+              from: "employees.dept_id",
+              to: "departments.id",
+              label: "Each employee belongs to one department (many-to-one)",
+            },
+          ],
+          question: "What type of relationship exists between employees and departments?",
+          options: [
+            "One-to-One",
+            "Many-to-One (many employees per department)",
+            "Many-to-Many",
+            "No relationship",
+          ],
+          correctIndex: 1,
+        }}
+        onComplete={onComplete}
+      />
+
+      <InsightBox title="Relationships define your JOINs">
+        Understanding table relationships is essential for writing correct JOINs. The ER diagram
+        shows you exactly which columns to use in your ON clause.
+      </InsightBox>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Main Lesson Component
+   ═══════════════════════════════════════════════════════════════ */
 export default function Lesson3({ currentPhase, currentStep, onComplete }) {
   if (currentPhase === "learn") {
-    if (currentStep === 0) return <WhyRelationships onComplete={onComplete} />;
-    if (currentStep === 1) return <ERDiagramStep onComplete={onComplete} />;
-    if (currentStep === 2) return <AnimatedJoin onComplete={onComplete} />;
-    if (currentStep === 3) return <JoinTypes onComplete={onComplete} />;
+    if (currentStep === 0) return <WhyJoins onComplete={onComplete} />;
+    if (currentStep === 1) return <InnerJoinViz onComplete={onComplete} />;
+    if (currentStep === 2) return <LeftVsInner onComplete={onComplete} />;
+    if (currentStep === 3) return <ERDiagramStep onComplete={onComplete} />;
   }
 
   if (currentPhase === "apply") {
@@ -433,14 +646,19 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
                 },
               ],
               relationships: [
-                { from: "customers.id", to: "orders.customer_id", label: "One customer can have many orders" },
+                {
+                  from: "customers.id",
+                  to: "orders.customer_id",
+                  label: "One customer can have many orders",
+                },
               ],
-              question: "To get a list of customer names with their order totals, what JOIN condition do you need?",
+              question:
+                "Which column connects these tables?",
               options: [
-                "ON orders.order_id = customers.id",
-                "ON customers.id = orders.customer_id",
-                "ON customers.name = orders.total",
-                "ON orders.total > 100",
+                "orders.order_id = customers.id",
+                "customers.id = orders.customer_id",
+                "customers.name = orders.total",
+                "orders.total > 100",
               ],
               correctIndex: 1,
             }}
@@ -453,20 +671,20 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Build a JOIN Query</h2>
           <p className="text-sm text-graphite">
-            Get all student names with their course titles by joining the three tables.
+            Get all employee names with their department names using a JOIN.
           </p>
           <QueryBuilder
             data={{
               clauses: [
-                { id: "c1", sql: "SELECT s.name, c.title", type: "select" },
-                { id: "c2", sql: "FROM students s", type: "from" },
-                { id: "c3", sql: "JOIN enrollments e ON s.id = e.student_id", type: "join" },
-                { id: "c4", sql: "JOIN courses c ON e.course_id = c.course_id", type: "join" },
-                { id: "c5", sql: "JOIN grades g ON s.id = g.student_id", type: "join", isDistractor: true },
+                { id: "c1", sql: "SELECT e.name, d.name", type: "select" },
+                { id: "c2", sql: "FROM employees e", type: "from" },
+                { id: "c3", sql: "JOIN departments d ON e.dept_id = d.id", type: "join" },
+                { id: "c4", sql: "ORDER BY e.name", type: "order" },
+                { id: "c5", sql: "JOIN salaries s ON e.id = s.emp_id", type: "join", isDistractor: true },
               ],
               correctOrder: ["c1", "c2", "c3", "c4"],
               sampleData: JOINED_DATA,
-              columns: ["student_name", "course_title", "grade", "credits"],
+              columns: ["employee_name", "department_name", "salary"],
             }}
             onComplete={onComplete}
           />
@@ -479,33 +697,35 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
       return (
         <div className="skill-theme-sql space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Multi-Table Challenge</h2>
-          <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-white to-indigo-50/30 p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-white to-blue-50/30 p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100">
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-indigo-600">
-                  <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.5 11.5c0-1.5 1.12-2.5 2.5-2.5s2.5 1 2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-blue-700">
+                  <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.5 11.5c0-1.5 1.12-2.5 2.5-2.5s2.5 1 2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
               </span>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-indigo-600">Dean's request</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-700">
+                Manager request
+              </p>
             </div>
             <p className="text-sm text-slate-600 leading-relaxed">
-              "I need to see which students got an A grade. Show me their names, course titles, and grades. Only include the A grades."
+              "Show me employee names with their department names, sorted by salary from highest to
+              lowest. I need to see the salary too."
             </p>
           </div>
           <QueryBuilder
             data={{
               clauses: [
-                { id: "c1", sql: "SELECT s.name, c.title, e.grade", type: "select" },
-                { id: "c2", sql: "FROM students s", type: "from" },
-                { id: "c3", sql: "JOIN enrollments e ON s.id = e.student_id", type: "join" },
-                { id: "c4", sql: "JOIN courses c ON e.course_id = c.course_id", type: "join" },
-                { id: "c5", sql: "WHERE e.grade = 'A'", type: "where", filterFn: (row) => row.grade === "A" },
-                { id: "c6", sql: "WHERE e.grade > 'B'", type: "where", isDistractor: true },
-                { id: "c7", sql: "HAVING grade = 'A'", type: "having", isDistractor: true },
+                { id: "c1", sql: "SELECT e.name, d.name, e.salary", type: "select" },
+                { id: "c2", sql: "FROM employees e", type: "from" },
+                { id: "c3", sql: "JOIN departments d ON e.dept_id = d.id", type: "join" },
+                { id: "c4", sql: "ORDER BY e.salary DESC", type: "order" },
+                { id: "c5", sql: "WHERE e.salary > 5000", type: "where", isDistractor: true },
+                { id: "c6", sql: "HAVING d.name = 'IT'", type: "having", isDistractor: true },
               ],
-              correctOrder: ["c1", "c2", "c3", "c4", "c5"],
+              correctOrder: ["c1", "c2", "c3", "c4"],
               sampleData: JOINED_DATA,
-              columns: ["student_name", "course_title", "grade", "credits"],
+              columns: ["employee_name", "department_name", "salary"],
             }}
             onComplete={onComplete}
           />

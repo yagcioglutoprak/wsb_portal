@@ -1,39 +1,62 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
-/* Clause-type color map */
+/* ── Clause-type color palette ──────────────────────────────── */
 const CLAUSE_COLORS = {
-  select: { bg: "bg-indigo-500", text: "text-white", pill: "bg-indigo-100 text-indigo-700 border-indigo-200", glow: "shadow-indigo-200" },
-  from: { bg: "bg-emerald-500", text: "text-white", pill: "bg-emerald-100 text-emerald-700 border-emerald-200", glow: "shadow-emerald-200" },
-  where: { bg: "bg-amber-500", text: "text-white", pill: "bg-amber-100 text-amber-700 border-amber-200", glow: "shadow-amber-200" },
-  and: { bg: "bg-orange-500", text: "text-white", pill: "bg-orange-100 text-orange-700 border-orange-200", glow: "shadow-orange-200" },
-  order: { bg: "bg-pink-500", text: "text-white", pill: "bg-pink-100 text-pink-700 border-pink-200", glow: "shadow-pink-200" },
-  join: { bg: "bg-violet-500", text: "text-white", pill: "bg-violet-100 text-violet-700 border-violet-200", glow: "shadow-violet-200" },
-  group: { bg: "bg-stone-400", text: "text-white", pill: "bg-stone-100 text-stone-500 border-stone-200", glow: "shadow-stone-200" },
-  having: { bg: "bg-stone-400", text: "text-white", pill: "bg-stone-100 text-stone-500 border-stone-200", glow: "shadow-stone-200" },
+  select:  { bg: "#2856a6", pill: "bg-blue-100 text-blue-800 border-blue-300",   glow: "shadow-blue-200",   label: "SELECT",   dot: "bg-blue-500" },
+  from:    { bg: "#16a34a", pill: "bg-emerald-100 text-emerald-800 border-emerald-300", glow: "shadow-emerald-200", label: "FROM", dot: "bg-emerald-500" },
+  where:   { bg: "#ea580c", pill: "bg-orange-100 text-orange-800 border-orange-300",  glow: "shadow-orange-200", label: "WHERE",  dot: "bg-orange-500" },
+  and:     { bg: "#d97706", pill: "bg-amber-100 text-amber-800 border-amber-300",    glow: "shadow-amber-200",  label: "AND",    dot: "bg-amber-500" },
+  order:   { bg: "#7c3aed", pill: "bg-purple-100 text-purple-800 border-purple-300",  glow: "shadow-purple-200", label: "ORDER BY", dot: "bg-purple-500" },
+  join:    { bg: "#7c3aed", pill: "bg-violet-100 text-violet-800 border-violet-300",  glow: "shadow-violet-200", label: "JOIN",   dot: "bg-violet-500" },
+  group:   { bg: "#6b7280", pill: "bg-slate-100 text-slate-500 border-slate-300",     glow: "shadow-slate-200",  label: "GROUP BY", dot: "bg-slate-400" },
+  having:  { bg: "#6b7280", pill: "bg-slate-100 text-slate-500 border-slate-300",     glow: "shadow-slate-200",  label: "HAVING", dot: "bg-slate-400" },
 };
 
-const getClauseColor = (type) => CLAUSE_COLORS[type] || CLAUSE_COLORS.select;
+const getColor = (type) => CLAUSE_COLORS[type] || CLAUSE_COLORS.select;
 
-/* Extract the SQL keyword from a clause string */
-const getKeyword = (sql) => {
-  const match = sql.match(/^(SELECT|FROM|WHERE|AND|OR|ORDER BY|JOIN|INNER JOIN|LEFT JOIN|RIGHT JOIN|ON|GROUP BY|HAVING)/i);
-  return match ? match[1].toUpperCase() : "";
-};
+/* ── Syntax-highlight a SQL string for the dark code panel ── */
+function HighlightedSQL({ sql }) {
+  const tokens = sql.split(/(\b(?:SELECT|FROM|WHERE|AND|OR|ORDER BY|JOIN|INNER JOIN|LEFT JOIN|RIGHT JOIN|ON|GROUP BY|HAVING|ASC|DESC|AS)\b|'[^']*'|\b\d+\b)/gi);
+  const keywords = new Set(["SELECT","FROM","WHERE","AND","OR","ORDER BY","JOIN","INNER JOIN","LEFT JOIN","RIGHT JOIN","ON","GROUP BY","HAVING","ASC","DESC","AS"]);
 
+  return (
+    <>
+      {tokens.map((tok, i) => {
+        if (!tok) return null;
+        const upper = tok.toUpperCase();
+        if (keywords.has(upper)) {
+          const kwColor = upper === "SELECT" ? "text-blue-400"
+            : upper === "FROM" ? "text-emerald-400"
+            : upper === "WHERE" || upper === "AND" || upper === "OR" ? "text-orange-400"
+            : upper === "ORDER BY" || upper === "ASC" || upper === "DESC" ? "text-purple-400"
+            : upper.includes("JOIN") || upper === "ON" ? "text-violet-400"
+            : "text-slate-400";
+          return <span key={i} className={`font-bold ${kwColor}`}>{tok}</span>;
+        }
+        if (/^'[^']*'$/.test(tok)) return <span key={i} className="text-green-400">{tok}</span>;
+        if (/^\d+$/.test(tok)) return <span key={i} className="text-orange-300">{tok}</span>;
+        return <span key={i} className="text-slate-300">{tok}</span>;
+      })}
+    </>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   QueryBuilder Widget -- Structured Data aesthetic
+   ════════════════════════════════════════════════════════════════ */
 export default function QueryBuilder({ data, onComplete }) {
   const { clauses, correctOrder, sampleData, columns } = data;
   const [placed, setPlaced] = useState([]);
   const [draggedId, setDraggedId] = useState(null);
   const [checked, setChecked] = useState(false);
   const [justPlacedIdx, setJustPlacedIdx] = useState(null);
-  const [highlightedRows, setHighlightedRows] = useState(new Set());
-  const [sortCol, setSortCol] = useState(null);
-  const [sortDir, setSortDir] = useState("asc");
-  const prevFilteredRef = useRef(null);
+  const [sweepRows, setSweepRows] = useState(new Set());
+  const prevFilterCountRef = useRef(sampleData.length);
 
   const available = clauses.filter((c) => !placed.includes(c.id));
   const slots = correctOrder.length;
 
+  /* ── Drag handlers ──────────────────────────────────────── */
   const handleDragStart = (id) => setDraggedId(id);
 
   const handleDropOnSlot = (slotIdx) => {
@@ -45,45 +68,82 @@ export default function QueryBuilder({ data, onComplete }) {
     setChecked(false);
     setJustPlacedIdx(slotIdx);
     setTimeout(() => setJustPlacedIdx(null), 400);
-
-    // Flash matching rows
-    triggerRowHighlight(next);
+    triggerSweep(next);
   };
 
   const handleDropBack = () => {
     if (!draggedId) return;
-    const next = placed.filter((id) => id !== draggedId);
-    setPlaced(next);
+    setPlaced((prev) => prev.filter((id) => id !== draggedId));
     setDraggedId(null);
     setChecked(false);
-    triggerRowHighlight(next);
+    setSweepRows(new Set());
   };
 
   const handleRemove = (id) => {
-    const next = placed.filter((x) => x !== id);
-    setPlaced(next);
+    setPlaced((prev) => prev.filter((x) => x !== id));
     setChecked(false);
-    triggerRowHighlight(next);
+    setSweepRows(new Set());
   };
 
-  const triggerRowHighlight = useCallback((placedIds) => {
-    const filtered = getFilteredRowsFrom(placedIds);
-    const newSet = new Set(filtered.map((_, i) => i));
-    setHighlightedRows(newSet);
-    setTimeout(() => setHighlightedRows(new Set()), 1200);
-  }, [clauses, sampleData]);
+  /* ── Click to place (mobile-friendly) ────────────────────── */
+  const handleClauseClick = (id) => {
+    if (placed.includes(id)) return;
+    const next = [...placed, id];
+    if (next.length > slots) return;
+    setPlaced(next);
+    setChecked(false);
+    setJustPlacedIdx(next.length - 1);
+    setTimeout(() => setJustPlacedIdx(null), 400);
+    triggerSweep(next);
+  };
 
-  const getFilteredRowsFrom = useCallback((placedIds) => {
-    const clauseObjs = placedIds.map((id) => clauses.find((c) => c.id === id));
-    const hasWhere = clauseObjs.some((c) => c?.type === "where");
-    if (!hasWhere) return sampleData;
-    return sampleData.filter((row) =>
-      clauseObjs
-        .filter((c) => c?.type === "where")
-        .every((c) => c?.filterFn?.(row) ?? true)
+  /* ── Filter logic ───────────────────────────────────────── */
+  const getFilteredRows = useCallback(
+    (placedIds) => {
+      const clauseObjs = placedIds.map((id) => clauses.find((c) => c.id === id));
+      const filters = clauseObjs.filter((c) => c?.type === "where" && c?.filterFn);
+      if (filters.length === 0) return sampleData;
+      return sampleData.filter((row) => filters.every((c) => c.filterFn(row)));
+    },
+    [clauses, sampleData]
+  );
+
+  /* ── Sweep animation for matching rows ──────────────────── */
+  const triggerSweep = useCallback(
+    (placedIds) => {
+      const filtered = getFilteredRows(placedIds);
+      if (filtered.length < sampleData.length) {
+        const matchIndices = new Set();
+        sampleData.forEach((row, i) => {
+          if (filtered.includes(row)) matchIndices.add(i);
+        });
+        setSweepRows(matchIndices);
+      } else {
+        setSweepRows(new Set());
+      }
+    },
+    [getFilteredRows, sampleData]
+  );
+
+  /* ── Derive visible columns from placed SELECT ─────────── */
+  const getVisibleColumns = () => {
+    const selectClause = placed
+      .map((id) => clauses.find((c) => c.id === id))
+      .find((c) => c?.type === "select");
+    if (!selectClause || selectClause.sql.includes("*")) return columns;
+    const selectPart = selectClause.sql.replace(/^SELECT\s+/i, "");
+    const selectedCols = selectPart.split(",").map((s) => s.trim().replace(/.*\./, ""));
+    const matched = columns.filter((col) =>
+      selectedCols.some(
+        (sc) => col.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(col.toLowerCase())
+      )
     );
-  }, [clauses, sampleData]);
+    return matched.length > 0 ? matched : columns;
+  };
 
+  const filteredRows = placed.length > 0 ? getFilteredRows(placed) : sampleData;
+  const visibleCols = getVisibleColumns();
+  const hasFilters = placed.length > 0 && filteredRows.length < sampleData.length;
   const isCorrect = JSON.stringify(placed) === JSON.stringify(correctOrder);
 
   const handleCheck = () => {
@@ -91,48 +151,24 @@ export default function QueryBuilder({ data, onComplete }) {
     if (isCorrect) onComplete?.();
   };
 
-  // Derive visible columns from SELECT clause
-  const getVisibleColumns = () => {
-    const selectClause = placed.map((id) => clauses.find((c) => c.id === id)).find((c) => c?.type === "select");
-    if (!selectClause) return columns;
-    if (selectClause.sql.includes("*")) return columns;
-    // Extract column names from SELECT clause
-    const selectPart = selectClause.sql.replace(/^SELECT\s+/i, "");
-    const selectedCols = selectPart.split(",").map((s) => s.trim().replace(/.*\./, ""));
-    // Return only matching columns, falling back to all
-    const matched = columns.filter((col) => selectedCols.some((sc) => col.toLowerCase().includes(sc.toLowerCase()) || sc.toLowerCase().includes(col.toLowerCase())));
-    return matched.length > 0 ? matched : columns;
+  /* ── Build the full SQL text for the code panel ─────────── */
+  const buildSQLText = () => {
+    if (placed.length === 0) return null;
+    return placed
+      .map((id) => clauses.find((c) => c.id === id))
+      .filter(Boolean)
+      .map((c) => c.sql)
+      .join("\n");
   };
 
-  const filteredRows = placed.length > 0 ? getFilteredRowsFrom(placed) : sampleData;
-  const visibleCols = getVisibleColumns();
-  const hasPlacedClauses = placed.length > 0;
-
-  // Sort logic
-  const handleSort = (col) => {
-    if (sortCol === col) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortCol(col);
-      setSortDir("asc");
-    }
-  };
-
-  const sortedRows = sortCol
-    ? [...filteredRows].sort((a, b) => {
-        const va = a[sortCol];
-        const vb = b[sortCol];
-        const cmp = typeof va === "number" ? va - vb : String(va).localeCompare(String(vb));
-        return sortDir === "asc" ? cmp : -cmp;
-      })
-    : filteredRows;
+  const sqlText = buildSQLText();
 
   return (
     <div className="space-y-4">
-      {/* ── Code Editor Bar (Query Assembly) ────────────── */}
-      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-900 shadow-lg">
+      {/* ─── Dark Code Panel (Query Assembly) ───────────────── */}
+      <div className="overflow-hidden rounded-xl border border-slate-700 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 shadow-xl">
         {/* Title bar */}
-        <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2">
+        <div className="flex items-center gap-2 border-b border-slate-700/60 px-4 py-2.5">
           <div className="flex gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
@@ -141,90 +177,112 @@ export default function QueryBuilder({ data, onComplete }) {
           <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
             query.sql
           </span>
-          {hasPlacedClauses && (
-            <span className="ml-auto rounded-full bg-indigo-500/20 px-2 py-0.5 font-mono text-[9px] font-bold text-indigo-400">
+          {placed.length > 0 && (
+            <span className="ml-auto rounded-full bg-blue-500/15 px-2.5 py-0.5 font-mono text-[9px] font-bold text-blue-400">
               {placed.length}/{slots} clauses
             </span>
           )}
         </div>
 
-        {/* Query line */}
-        <div className="min-h-[56px] px-4 py-3">
-          <div className="flex items-center gap-1">
-            <span className="mr-1 font-mono text-xs text-slate-600 select-none">1</span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {Array.from({ length: slots }, (_, i) => {
-                const clauseId = placed[i];
-                const clause = clauses.find((c) => c.id === clauseId);
-                const colors = clause ? getClauseColor(clause.type) : null;
-                const isJustPlaced = justPlacedIdx === i;
-
-                return (
-                  <div
-                    key={i}
-                    onDrop={(e) => { e.preventDefault(); handleDropOnSlot(i); }}
-                    onDragOver={(e) => e.preventDefault()}
-                    className="transition-all duration-200"
-                  >
-                    {clause ? (
-                      <div
-                        className={`group flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-xs shadow-sm transition-all ${colors.pill} ${isJustPlaced ? "animate-sql-slot-in" : ""}`}
-                      >
-                        <span className={`inline-block h-1.5 w-1.5 rounded-full ${colors.bg}`} />
-                        <code className="font-semibold">{clause.sql}</code>
-                        <button
-                          onClick={() => handleRemove(clause.id)}
-                          className="ml-0.5 rounded-full p-0.5 text-current opacity-40 transition-all hover:bg-red-100 hover:text-red-500 hover:opacity-100"
-                        >
-                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 rounded-md border-2 border-dashed border-slate-700 bg-slate-800/40 px-3 py-1.5 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/5">
-                        <span className="font-mono text-[10px] text-slate-600 italic">
-                          {i === 0 ? "SELECT ..." : `clause ${i + 1}`}
-                        </span>
-                      </div>
+        {/* Query lines with syntax highlighting */}
+        <div className="min-h-[72px] px-4 py-3 font-mono text-sm leading-relaxed">
+          {placed.length === 0 ? (
+            <div className="flex items-center gap-2">
+              <span className="text-slate-600 select-none">1</span>
+              <span className="text-slate-600 italic">-- drag clauses here to build your query</span>
+              <span className="animate-sql-cursor ml-0.5 inline-block h-4 w-[2px] bg-blue-400" />
+            </div>
+          ) : (
+            placed.map((id, lineIdx) => {
+              const clause = clauses.find((c) => c.id === id);
+              if (!clause) return null;
+              const isLast = lineIdx === placed.length - 1;
+              return (
+                <div
+                  key={id}
+                  className={`flex items-start gap-2 ${justPlacedIdx === lineIdx ? "animate-sql-slot-in" : ""}`}
+                >
+                  <span className="w-4 text-right text-slate-600 select-none shrink-0">
+                    {lineIdx + 1}
+                  </span>
+                  <div className="flex-1 flex items-center gap-1 flex-wrap">
+                    <HighlightedSQL sql={clause.sql} />
+                    {lineIdx < placed.length - 1 && null}
+                    {isLast && lineIdx < slots - 1 && (
+                      <span className="animate-sql-cursor ml-0.5 inline-block h-4 w-[2px] bg-blue-400" />
+                    )}
+                    {isLast && lineIdx === slots - 1 && (
+                      <span className="text-slate-500">;</span>
                     )}
                   </div>
-                );
-              })}
-              {/* Blinking cursor */}
-              {placed.length < slots && (
-                <span className="animate-sql-cursor ml-0.5 inline-block h-4 w-[2px] bg-indigo-400" />
-              )}
-            </div>
-          </div>
+                  <button
+                    onClick={() => handleRemove(id)}
+                    className="shrink-0 mt-0.5 rounded p-0.5 text-slate-600 transition-colors hover:bg-red-500/20 hover:text-red-400"
+                    title="Remove clause"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                      <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
+
+        {/* Drop zone overlay in the code panel */}
+        {placed.length < slots && (
+          <div
+            className="border-t border-dashed border-slate-700/50 px-4 py-2 transition-colors hover:bg-slate-800/50"
+            onDrop={(e) => {
+              e.preventDefault();
+              handleDropOnSlot(placed.length);
+            }}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <span className="font-mono text-[10px] text-slate-600 italic">
+              Drop next clause here
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* ── Available Clause Blocks ────────────────────── */}
+      {/* ─── Available Clause Pills ─────────────────────────── */}
       <div
-        className="min-h-[44px] rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-3"
-        onDrop={(e) => { e.preventDefault(); handleDropBack(); }}
+        className="min-h-[52px] rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+        onDrop={(e) => {
+          e.preventDefault();
+          handleDropBack();
+        }}
         onDragOver={(e) => e.preventDefault()}
       >
-        <p className="mb-2 font-mono text-[9px] font-bold uppercase tracking-widest text-slate-400">
-          Available clauses
+        <p className="mb-2.5 font-mono text-[9px] font-bold uppercase tracking-widest text-slate-400">
+          Available clauses -- drag or click to add
         </p>
         <div className="flex flex-wrap gap-2">
           {available.map((clause) => {
-            const colors = getClauseColor(clause.type);
-            const keyword = getKeyword(clause.sql);
+            const colors = getColor(clause.type);
             return (
               <div
                 key={clause.id}
                 draggable
                 onDragStart={() => handleDragStart(clause.id)}
+                onClick={() => handleClauseClick(clause.id)}
                 className={`group cursor-grab select-none rounded-lg border px-3 py-2 font-mono text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:cursor-grabbing active:scale-95 ${
                   clause.isDistractor
-                    ? "border-slate-200 bg-slate-100 text-slate-400"
-                    : `${colors.pill} ${colors.glow}`
+                    ? "border-slate-200 bg-slate-50 text-slate-400"
+                    : `${colors.pill} shadow-sm ${colors.glow}`
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  {!clause.isDistractor && (
-                    <span className={`inline-block h-2 w-2 rounded-full ${colors.bg} transition-transform group-hover:scale-125`} />
+                  {clause.isDistractor ? (
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="text-slate-400">
+                      <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  ) : (
+                    <span
+                      className={`inline-block h-2 w-2 rounded-full ${colors.dot} transition-transform group-hover:scale-125`}
+                    />
                   )}
                   <span className="font-semibold">{clause.sql}</span>
                 </div>
@@ -232,94 +290,89 @@ export default function QueryBuilder({ data, onComplete }) {
             );
           })}
           {available.length === 0 && (
-            <span className="font-mono text-[10px] italic text-slate-400">All clauses placed</span>
+            <span className="font-mono text-[10px] italic text-slate-400">
+              All clauses placed -- check your query
+            </span>
           )}
         </div>
       </div>
 
-      {/* ── Result Table ──────────────────────────────── */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+      {/* ─── Result Table (data grid) ───────────────────────── */}
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         {/* Table header bar */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-slate-100 to-slate-50 px-4 py-2">
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
           <div className="flex items-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" className="text-slate-400">
-              <rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="2" y1="7" x2="18" y2="7" stroke="currentColor" strokeWidth="1.5"/>
-              <line x1="8" y1="7" x2="8" y2="17" stroke="currentColor" strokeWidth="1.5"/>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-slate-400">
+              <rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
+              <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
+              <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
             </svg>
             <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
               Result Preview
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold transition-colors ${
-              hasPlacedClauses && filteredRows.length < sampleData.length
-                ? "bg-indigo-100 text-indigo-600"
-                : "bg-slate-100 text-slate-500"
-            }`}>
-              {filteredRows.length} row{filteredRows.length !== 1 ? "s" : ""}
-            </span>
-            {hasPlacedClauses && filteredRows.length < sampleData.length && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-600">
-                {sampleData.length - filteredRows.length} filtered
+            {hasFilters ? (
+              <>
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-400 line-through">
+                  {sampleData.length} rows
+                </span>
+                <svg width="10" height="10" viewBox="0 0 10 10" className="text-slate-400">
+                  <path d="M2 5h6M6 3l2 2-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+                  {filteredRows.length} rows matching
+                </span>
+              </>
+            ) : (
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-500">
+                {sampleData.length} rows
               </span>
             )}
           </div>
         </div>
 
-        {/* Table */}
+        {/* Data grid */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-white">
+              <tr className="border-b border-slate-200">
                 {visibleCols.map((col) => (
                   <th
                     key={col}
-                    onClick={() => handleSort(col)}
-                    className="cursor-pointer px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-indigo-600 select-none"
+                    className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80"
                   >
-                    <div className="flex items-center gap-1">
-                      {col}
-                      {sortCol === col ? (
-                        <svg width="10" height="10" viewBox="0 0 10 10" className="text-indigo-500">
-                          {sortDir === "asc"
-                            ? <path d="M5 2L8 7H2L5 2Z" fill="currentColor"/>
-                            : <path d="M5 8L2 3H8L5 8Z" fill="currentColor"/>
-                          }
-                        </svg>
-                      ) : (
-                        <svg width="10" height="10" viewBox="0 0 10 10" className="text-slate-300">
-                          <path d="M5 2L7 5H3L5 2Z" fill="currentColor"/>
-                          <path d="M5 8L3 5H7L5 8Z" fill="currentColor"/>
-                        </svg>
-                      )}
-                    </div>
+                    {col}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {sortedRows.slice(0, 10).map((row, i) => {
-                const isMatch = hasPlacedClauses && filteredRows.length < sampleData.length;
-                const isHighlighted = highlightedRows.has(i);
+              {sampleData.map((row, i) => {
+                const isMatch = !hasFilters || filteredRows.includes(row);
+                const isSweeping = sweepRows.has(i);
+                const isDimmed = hasFilters && !isMatch;
 
                 return (
                   <tr
                     key={i}
                     className={`border-b border-slate-100 transition-all duration-500 ${
-                      isHighlighted
-                        ? "animate-sql-row-flash"
-                        : isMatch
-                          ? "bg-indigo-50/40"
+                      isSweeping
+                        ? "animate-sql-row-sweep"
+                        : isDimmed
+                          ? "opacity-25"
                           : i % 2 === 0
                             ? "bg-white"
-                            : "bg-slate-50/50"
+                            : "bg-slate-50/40"
                     }`}
+                    style={isDimmed ? { transition: "opacity 0.6s ease-out" } : undefined}
                   >
                     {visibleCols.map((col) => (
                       <td
                         key={col}
-                        className="px-4 py-2 font-mono text-xs text-slate-700"
+                        className={`px-4 py-2 font-mono text-xs ${
+                          isDimmed ? "text-slate-300" : "text-slate-700"
+                        }`}
                       >
                         {row[col]}
                       </td>
@@ -327,10 +380,13 @@ export default function QueryBuilder({ data, onComplete }) {
                   </tr>
                 );
               })}
-              {sortedRows.length === 0 && (
+              {filteredRows.length === 0 && (
                 <tr>
-                  <td colSpan={visibleCols.length} className="px-4 py-6 text-center text-xs italic text-slate-400">
-                    No rows match the current query
+                  <td
+                    colSpan={visibleCols.length}
+                    className="px-4 py-6 text-center text-xs italic text-slate-400"
+                  >
+                    No rows match the current filters
                   </td>
                 </tr>
               )}
@@ -338,46 +394,66 @@ export default function QueryBuilder({ data, onComplete }) {
           </table>
         </div>
 
-        {/* Faded non-matching rows indicator */}
-        {hasPlacedClauses && filteredRows.length < sampleData.length && (
+        {/* Filter summary bar */}
+        {hasFilters && (
           <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2">
-            <p className="font-mono text-[10px] text-slate-400">
-              {sampleData.length - filteredRows.length} row{sampleData.length - filteredRows.length !== 1 ? "s" : ""} hidden by WHERE filter
+            <p className="font-mono text-[10px] text-slate-500">
+              <span className="font-bold text-emerald-600">{filteredRows.length}</span> of{" "}
+              {sampleData.length} rows pass the WHERE filter --{" "}
+              <span className="text-slate-400">
+                {sampleData.length - filteredRows.length} hidden
+              </span>
             </p>
           </div>
         )}
       </div>
 
-      {/* ── Run Query / Feedback ─────────────────────── */}
+      {/* ─── Run Query Button ───────────────────────────────── */}
       {placed.length === slots && !checked && (
         <button
           onClick={handleCheck}
-          className="animate-lesson-enter flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-300 hover:brightness-110 active:scale-[0.98]"
+          className="animate-lesson-enter flex items-center gap-2 rounded-lg bg-[#2856a6] px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-blue-200 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-300 hover:brightness-110 active:scale-[0.98]"
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M4 3l9 5-9 5V3z" fill="currentColor"/>
+            <path d="M4 3l9 5-9 5V3z" fill="currentColor" />
           </svg>
           Run Query
         </button>
       )}
 
+      {/* ─── Feedback ───────────────────────────────────────── */}
       {checked && (
-        <div className={`animate-lesson-enter rounded-xl border-l-[3px] p-4 ${
-          isCorrect
-            ? "border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50/30"
-            : "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50/30"
-        }`}>
+        <div
+          className={`animate-lesson-enter rounded-xl border-l-[3px] p-4 ${
+            isCorrect
+              ? "border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50/30"
+              : "border-red-400 bg-gradient-to-r from-red-50 to-orange-50/20"
+          }`}
+        >
           <div className="flex items-start gap-3">
-            <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white ${
-              isCorrect ? "bg-emerald-500" : "bg-amber-500"
-            }`}>
+            <span
+              className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white ${
+                isCorrect ? "bg-emerald-500" : "bg-red-400"
+              }`}
+            >
               {isCorrect ? (
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                  <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M3 8.5L6.5 12L13 4"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               ) : (
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                  <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                  <path
+                    d="M4 4L12 12M12 4L4 12"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
                 </svg>
               )}
             </span>
@@ -385,8 +461,7 @@ export default function QueryBuilder({ data, onComplete }) {
               <p className="text-sm font-bold text-ink">
                 {isCorrect
                   ? "Query executed successfully!"
-                  : "Syntax error -- check the clause order."
-                }
+                  : "Syntax error -- check the clause order and remove distractors."}
               </p>
               {isCorrect && (
                 <p className="mt-1 text-xs text-slate-500">
@@ -395,11 +470,25 @@ export default function QueryBuilder({ data, onComplete }) {
               )}
               {!isCorrect && (
                 <button
-                  onClick={() => { setPlaced([]); setChecked(false); setHighlightedRows(new Set()); }}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-100"
+                  onClick={() => {
+                    setPlaced([]);
+                    setChecked(false);
+                    setSweepRows(new Set());
+                  }}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M1 4v6h6" />
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                   </svg>
                   Reset query
                 </button>
