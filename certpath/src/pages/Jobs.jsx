@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { fields, jobs } from "../data/mock";
 import JobRow from "../components/JobRow";
+import useProgress from "../hooks/useProgress";
 
 const experienceLevels = [
   { value: "all", label: "All levels" },
@@ -10,8 +11,13 @@ const experienceLevels = [
 ];
 
 export default function Jobs() {
-  const [activeField, setActiveField] = useState("all");
-  const [activeLevel, setActiveLevel] = useState("all");
+  const { profile, isOnboarded } = useProgress();
+  const [activeField, setActiveField] = useState(() =>
+    isOnboarded && profile?.field ? profile.field : "all"
+  );
+  const [activeLevel, setActiveLevel] = useState(() =>
+    isOnboarded ? "junior" : "all"
+  );
 
   const filtered = jobs.filter((job) => {
     if (activeField !== "all" && job.fieldId !== activeField) return false;
@@ -27,15 +33,16 @@ export default function Jobs() {
         className="mb-8 animate-fade-in-up"
         style={{ animationDelay: "0ms" }}
       >
-        <span className="font-mono text-xs uppercase tracking-widest text-pencil">
-          Job board
+        <span className="font-mono text-sm uppercase tracking-widest text-pencil">
+          Opportunities
         </span>
-        <h1 className="mt-2 font-serif text-3xl italic text-ink sm:text-4xl">
-          Jobs in Poland
+        <h1 className="mt-2 font-sans text-4xl font-bold text-ink sm:text-5xl">
+          Opportunities for students
         </h1>
-        <p className="mt-2 max-w-2xl text-base leading-relaxed text-graphite">
-          Current openings that list specific certifications in their
-          requirements. Filter by field and experience level.
+        <p className="mt-2 max-w-2xl text-lg leading-relaxed text-graphite">
+          Internships, working student positions, and full-time roles in
+          Poland. Filter by field and experience level to find what fits your
+          schedule.
         </p>
       </div>
 
@@ -82,10 +89,10 @@ export default function Jobs() {
         className="mb-4 flex items-center gap-2 animate-fade-in-up"
         style={{ animationDelay: "200ms" }}
       >
-        <span className="font-serif text-2xl italic text-ink">
+        <span className="font-sans text-3xl font-bold text-ink">
           {filtered.length}
         </span>
-        <span className="font-mono text-sm tracking-wider text-pencil">
+        <span className="font-mono text-base tracking-wider text-pencil">
           of {jobs.length} positions
         </span>
       </div>
@@ -104,7 +111,7 @@ export default function Jobs() {
           ))
         ) : (
           <div className="rounded-lg border border-faint bg-card p-12 text-center">
-            <p className="font-serif text-lg italic text-pencil">
+            <p className="font-sans text-xl font-medium text-pencil">
               No jobs match the current filters.
             </p>
             <button
@@ -113,7 +120,7 @@ export default function Jobs() {
                 setActiveField("all");
                 setActiveLevel("all");
               }}
-              className="mt-3 font-mono text-xs uppercase tracking-wider text-rust hover:underline"
+              className="mt-3 font-mono text-sm uppercase tracking-wider text-rust hover:underline"
             >
               Clear filters
             </button>
@@ -130,7 +137,7 @@ function FilterTab({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={[
-        "rounded-full border px-4 py-1.5 font-mono text-xs tracking-wider transition-all duration-200",
+        "rounded-full border px-4 py-1.5 font-mono text-sm tracking-wider transition-all duration-200",
         active
           ? "border-rust bg-rust text-white"
           : "border-faint bg-card text-graphite hover:border-pencil/30 hover:text-ink",
