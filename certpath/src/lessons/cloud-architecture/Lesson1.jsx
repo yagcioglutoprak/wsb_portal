@@ -1,22 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Quiz from "../../components/widgets/Quiz";
 import InsightBox from "../../components/widgets/InsightBox";
 import DragDrop from "../../components/widgets/DragDrop";
 
 /* ================================================================
    Lesson 1  --  Cloud Basics
-   Blueprint sky aesthetic: airy, spacious, architectural
+   Blueprint aesthetic: dotted grid, indigo palette, animated SVGs,
+   layered diagrams, staggered card reveals
    ================================================================ */
 
-/* ---- Blueprint grid background ---- */
+/* ---- Blueprint dotted grid background ---- */
 const blueprintBg = {
   backgroundImage: `
-    linear-gradient(rgba(14,165,233,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14,165,233,0.06) 1px, transparent 1px),
-    linear-gradient(rgba(14,165,233,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(14,165,233,0.03) 1px, transparent 1px)
+    radial-gradient(circle, rgba(99,130,191,0.12) 1px, transparent 1px),
+    linear-gradient(rgba(99,130,191,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,130,191,0.05) 1px, transparent 1px)
   `,
-  backgroundSize: "60px 60px, 60px 60px, 12px 12px, 12px 12px",
+  backgroundSize: "20px 20px, 60px 60px, 60px 60px",
+  backgroundColor: "#f8faff",
 };
 
 /* ---- Shared next button ---- */
@@ -24,100 +25,155 @@ function NextButton({ onClick, label = "Got it -- next" }) {
   return (
     <button
       onClick={onClick}
-      className="rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-3 text-sm font-bold text-white shadow-md shadow-sky-200 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-300/40 active:scale-[0.98]"
+      className="rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-200/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-indigo-300/40 active:scale-[0.98]"
     >
       {label}
     </button>
   );
 }
 
-/* ─── Learn Step 0: On-premise vs Cloud visual comparison ─────── */
-function OnPremVsCloud({ onComplete }) {
+/* ─── Learn Step 0: "What is cloud computing?" ──────────────────── */
+function WhatIsCloud({ onComplete }) {
   const [showCloud, setShowCloud] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-sky-900">On-Premise vs Cloud</h2>
+      <h2 className="text-xl font-bold text-indigo-900">What is Cloud Computing?</h2>
       <p className="text-sm leading-relaxed text-slate-600">
-        Traditionally, companies bought and maintained their own servers (on-premise). <strong className="text-sky-900">Cloud computing</strong> lets you rent computing resources over the internet -- pay only for what you use.
+        Traditionally, companies bought and maintained their own servers. <strong className="text-indigo-900">Cloud computing</strong> lets you rent computing resources over the internet -- pay only for what you use, scale in minutes.
       </p>
 
-      {/* Visual comparison slider */}
-      <div className="relative overflow-hidden rounded-2xl border border-sky-200/70 shadow-sm" style={{ minHeight: 280 }}>
-        {/* On-premise side */}
+      {/* Split visual comparison */}
+      <div className="relative overflow-hidden rounded-2xl border border-indigo-200/50 shadow-md" style={{ minHeight: 320 }}>
+        {/* ON-PREMISE SIDE */}
         <div
           className="absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out"
           style={{
             background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
             opacity: showCloud ? 0 : 1,
-            transform: showCloud ? "translateX(-40px)" : "translateX(0)",
+            transform: showCloud ? "translateX(-50px) scale(0.95)" : "translateX(0) scale(1)",
           }}
         >
-          {/* Server rack illustration */}
-          <svg viewBox="0 0 120 160" className="h-28 w-28 mb-4">
+          {/* Server rack SVG */}
+          <svg viewBox="0 0 140 180" className="h-32 w-32 mb-4" style={{ opacity: mounted ? 1 : 0, transition: "opacity 0.6s ease 0.3s" }}>
+            {/* Room outline */}
+            <rect x="15" y="10" width="110" height="160" rx="6" fill="none" stroke="#334155" strokeWidth="2" strokeDasharray="4 3" />
+            {/* Floor */}
+            <line x1="15" y1="160" x2="125" y2="160" stroke="#475569" strokeWidth="1.5" />
             {/* Rack frame */}
-            <rect x="10" y="10" width="100" height="140" rx="6" fill="none" stroke="#475569" strokeWidth="2"/>
-            {/* Server units */}
+            <rect x="30" y="20" width="80" height="130" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="1.5" />
+            {/* Server units with status LEDs */}
             {[0, 1, 2, 3, 4].map((i) => (
               <g key={i}>
-                <rect x="18" y={20 + i * 26} width="84" height="20" rx="3" fill="#334155" stroke="#475569" strokeWidth="1"/>
-                <circle cx="30" cy={30 + i * 26} r="3" fill={i < 3 ? "#22c55e" : "#ef4444"}/>
-                <rect x="40" y={27 + i * 26} width="30" height="6" rx="1" fill="#1e293b"/>
-                <rect x="80" y={27 + i * 26} width="14" height="6" rx="1" fill="#1e293b"/>
+                <rect x="36" y={28 + i * 24} width="68" height="18" rx="2" fill="#334155" stroke="#475569" strokeWidth="0.8" />
+                <circle cx="46" cy={37 + i * 24} r="2.5" fill={i < 3 ? "#22c55e" : "#ef4444"}>
+                  {i < 3 && <animate attributeName="opacity" values="1;0.6;1" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />}
+                </circle>
+                <rect x="54" y={34 + i * 24} width="24" height="5" rx="1" fill="#1e293b" opacity="0.6" />
+                <rect x="82" y={34 + i * 24} width="16" height="5" rx="1" fill="#1e293b" opacity="0.6" />
               </g>
             ))}
+            {/* Power cables */}
+            <path d="M70 150 L70 165 L50 175" stroke="#475569" strokeWidth="1" strokeDasharray="3 2" />
+            <path d="M70 150 L70 165 L90 175" stroke="#475569" strokeWidth="1" strokeDasharray="3 2" />
           </svg>
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">On-Premise</span>
-          <span className="mt-1 text-[11px] text-slate-500">Your servers, your data center, your problem</span>
+          <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-slate-400">On-Premise</span>
+          <span className="mt-1.5 text-[11px] text-slate-500">Your servers, your data center, your problem</span>
         </div>
 
-        {/* Cloud side */}
+        {/* CLOUD SIDE */}
         <div
           className="absolute inset-0 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out"
           style={{
             ...blueprintBg,
-            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
             opacity: showCloud ? 1 : 0,
-            transform: showCloud ? "translateX(0)" : "translateX(40px)",
+            transform: showCloud ? "translateX(0) scale(1)" : "translateX(50px) scale(0.95)",
           }}
         >
-          {/* Cloud illustration */}
-          <svg viewBox="0 0 160 120" className="h-28 w-auto mb-4">
-            {/* Main cloud */}
-            <path d="M40 80 C20 80 10 65 15 50 C5 40 15 20 35 25 C40 10 70 5 85 20 C100 10 130 15 135 35 C150 35 155 55 140 65 C150 80 135 90 120 80 Z"
-              fill="white" stroke="#7dd3fc" strokeWidth="2"/>
-            {/* Server nodes inside cloud */}
-            <rect x="45" y="40" width="22" height="16" rx="3" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1.5"/>
-            <rect x="75" y="35" width="22" height="16" rx="3" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1.5"/>
-            <rect x="60" y="55" width="22" height="16" rx="3" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1.5"/>
-            {/* Connection lines */}
-            <line x1="67" y1="48" x2="75" y2="43" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 2"/>
-            <line x1="67" y1="56" x2="71" y2="55" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 2"/>
-            <line x1="86" y1="51" x2="82" y2="55" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 2"/>
-            {/* Scaling arrows */}
-            <path d="M105 45 L115 45" stroke="#0ea5e9" strokeWidth="1.5" markerEnd="url(#arrowhead)"/>
-            <path d="M105 55 L115 55" stroke="#0ea5e9" strokeWidth="1.5" markerEnd="url(#arrowhead)"/>
-            <defs><marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#0ea5e9"/></marker></defs>
+          {/* Cloud with floating nodes SVG */}
+          <svg viewBox="0 0 200 140" className="h-32 w-auto mb-4">
+            {/* Cloud shape */}
+            <path
+              d="M45 95 C20 95 8 78 14 60 C2 48 14 24 38 28 C44 12 78 6 95 22 C110 12 145 16 150 40 C168 38 175 60 158 72 C170 92 150 104 132 95 Z"
+              fill="white"
+              stroke="#6384bf"
+              strokeWidth="1.8"
+              style={{ filter: "drop-shadow(0 4px 12px rgba(99,130,191,0.2))" }}
+            />
+            {/* Floating server nodes inside cloud */}
+            {[
+              { cx: 55, cy: 52, delay: 0 },
+              { cx: 90, cy: 40, delay: 0.5 },
+              { cx: 125, cy: 50, delay: 1 },
+              { cx: 72, cy: 72, delay: 1.5 },
+              { cx: 108, cy: 70, delay: 2 },
+            ].map((node, i) => (
+              <g key={i}>
+                <rect x={node.cx - 12} y={node.cy - 8} width={24} height={16} rx="3"
+                  fill="#eef2ff" stroke="#6384bf" strokeWidth="1.2">
+                  <animate attributeName="y" values={`${node.cy - 8};${node.cy - 11};${node.cy - 8}`}
+                    dur="3s" begin={`${node.delay}s`} repeatCount="indefinite" />
+                </rect>
+                <circle cx={node.cx - 5} cy={node.cy} r="1.5" fill="#6384bf" opacity="0.5">
+                  <animate attributeName="cy" values={`${node.cy};${node.cy - 3};${node.cy}`}
+                    dur="3s" begin={`${node.delay}s`} repeatCount="indefinite" />
+                </circle>
+              </g>
+            ))}
+            {/* Connection lines between nodes */}
+            {[
+              "M67 52 L78 44",
+              "M102 44 L113 50",
+              "M84 72 L96 70",
+              "M72 62 L72 64",
+              "M108 60 L108 62",
+            ].map((d, i) => (
+              <path key={i} d={d} stroke="#6384bf" strokeWidth="0.8" strokeDasharray="3 2" opacity="0.4">
+                <animate attributeName="opacity" values="0.4;0.7;0.4" dur="2s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
+              </path>
+            ))}
+            {/* Scale arrows */}
+            <g opacity="0.6">
+              <path d="M145 55 L155 55" stroke="#4f6593" strokeWidth="1.5" markerEnd="url(#cloudArrow)" />
+              <path d="M145 65 L155 65" stroke="#4f6593" strokeWidth="1.5" markerEnd="url(#cloudArrow)" />
+              <defs>
+                <marker id="cloudArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0 0 L6 3 L0 6" fill="#4f6593" />
+                </marker>
+              </defs>
+            </g>
           </svg>
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-sky-500">Cloud</span>
-          <span className="mt-1 text-[11px] text-sky-600">Elastic, global, pay-as-you-go</span>
+          <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-indigo-500">Cloud</span>
+          <span className="mt-1.5 text-[11px] text-indigo-600">Elastic, global, pay-as-you-go</span>
         </div>
 
         {/* Toggle button */}
         <button
           onClick={() => setShowCloud(!showCloud)}
-          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 border border-sky-200 px-4 py-1.5 font-mono text-[11px] font-bold text-sky-600 shadow-md backdrop-blur-sm transition-all hover:bg-sky-50 hover:shadow-lg"
+          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full bg-white/95 border border-indigo-200 px-5 py-2 font-mono text-[11px] font-bold text-indigo-600 shadow-lg backdrop-blur-sm transition-all hover:bg-indigo-50 hover:shadow-xl hover:scale-105"
         >
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3 w-3">
+            <path d={showCloud ? "M10 2l-4 6 4 6" : "M6 2l4 6-4 6"} />
+          </svg>
           {showCloud ? "Show On-Premise" : "Show Cloud"}
         </button>
       </div>
 
-      {/* Comparison table */}
+      {/* Key differences */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-200">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="1.6" className="h-4 w-4"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="#475569"/><circle cx="6" cy="18" r="1" fill="#475569"/></svg>
+        <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-5 shadow-sm">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200/80">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="1.6" className="h-4.5 w-4.5">
+                <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+                <circle cx="6" cy="6" r="1" fill="#475569"/><circle cx="6" cy="18" r="1" fill="#475569"/>
+              </svg>
             </div>
             <span className="text-sm font-bold text-slate-800">On-Premise</span>
           </div>
@@ -137,12 +193,14 @@ function OnPremVsCloud({ onComplete }) {
             ))}
           </div>
         </div>
-        <div className="rounded-xl border-2 border-sky-300/50 bg-sky-50/50 p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="1.6" className="h-4 w-4"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        <div className="rounded-2xl border-2 border-indigo-300/40 bg-indigo-50/30 p-5 shadow-sm">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-100">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4f6593" strokeWidth="1.6" className="h-4.5 w-4.5">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+              </svg>
             </div>
-            <span className="text-sm font-bold text-sky-900">Cloud</span>
+            <span className="text-sm font-bold text-indigo-900">Cloud</span>
           </div>
           <div className="space-y-2">
             {[
@@ -152,7 +210,7 @@ function OnPremVsCloud({ onComplete }) {
               { label: "Control", value: "Shared control", negative: true },
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between text-xs">
-                <span className="text-sky-600/80">{item.label}</span>
+                <span className="text-indigo-600/80">{item.label}</span>
                 <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${
                   item.negative ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
                 }`}>{item.value}</span>
@@ -160,6 +218,84 @@ function OnPremVsCloud({ onComplete }) {
             ))}
           </div>
         </div>
+      </div>
+
+      <NextButton onClick={onComplete} />
+    </div>
+  );
+}
+
+/* ─── Learn Step 1: "Why cloud?" ────────────────────────────────── */
+function WhyCloud({ onComplete }) {
+  const benefits = [
+    {
+      icon: (
+        <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6">
+          <path d="M16 6 L16 10 M8 16 L12 16 M20 16 L24 16 M16 22 L16 26" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M10 10 L13 13 M22 10 L19 13 M10 22 L13 19 M22 22 L19 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+          <circle cx="16" cy="16" r="5" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M16 11 L16 8 L20 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          <path d="M16 11 L16 8 L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        </svg>
+      ),
+      title: "Scalability",
+      subtitle: "Scale up in minutes, not months",
+      desc: "Add servers with a click. Handle 10x traffic during peak, scale back down after. No hardware purchase needed.",
+    },
+    {
+      icon: (
+        <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6">
+          <circle cx="16" cy="16" r="10" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M16 6 v20" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M20 10 h-8 a4 4 0 0 0 0 8 h8 a4 4 0 0 1 0 8 h-12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      ),
+      title: "Cost Efficiency",
+      subtitle: "Pay only for what you use",
+      desc: "No upfront hardware costs. Scale down during quiet hours to save money. Start a company for $100/month instead of $100,000.",
+    },
+    {
+      icon: (
+        <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6">
+          <path d="M16 4 L20 12 L28 12 L22 18 L24 26 L16 22 L8 26 L10 18 L4 12 L12 12 Z" stroke="currentColor" strokeWidth="1.5" fill="currentColor" opacity="0.1" strokeLinejoin="round" />
+          <circle cx="16" cy="15" r="4" stroke="currentColor" strokeWidth="1.3" />
+          <path d="M14 15 L15.5 16.5 L18 14" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+      title: "Reliability",
+      subtitle: "99.99% uptime across regions",
+      desc: "Cloud providers run data centers worldwide. If one goes down, traffic routes to another automatically. Built-in disaster recovery.",
+    },
+  ];
+
+  return (
+    <div className="space-y-6 animate-fade-in-up">
+      <h2 className="text-xl font-bold text-indigo-900">Why Cloud?</h2>
+      <p className="text-sm leading-relaxed text-slate-600">
+        Cloud computing has transformed how we build software. Here are the three main reasons companies are moving to the cloud.
+      </p>
+
+      <div className="space-y-4">
+        {benefits.map((b, i) => (
+          <div
+            key={b.title}
+            className="rounded-2xl border border-indigo-200/50 bg-white p-5 shadow-sm animate-fade-in-up transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+            style={{ animationDelay: `${i * 180}ms` }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-500">
+                {b.icon}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-sm font-bold text-indigo-900">{b.title}</span>
+                  <span className="font-mono text-[10px] text-indigo-400">{b.subtitle}</span>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-600">{b.desc}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <InsightBox title="The big three cloud providers">
@@ -171,97 +307,123 @@ function OnPremVsCloud({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 1: IaaS / PaaS / SaaS as building layers ─────── */
+/* ─── Learn Step 2: "IaaS, PaaS, SaaS" ─────────────────────────── */
 function ServiceModels({ onComplete }) {
+  const [hoveredLayer, setHoveredLayer] = useState(null);
+  const [built, setBuilt] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBuilt(true), 200);
+    return () => clearTimeout(t);
+  }, []);
+
   const layers = [
     {
       name: "SaaS",
       full: "Software as a Service",
-      floor: "Furnished apartment",
-      desc: "Ready-to-use software. No installation, no management. Just log in and use it.",
-      examples: ["Gmail", "Slack", "Salesforce"],
+      desc: "Ready-to-use applications. Just log in and use them.",
+      examples: ["Gmail", "Slack", "Salesforce", "Dropbox"],
       manages: "Provider manages everything",
-      color: "bg-violet-50 border-violet-200 text-violet-800",
-      iconColor: "text-violet-500",
-      barColor: "bg-violet-400",
+      gradient: "from-violet-500 to-purple-600",
+      bg: "bg-violet-50",
+      border: "border-violet-200",
+      text: "text-violet-800",
+      badge: "bg-violet-100 text-violet-700",
+      accent: "#8b5cf6",
     },
     {
       name: "PaaS",
       full: "Platform as a Service",
-      floor: "Building floors & utilities",
-      desc: "Deploy your code. The provider manages infrastructure and runtime.",
-      examples: ["Heroku", "App Engine", "Azure Apps"],
+      desc: "Deploy your code. Provider manages servers and runtime.",
+      examples: ["Heroku", "Vercel", "Google App Engine", "Azure App Service"],
       manages: "You manage code + data",
-      color: "bg-sky-50 border-sky-200 text-sky-800",
-      iconColor: "text-sky-500",
-      barColor: "bg-sky-400",
+      gradient: "from-indigo-500 to-blue-600",
+      bg: "bg-indigo-50",
+      border: "border-indigo-200",
+      text: "text-indigo-800",
+      badge: "bg-indigo-100 text-indigo-700",
+      accent: "#6366f1",
     },
     {
       name: "IaaS",
       full: "Infrastructure as a Service",
-      floor: "Foundation & raw materials",
-      desc: "Raw computing resources: VMs, storage, networks. You manage everything on top.",
-      examples: ["AWS EC2", "Azure VMs", "GCE"],
+      desc: "Raw computing resources: VMs, storage, networks.",
+      examples: ["AWS EC2", "Azure VMs", "Google Compute", "DigitalOcean"],
       manages: "You manage OS, apps, data",
-      color: "bg-amber-50 border-amber-200 text-amber-800",
-      iconColor: "text-amber-500",
-      barColor: "bg-amber-400",
+      gradient: "from-blue-500 to-cyan-600",
+      bg: "bg-blue-50",
+      border: "border-blue-200",
+      text: "text-blue-800",
+      badge: "bg-blue-100 text-blue-700",
+      accent: "#3b82f6",
     },
   ];
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-sky-900">Service Models: IaaS, PaaS, SaaS</h2>
+      <h2 className="text-xl font-bold text-indigo-900">IaaS, PaaS, SaaS</h2>
       <p className="text-sm leading-relaxed text-slate-600">
-        Cloud services come in three layers -- like floors of a building. The higher you go, the less you manage.
+        Cloud services come in three layers. The higher you go, the less you manage -- and the more the provider handles for you.
       </p>
 
-      {/* Building visualization */}
-      <div className="rounded-2xl border border-sky-200/70 bg-sky-50/20 p-6 shadow-sm" style={blueprintBg}>
-        {/* Building label */}
+      {/* Stacked layers diagram */}
+      <div className="rounded-2xl border border-indigo-200/50 bg-white/50 p-6 shadow-sm overflow-hidden" style={blueprintBg}>
         <div className="mb-4 flex items-center gap-2">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="1.6" className="h-4 w-4 text-sky-400"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-sky-400">The Cloud Building</span>
+          <svg viewBox="0 0 16 16" fill="none" stroke="#6384bf" strokeWidth="1.5" className="h-3.5 w-3.5">
+            <path d="M2 12 L8 15 L14 12 M2 8 L8 11 L14 8 M2 4 L8 7 L14 4 L8 1 Z" />
+          </svg>
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70">Service Model Layers</span>
         </div>
 
         <div className="space-y-3">
-          {layers.map((m, i) => (
+          {layers.map((layer, i) => (
             <div
-              key={m.name}
-              className={`rounded-xl border-2 ${m.color} p-4 animate-fade-in-up`}
-              style={{ animationDelay: `${i * 150}ms` }}
+              key={layer.name}
+              className={`rounded-xl border-2 ${layer.border} ${layer.bg}/50 p-4 cursor-pointer transition-all duration-300 ${
+                hoveredLayer === i ? "shadow-md scale-[1.01]" : "shadow-sm"
+              }`}
+              style={{
+                opacity: built ? 1 : 0,
+                transform: built ? "translateY(0)" : "translateY(20px)",
+                transition: `all 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${i * 200 + 200}ms`,
+              }}
+              onMouseEnter={() => setHoveredLayer(i)}
+              onMouseLeave={() => setHoveredLayer(null)}
             >
               <div className="flex items-start gap-3">
-                {/* Vertical bar */}
-                <div className={`${m.barColor} w-1 self-stretch rounded-full`} />
+                {/* Gradient bar */}
+                <div className={`w-1.5 self-stretch rounded-full bg-gradient-to-b ${layer.gradient}`} />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-base font-bold">{m.name}</span>
-                    <span className="text-[11px] opacity-60">{m.full}</span>
+                    <span className={`text-base font-bold ${layer.text}`}>{layer.name}</span>
+                    <span className={`rounded-md ${layer.badge} px-2 py-0.5 font-mono text-[9px] font-bold`}>{layer.full}</span>
                   </div>
-                  <p className="text-[11px] font-medium opacity-50 mb-1.5">{m.floor}</p>
-                  <p className="text-xs opacity-80 mb-2">{m.desc}</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {m.examples.map((ex) => (
-                      <span key={ex} className="rounded-md bg-white/60 border border-current/10 px-2 py-0.5 font-mono text-[10px] font-bold">
+                  <p className="text-xs text-slate-600 mb-2">{layer.desc}</p>
+
+                  {/* Examples (expand on hover) */}
+                  <div className={`flex flex-wrap gap-1.5 transition-all duration-300 ${
+                    hoveredLayer === i ? "opacity-100 max-h-20" : "opacity-70 max-h-8"
+                  }`} style={{ overflow: "hidden" }}>
+                    {layer.examples.map((ex) => (
+                      <span key={ex} className="rounded-md bg-white/80 border border-current/10 px-2 py-0.5 font-mono text-[10px] font-bold" style={{ color: layer.accent }}>
                         {ex}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-1.5 font-mono text-[10px] opacity-50">{m.manages}</p>
+                  <p className="mt-1.5 font-mono text-[10px] text-slate-400">{layer.manages}</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Arrow labels */}
-        <div className="mt-3 flex justify-between px-4">
-          <div className="flex items-center gap-1">
+        {/* Control spectrum */}
+        <div className="mt-4 flex justify-between px-4">
+          <div className="flex items-center gap-1.5">
             <svg viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="1.5" className="h-3 w-3"><path d="M8 2v12M4 10l4 4 4-4"/></svg>
             <span className="font-mono text-[9px] text-slate-400">More control</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <svg viewBox="0 0 16 16" fill="none" stroke="#94a3b8" strokeWidth="1.5" className="h-3 w-3"><path d="M8 14V2M4 6l4-4 4 4"/></svg>
             <span className="font-mono text-[9px] text-slate-400">Less to manage</span>
           </div>
@@ -273,129 +435,59 @@ function ServiceModels({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 2: Real examples mapped to layers ─────────────── */
-function RealExamples({ onComplete }) {
-  const examples = [
-    {
-      layer: "SaaS",
-      items: [
-        { name: "Google Workspace", desc: "Docs, Sheets, email", logo: "G" },
-        { name: "Microsoft 365", desc: "Word, Excel, Teams", logo: "M" },
-        { name: "Slack", desc: "Team communication", logo: "S" },
-      ],
-      color: "border-violet-200 bg-violet-50/40",
-      badge: "bg-violet-100 text-violet-700",
-    },
-    {
-      layer: "PaaS",
-      items: [
-        { name: "Heroku", desc: "Deploy apps easily", logo: "H" },
-        { name: "Vercel", desc: "Frontend hosting", logo: "V" },
-        { name: "Google App Engine", desc: "Managed app platform", logo: "A" },
-      ],
-      color: "border-sky-200 bg-sky-50/40",
-      badge: "bg-sky-100 text-sky-700",
-    },
-    {
-      layer: "IaaS",
-      items: [
-        { name: "AWS EC2", desc: "Virtual machines", logo: "E" },
-        { name: "Azure VMs", desc: "Cloud compute", logo: "A" },
-        { name: "DigitalOcean", desc: "Simple cloud VMs", logo: "D" },
-      ],
-      color: "border-amber-200 bg-amber-50/40",
-      badge: "bg-amber-100 text-amber-700",
-    },
+/* ─── Learn Step 3: InsightBox about shared responsibility ──────── */
+function SharedResponsibility({ onComplete }) {
+  const responsibilities = [
+    { layer: "SaaS", you: ["Data input", "User access"], provider: ["Application", "Runtime", "OS", "Infrastructure"], color: "violet" },
+    { layer: "PaaS", you: ["Application code", "Data"], provider: ["Runtime", "OS", "Infrastructure"], color: "indigo" },
+    { layer: "IaaS", you: ["Application", "Runtime", "OS", "Data"], provider: ["Servers", "Storage", "Networking"], color: "blue" },
   ];
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-sky-900">Real-World Examples</h2>
+      <h2 className="text-xl font-bold text-indigo-900">Shared Responsibility Model</h2>
       <p className="text-sm leading-relaxed text-slate-600">
-        Here is how popular services map to each cloud service model. You are probably already using several of these.
+        In cloud computing, security and management are <strong className="text-indigo-900">shared</strong> between you and the provider. Who manages what depends on the service model you choose.
       </p>
 
-      <div className="space-y-4">
-        {examples.map((group, gi) => (
-          <div
-            key={group.layer}
-            className={`rounded-xl border ${group.color} p-4 animate-fade-in-up`}
-            style={{ animationDelay: `${gi * 120}ms` }}
-          >
-            <span className={`inline-block rounded-md ${group.badge} px-2.5 py-0.5 font-mono text-[11px] font-bold mb-3`}>
-              {group.layer}
-            </span>
-            <div className="grid gap-2.5 sm:grid-cols-3">
-              {group.items.map((item) => (
-                <div key={item.name} className="flex items-center gap-2.5 rounded-lg bg-white/70 border border-white px-3 py-2.5 shadow-sm">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-100 font-mono text-xs font-bold text-sky-600">
-                    {item.logo}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-sky-900">{item.name}</p>
-                    <p className="text-[10px] text-slate-500">{item.desc}</p>
+      <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
+        <div className="space-y-4">
+          {responsibilities.map((r, i) => (
+            <div key={r.layer} className="rounded-xl border border-indigo-100/80 bg-white p-4 animate-fade-in-up" style={{ animationDelay: `${i * 150}ms` }}>
+              <span className={`inline-block rounded-md bg-${r.color}-100 text-${r.color}-700 px-2.5 py-0.5 font-mono text-[11px] font-bold mb-3`}>
+                {r.layer}
+              </span>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-indigo-400 mb-1.5">You manage</p>
+                  <div className="space-y-1">
+                    {r.you.map((item) => (
+                      <div key={item} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                        {item}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <NextButton onClick={onComplete} />
-    </div>
-  );
-}
-
-/* ─── Learn Step 3: Cloud advantages InsightBox ────────────────── */
-function CloudAdvantages({ onComplete }) {
-  const benefits = [
-    {
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-5 w-5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-      title: "Cost Efficiency",
-      desc: "Pay only for what you use. No upfront hardware costs. Scale down when traffic is low to save money.",
-    },
-    {
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-5 w-5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
-      title: "Elasticity",
-      desc: "Scale up instantly during peak times. Scale down when demand drops. Automatic.",
-    },
-    {
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg>,
-      title: "Global Reach",
-      desc: "Deploy in data centers worldwide. Users everywhere get fast response times.",
-    },
-    {
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-5 w-5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-      title: "Security",
-      desc: "Cloud providers invest billions in security: encryption, firewalls, DDoS protection, compliance.",
-    },
-  ];
-
-  return (
-    <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-sky-900">Why Companies Move to the Cloud</h2>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        {benefits.map((b, i) => (
-          <div
-            key={b.title}
-            className="rounded-xl border border-sky-200/60 bg-white p-4 shadow-sm animate-fade-in-up"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
-            <div className="flex items-center gap-2.5 mb-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-500">
-                {b.icon}
+                <div>
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-emerald-500 mb-1.5">Provider manages</p>
+                  <div className="space-y-1">
+                    {r.provider.map((item) => (
+                      <div key={item} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <span className="text-sm font-bold text-sky-900">{b.title}</span>
             </div>
-            <p className="text-xs leading-relaxed text-slate-600">{b.desc}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <InsightBox title="For startups especially">
-        Cloud computing is why startups can launch with minimal capital. Instead of spending $100,000 on servers, you can start with $100/month on AWS and scale as your user base grows.
+      <InsightBox title="Why this matters">
+        In a <strong>data breach</strong>, who is responsible depends on the service model. With IaaS, if you misconfigure your firewall, that is your fault. With SaaS, the provider is responsible for securing the application. Understanding this model is essential for cloud security.
       </InsightBox>
 
       <NextButton onClick={onComplete} label="Let's practice" />
@@ -406,24 +498,29 @@ function CloudAdvantages({ onComplete }) {
 /* ─── Main Lesson Component ───────────────────────────────────── */
 export default function Lesson1({ currentPhase, currentStep, onComplete }) {
   if (currentPhase === "learn") {
-    if (currentStep === 0) return <OnPremVsCloud onComplete={onComplete} />;
-    if (currentStep === 1) return <ServiceModels onComplete={onComplete} />;
-    if (currentStep === 2) return <RealExamples onComplete={onComplete} />;
-    if (currentStep === 3) return <CloudAdvantages onComplete={onComplete} />;
+    if (currentStep === 0) return <WhatIsCloud onComplete={onComplete} />;
+    if (currentStep === 1) return <WhyCloud onComplete={onComplete} />;
+    if (currentStep === 2) return <ServiceModels onComplete={onComplete} />;
+    if (currentStep === 3) return <SharedResponsibility onComplete={onComplete} />;
   }
 
   if (currentPhase === "apply") {
     if (currentStep === 0)
       return (
         <div className="space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-sky-900">Service Model Check</h2>
+          <h2 className="text-xl font-bold text-indigo-900">Service Model Check</h2>
           <Quiz
             data={{
-              question: "A company wants to deploy their web app without managing servers or operating systems. Which service model should they use?",
-              options: ["IaaS", "PaaS", "SaaS", "On-Premise"],
+              question: "Which model gives you the most control over the infrastructure?",
+              options: [
+                "SaaS -- you control the entire stack",
+                "IaaS -- you manage OS, runtime, and applications",
+                "PaaS -- you manage servers but not code",
+                "All models give equal control",
+              ],
               correctIndex: 1,
               explanation:
-                "PaaS (Platform as a Service) is the right choice. The company can deploy their code while the provider manages servers, OS, and runtime. IaaS would require managing the OS, and SaaS is for ready-to-use applications.",
+                "IaaS (Infrastructure as a Service) gives you the most control. You manage the operating system, runtime, applications, and data. The provider only manages the physical hardware, storage, and networking. SaaS gives the least control, and PaaS sits in between.",
             }}
             onComplete={onComplete}
           />
@@ -432,9 +529,9 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
     if (currentStep === 1)
       return (
         <div className="space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-sky-900">Categorize the Services</h2>
+          <h2 className="text-xl font-bold text-indigo-900">Categorize the Services</h2>
           <p className="text-sm text-slate-600">
-            Drag each service to its correct category.
+            Drag each service to its correct cloud model category.
           </p>
           <DragDrop
             items={[
@@ -465,25 +562,25 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
     if (currentStep === 0)
       return (
         <div className="space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-sky-900">Scenario Challenge</h2>
-          <div className="rounded-xl border border-sky-200/60 bg-sky-50/30 p-5 shadow-sm" style={blueprintBg}>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-sky-400 mb-2">Business case</p>
+          <h2 className="text-xl font-bold text-indigo-900">Scenario Challenge</h2>
+          <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Business case</p>
             <p className="text-sm text-slate-600 leading-relaxed">
-              A Polish university wants to migrate their student portal to the cloud. They have a development team that builds custom software, but they do not want to manage servers. They expect traffic spikes during exam registration (10x normal traffic for 3 days).
+              A startup needs to deploy a web application quickly. They have developers who write code, but they do not want to manage servers, operating systems, or middleware. They expect unpredictable traffic patterns.
             </p>
           </div>
           <Quiz
             data={{
-              question: "Which cloud approach would be MOST suitable for this university?",
+              question: "Which cloud model is most suitable for this startup?",
               options: [
-                "IaaS with manual scaling -- full control over everything",
-                "PaaS with auto-scaling -- deploy code, provider handles infrastructure",
-                "SaaS -- just buy an existing student portal product",
-                "Stay on-premise -- buy extra servers for exam season",
+                "IaaS -- full control, manage everything themselves",
+                "PaaS -- deploy code without managing servers, auto-scale included",
+                "SaaS -- buy an existing product off the shelf",
+                "On-premise -- buy their own servers for maximum reliability",
               ],
               correctIndex: 1,
               explanation:
-                "PaaS with auto-scaling is ideal: the development team can deploy their custom app without managing servers, and auto-scaling handles the exam registration traffic spikes automatically. IaaS would require too much ops work, SaaS would not be customizable enough, and on-premise would waste resources for 362 days of the year.",
+                "PaaS is ideal: developers can deploy their code without managing servers or OS, and the platform handles auto-scaling for unpredictable traffic. IaaS would require too much ops work, SaaS would not be custom enough, and on-premise would be expensive and slow to scale.",
             }}
             onComplete={onComplete}
           />
