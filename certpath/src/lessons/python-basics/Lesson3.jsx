@@ -4,40 +4,49 @@ import InsightBox from "../../components/widgets/InsightBox";
 import VariableVisualizer from "../../components/lesson-widgets/VariableVisualizer";
 import CodeBlockPuzzle from "../../components/lesson-widgets/CodeBlockPuzzle";
 
-/* ─── Shared code display helpers ───────────────────────────────── */
+/* ─── Catppuccin palette ─────────────────────────────────────────── */
+const DARK = "#1e1e2e";
+const SURFACE = "#181825";
+const GUTTER = "#313244";
+const SUBTEXT = "#585b70";
+
+/* ─── Shared syntax helpers ──────────────────────────────────────── */
 function CodeSnippet({ children, filename = "python", className = "" }) {
   return (
-    <div className={`overflow-hidden rounded-xl border border-stone-700 shadow-lg ${className}`}>
-      <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-        <span className="ml-2 font-mono text-[10px] text-stone-600">{filename}</span>
+    <div className={`overflow-hidden rounded-xl shadow-2xl ${className}`} style={{ border: `1px solid ${GUTTER}` }}>
+      <div className="flex items-center gap-1.5 px-4 py-2" style={{ background: SURFACE }}>
+        <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
+        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
-      <div className="bg-[#1c1917] p-4 font-mono text-sm leading-relaxed">{children}</div>
+      <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>
   );
 }
 
-function CodeLine({ children }) {
-  return <p className="font-mono text-sm">{children}</p>;
-}
-
-function Kw({ children }) { return <span style={{ color: "#60a5fa" }}>{children}</span>; }
-function Str({ children }) { return <span style={{ color: "#4ade80" }}>{children}</span>; }
-function Num({ children }) { return <span style={{ color: "#fb923c" }}>{children}</span>; }
-function Var({ children }) { return <span className="text-stone-300">{children}</span>; }
-function Op({ children }) { return <span className="text-stone-500">{children}</span>; }
-function Cmt({ children }) { return <span style={{ color: "#78716c" }}>{children}</span>; }
+function Ln({ children }) { return <p className="font-mono text-sm">{children}</p>; }
+function Kw({ children }) { return <span style={{ color: "#89b4fa", fontWeight: 600 }}>{children}</span>; }
+function Str({ children }) { return <span style={{ color: "#a6e3a1" }}>{children}</span>; }
+function Num({ children }) { return <span style={{ color: "#fab387" }}>{children}</span>; }
+function V({ children }) { return <span style={{ color: "#cdd6f4" }}>{children}</span>; }
+function Op({ children }) { return <span style={{ color: "#f5c2e7" }}>{children}</span>; }
+function Cmt({ children }) { return <span style={{ color: "#585b70", fontStyle: "italic" }}>{children}</span>; }
+function Punc({ children }) { return <span style={{ color: "#585b70" }}>{children}</span>; }
 
 /* ─── Learn Step 0: What is a list? ──────────────────────────────── */
 function WhatIsList({ onComplete }) {
   const [visibleCount, setVisibleCount] = useState(0);
-  const items = ["apple", "banana", "cherry", "date"];
+  const items = [
+    { val: '"apple"', color: "#a6e3a1" },
+    { val: '"banana"', color: "#f9e2af" },
+    { val: '"cherry"', color: "#f38ba8" },
+    { val: '"date"', color: "#fab387" },
+  ];
 
   useEffect(() => {
     items.forEach((_, i) => {
-      setTimeout(() => setVisibleCount(i + 1), 300 + i * 250);
+      setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), 400 + i * 300);
     });
   }, []);
 
@@ -45,42 +54,84 @@ function WhatIsList({ onComplete }) {
     <div className="space-y-6 animate-fade-in-up">
       <h2 className="text-xl font-bold text-ink">What is a List?</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        A <strong className="text-ink">list</strong> is an ordered collection of values. Think of it as a row of labeled boxes -- each box has an <strong className="text-ink">index</strong> (position number) starting from 0.
+        A <strong className="text-ink">list</strong> is an ordered collection of values. Think of it as a row of connected train cars -- each car holds a value and has a number (index) starting from 0.
       </p>
 
-      {/* Animated list visual */}
-      <div className="rounded-xl border border-stone-700 bg-[#1c1917] p-6">
-        <p className="mb-4 font-mono text-[10px] font-bold uppercase tracking-widest text-stone-600">
-          fruits = ["apple", "banana", "cherry", "date"]
-        </p>
-        <div className="flex gap-2">
+      {/* Animated train car visual */}
+      <div className="rounded-xl p-6 overflow-hidden" style={{ background: DARK, border: `1px solid ${GUTTER}` }}>
+        {/* Rail line */}
+        <div className="relative">
+          <div className="absolute top-[52px] left-0 right-0 h-[2px]" style={{ background: GUTTER }} />
+
+          <div className="flex gap-0 relative">
+            {items.map((item, i) => (
+              <div
+                key={i}
+                className="flex-1 transition-all duration-600"
+                style={{
+                  opacity: i < visibleCount ? 1 : 0,
+                  transform: i < visibleCount
+                    ? "translateX(0) scale(1)"
+                    : "translateX(-30px) scale(0.85)",
+                  transitionDelay: `${i * 50}ms`,
+                }}
+              >
+                {/* Train car */}
+                <div
+                  className="mx-1 rounded-t-xl rounded-b-md overflow-hidden"
+                  style={{ border: `2px solid ${item.color}44` }}
+                >
+                  {/* Value */}
+                  <div
+                    className="px-2 py-3 text-center font-mono text-sm font-bold"
+                    style={{ background: `${item.color}10`, color: item.color }}
+                  >
+                    {item.val}
+                  </div>
+
+                  {/* Connector bar */}
+                  <div className="h-[3px]" style={{ background: `${item.color}40` }} />
+
+                  {/* Index */}
+                  <div
+                    className="py-1 text-center font-mono text-[10px] font-bold"
+                    style={{ background: SURFACE, color: SUBTEXT }}
+                  >
+                    [{i}]
+                  </div>
+                </div>
+
+                {/* Wheel dots */}
+                <div className="flex justify-center gap-3 mt-1">
+                  <div className="w-2 h-2 rounded-full" style={{ background: SUBTEXT }} />
+                  <div className="w-2 h-2 rounded-full" style={{ background: SUBTEXT }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Label */}
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: SUBTEXT }}>
+            fruits
+          </span>
+          <span className="font-mono text-xs" style={{ color: "#89b4fa" }}>= [</span>
           {items.map((item, i) => (
-            <div
-              key={item}
-              className="flex-1 transition-all duration-500"
-              style={{
-                opacity: i < visibleCount ? 1 : 0,
-                transform: i < visibleCount ? "translateY(0) scale(1)" : "translateY(-20px) scale(0.8)",
-              }}
-            >
-              {/* Value cell */}
-              <div className="rounded-t-lg bg-blue-500/15 border-2 border-blue-400/40 px-3 py-3 text-center border-b-0">
-                <span className="font-mono text-sm font-bold text-blue-300">{`"${item}"`}</span>
-              </div>
-              {/* Index label */}
-              <div className="rounded-b-lg bg-stone-800 border-2 border-stone-700 border-t-0 px-3 py-1 text-center">
-                <span className="font-mono text-[10px] font-bold text-stone-500">index {i}</span>
-              </div>
-            </div>
+            <span key={i}>
+              <span className="font-mono text-xs" style={{ color: item.color }}>{item.val}</span>
+              {i < items.length - 1 && <span style={{ color: SUBTEXT }}>, </span>}
+            </span>
           ))}
+          <span className="font-mono text-xs" style={{ color: "#89b4fa" }}>]</span>
         </div>
       </div>
 
       <CodeSnippet filename="lists.py">
         <div className="space-y-1">
-          <CodeLine><Var>fruits</Var> <Op>=</Op> <span className="text-stone-400">[</span><Str>"apple"</Str><span className="text-stone-400">,</span> <Str>"banana"</Str><span className="text-stone-400">,</span> <Str>"cherry"</Str><span className="text-stone-400">]</span></CodeLine>
-          <CodeLine><Kw>print</Kw><span className="text-stone-400">(</span><Var>fruits</Var><span className="text-stone-400">[</span><Num>0</Num><span className="text-stone-400">])</span>  <Cmt># "apple"</Cmt></CodeLine>
-          <CodeLine><Kw>print</Kw><span className="text-stone-400">(</span><Kw>len</Kw><span className="text-stone-400">(</span><Var>fruits</Var><span className="text-stone-400">))</span>  <Cmt># 3</Cmt></CodeLine>
+          <Ln><V>fruits</V> <Op>=</Op> <Punc>[</Punc><Str>"apple"</Str><Punc>,</Punc> <Str>"banana"</Str><Punc>,</Punc> <Str>"cherry"</Str><Punc>,</Punc> <Str>"date"</Str><Punc>]</Punc></Ln>
+          <Ln><Kw>print</Kw><Punc>(</Punc><V>fruits</V><Punc>[</Punc><Num>0</Num><Punc>])</Punc>  <Cmt># "apple"</Cmt></Ln>
+          <Ln><Kw>print</Kw><Punc>(</Punc><Kw>len</Kw><Punc>(</Punc><V>fruits</V><Punc>))</Punc>  <Cmt># 4</Cmt></Ln>
         </div>
       </CodeSnippet>
 
@@ -98,83 +149,101 @@ function WhatIsList({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 1: For loops with animated cursor ──────────────── */
-function ForLoops({ onComplete }) {
-  const numbers = [1, 2, 3, 4];
-  const [cursorIndex, setCursorIndex] = useState(-1);
-  const [outputs, setOutputs] = useState([]);
+/* ─── Learn Step 1: Accessing elements with animated pointer ───── */
+function AccessingElements({ onComplete }) {
+  const [pointerIdx, setPointerIdx] = useState(-1);
+  const items = ["apple", "banana", "cherry", "date"];
+  const colors = ["#a6e3a1", "#f9e2af", "#f38ba8", "#fab387"];
+
+  const examples = [
+    { code: "fruits[0]", idx: 0, result: '"apple"' },
+    { code: "fruits[2]", idx: 2, result: '"cherry"' },
+    { code: "fruits[-1]", idx: 3, result: '"date"' },
+  ];
+
+  const [exampleIdx, setExampleIdx] = useState(-1);
 
   useEffect(() => {
-    const timers = numbers.map((n, i) =>
+    examples.forEach((ex, i) => {
       setTimeout(() => {
-        setCursorIndex(i);
-        setOutputs((prev) => [...prev, n * 2]);
-      }, 800 + i * 800)
-    );
-    return () => timers.forEach(clearTimeout);
+        setExampleIdx(i);
+        setPointerIdx(ex.idx);
+      }, 800 + i * 1500);
+    });
   }, []);
 
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">For Loops: Repeating Actions</h2>
+      <h2 className="text-xl font-bold text-ink">Accessing Elements</h2>
       <p className="text-sm leading-relaxed text-graphite">
-        A <strong className="text-ink">for loop</strong> lets you do something with each item in a list. The loop variable takes on each value one at a time, like a cursor moving through the list.
+        Use square brackets with an index to access a specific element. Python also supports <strong className="text-ink">negative indexing</strong> -- <code className="font-mono text-xs">-1</code> gets the last item.
       </p>
 
-      {/* Animated cursor through array */}
-      <div className="rounded-xl border border-stone-700 bg-[#1c1917] p-6">
+      {/* Animated pointer visual */}
+      <div className="rounded-xl p-6" style={{ background: DARK, border: `1px solid ${GUTTER}` }}>
         <div className="flex gap-2 mb-4">
-          {numbers.map((n, i) => (
-            <div key={n} className="flex-1 text-center">
-              <div className={[
-                "rounded-lg border-2 px-3 py-3 font-mono text-sm font-bold transition-all duration-400",
-                i === cursorIndex
-                  ? "border-amber-500 bg-amber-500/20 text-amber-300 scale-110 shadow-lg shadow-amber-500/10"
-                  : i < cursorIndex
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400/60"
-                    : "border-stone-700 bg-stone-800/50 text-stone-500",
-              ].join(" ")}>
-                {n}
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className="flex-1 text-center transition-all duration-400"
+              style={{
+                transform: i === pointerIdx ? "scale(1.08) translateY(-4px)" : "scale(1)",
+              }}
+            >
+              <div
+                className="rounded-lg px-2 py-3 font-mono text-sm font-bold transition-all duration-400"
+                style={{
+                  background: i === pointerIdx ? `${colors[i]}18` : `${colors[i]}08`,
+                  border: `2px solid ${i === pointerIdx ? colors[i] : `${colors[i]}33`}`,
+                  color: colors[i],
+                  boxShadow: i === pointerIdx ? `0 0 16px ${colors[i]}25` : "none",
+                }}
+              >
+                "{item}"
               </div>
-              {/* Cursor pointer */}
-              {i === cursorIndex && (
-                <div className="mt-1.5 flex justify-center">
-                  <svg width="12" height="10" viewBox="0 0 12 10" className="text-amber-500" style={{ animation: "counter 0.3s ease-out" }}>
-                    <polygon points="6,0 12,10 0,10" fill="currentColor" />
-                  </svg>
-                </div>
-              )}
+              <div className="mt-1 font-mono text-[10px]" style={{ color: SUBTEXT }}>
+                [{i}]
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Current value display */}
-        <div className="flex items-center gap-3 mb-3">
-          <span className={`rounded-lg px-3 py-1 font-mono text-xs font-bold transition-all duration-300 ${
-            cursorIndex >= 0 ? "bg-amber-500/20 text-amber-400" : "bg-stone-800 text-stone-600"
-          }`}>
-            n = {cursorIndex >= 0 ? numbers[cursorIndex] : "?"}
-          </span>
-          <svg width="20" height="12"><path d="M0 6 L20 6" stroke="#57534e" strokeWidth="1.5" /><polygon points="16,3 20,6 16,9" fill="#57534e" /></svg>
-          <span className="font-mono text-xs text-stone-500">cursor moves through each item</span>
-        </div>
+        {/* Pointer arrow */}
+        {pointerIdx >= 0 && (
+          <div
+            className="flex justify-center transition-all duration-400"
+            style={{
+              marginLeft: `${(pointerIdx / items.length) * 100}%`,
+              width: `${100 / items.length}%`,
+            }}
+          >
+            <svg width="16" height="12" viewBox="0 0 16 12" style={{ color: colors[pointerIdx], animation: "counter 0.3s ease-out" }}>
+              <polygon points="8,0 16,12 0,12" fill="currentColor" />
+            </svg>
+          </div>
+        )}
 
-        {/* Output so far */}
-        {outputs.length > 0 && (
-          <div className="rounded-lg bg-emerald-950/30 border border-emerald-800/40 px-3 py-2">
-            <span className="font-mono text-[10px] text-emerald-500/60 mr-2">Output:</span>
-            <span className="font-mono text-xs text-emerald-400">
-              {outputs.join("  ")}
+        {/* Current access display */}
+        {exampleIdx >= 0 && (
+          <div
+            className="mt-3 flex items-center justify-center gap-3 rounded-lg px-4 py-2 transition-all duration-300"
+            style={{ background: SURFACE }}
+          >
+            <span className="font-mono text-sm" style={{ color: "#89b4fa" }}>{examples[exampleIdx].code}</span>
+            <svg width="20" height="10"><line x1="0" y1="5" x2="14" y2="5" stroke={SUBTEXT} strokeWidth="1.5" /><polygon points="12,2 18,5 12,8" fill={SUBTEXT} /></svg>
+            <span className="font-mono text-sm font-bold" style={{ color: colors[examples[exampleIdx].idx] }}>
+              {examples[exampleIdx].result}
             </span>
           </div>
         )}
       </div>
 
-      <CodeSnippet filename="loops.py">
+      <CodeSnippet>
         <div className="space-y-1">
-          <CodeLine><Var>numbers</Var> <Op>=</Op> <span className="text-stone-400">[</span><Num>1</Num><span className="text-stone-400">,</span> <Num>2</Num><span className="text-stone-400">,</span> <Num>3</Num><span className="text-stone-400">,</span> <Num>4</Num><span className="text-stone-400">]</span></CodeLine>
-          <CodeLine><Kw>for </Kw><Var>n</Var><Kw> in </Kw><Var>numbers</Var><span className="text-stone-400">:</span></CodeLine>
-          <CodeLine>    <Kw>print</Kw><span className="text-stone-400">(</span><Var>n</Var> <Op>*</Op> <Num>2</Num><span className="text-stone-400">)</span></CodeLine>
+          <Ln><V>fruits</V> <Op>=</Op> <Punc>[</Punc><Str>"apple"</Str><Punc>,</Punc> <Str>"banana"</Str><Punc>,</Punc> <Str>"cherry"</Str><Punc>,</Punc> <Str>"date"</Str><Punc>]</Punc></Ln>
+          <Ln><Kw>print</Kw><Punc>(</Punc><V>fruits</V><Punc>[</Punc><Num>0</Num><Punc>])</Punc>   <Cmt># "apple"</Cmt></Ln>
+          <Ln><Kw>print</Kw><Punc>(</Punc><V>fruits</V><Punc>[</Punc><Num>2</Num><Punc>])</Punc>   <Cmt># "cherry"</Cmt></Ln>
+          <Ln><Kw>print</Kw><Punc>(</Punc><V>fruits</V><Punc>[</Punc><Num>-1</Num><Punc>])</Punc>  <Cmt># "date" (last item)</Cmt></Ln>
         </div>
       </CodeSnippet>
 
@@ -188,13 +257,13 @@ function ForLoops({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 2: Variable Visualizer with loop ────────────────── */
-function LoopVisualizer({ onComplete }) {
+/* ─── Learn Step 2: For loops with VariableVisualizer ─────────────── */
+function ForLoopVisualizer({ onComplete }) {
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-ink">Trace a Loop</h2>
-      <p className="text-sm text-graphite">
-        Step through this loop line by line. Watch how the <code className="font-mono text-xs font-bold text-amber-600">total</code> variable changes with each iteration.
+      <h2 className="text-xl font-bold text-ink">For Loops: Repeating Actions</h2>
+      <p className="text-sm leading-relaxed text-graphite">
+        A <strong className="text-ink">for loop</strong> lets you do something with each item in a list. Watch how the loop variable takes on each value one at a time.
       </p>
       <VariableVisualizer
         data={{
@@ -221,14 +290,22 @@ function LoopVisualizer({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 3: range() and list operations ──────────────────── */
+/* ─── Learn Step 3: range() and patterns ─────────────────────────── */
 function RangeAndOps({ onComplete }) {
+  const [visibleCount, setVisibleCount] = useState(0);
+
   const operations = [
-    { method: ".append(x)", desc: "Add item x to the end", example: 'fruits.append("grape")' },
-    { method: ".remove(x)", desc: "Remove first occurrence of x", example: 'fruits.remove("banana")' },
-    { method: "len(list)", desc: "Get the number of items", example: "len(fruits) -> 3" },
-    { method: "list[i]", desc: "Access item at index i", example: 'fruits[0] -> "apple"' },
+    { method: ".append(x)", desc: "Add item to the end", example: 'fruits.append("grape")', color: "#a6e3a1" },
+    { method: ".remove(x)", desc: "Remove first match", example: 'fruits.remove("banana")', color: "#f38ba8" },
+    { method: "len(list)", desc: "Count items", example: "len(fruits) -> 3", color: "#89b4fa" },
+    { method: "list[i]", desc: "Access by index", example: 'fruits[0] -> "apple"', color: "#fab387" },
   ];
+
+  useEffect(() => {
+    operations.forEach((_, i) => {
+      setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), 200 + i * 120);
+    });
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -239,27 +316,64 @@ function RangeAndOps({ onComplete }) {
 
       <CodeSnippet filename="range_demo.py">
         <div className="space-y-1">
-          <CodeLine><Kw>for </Kw><Var>i</Var><Kw> in </Kw><Kw>range</Kw><span className="text-stone-400">(</span><Num>5</Num><span className="text-stone-400">):</span></CodeLine>
-          <CodeLine>    <Kw>print</Kw><span className="text-stone-400">(</span><Var>i</Var><span className="text-stone-400">)</span>  <Cmt># prints 0, 1, 2, 3, 4</Cmt></CodeLine>
+          <Ln><Kw>for </Kw><V>i</V><Kw> in </Kw><Kw>range</Kw><Punc>(</Punc><Num>5</Num><Punc>):</Punc></Ln>
+          <Ln>    <Kw>print</Kw><Punc>(</Punc><V>i</V><Punc>)</Punc>  <Cmt># prints 0, 1, 2, 3, 4</Cmt></Ln>
         </div>
       </CodeSnippet>
+
+      {/* range() visual */}
+      <div className="rounded-xl p-4" style={{ background: DARK, border: `1px solid ${GUTTER}` }}>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: SUBTEXT }}>
+          range(5) produces:
+        </p>
+        <div className="flex gap-2">
+          {[0, 1, 2, 3, 4].map((n) => (
+            <div
+              key={n}
+              className="flex-1 rounded-lg py-2 text-center font-mono text-sm font-bold transition-all duration-500"
+              style={{
+                background: "rgba(137, 180, 250, 0.08)",
+                border: "1px solid rgba(137, 180, 250, 0.25)",
+                color: "#89b4fa",
+                animationDelay: `${n * 100}ms`,
+              }}
+            >
+              {n}
+            </div>
+          ))}
+        </div>
+      </div>
 
       <p className="text-sm text-ink font-semibold">Common list operations:</p>
       <div className="space-y-2">
         {operations.map((op, i) => (
           <div
             key={op.method}
-            className="flex items-center gap-3 rounded-xl border border-stone-700 bg-[#1c1917]/80 px-4 py-3 shadow-sm animate-fade-in-up"
-            style={{ animationDelay: `${i * 80}ms` }}
+            className="flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-500"
+            style={{
+              background: `${op.color}06`,
+              border: `1px solid ${op.color}22`,
+              opacity: i < visibleCount ? 1 : 0,
+              transform: i < visibleCount ? "translateX(0)" : "translateX(-12px)",
+            }}
           >
-            <code className="font-mono text-xs font-bold text-amber-400 whitespace-nowrap min-w-[100px]">{op.method}</code>
-            <span className="text-xs text-stone-400 flex-1">{op.desc}</span>
-            <div className="rounded bg-stone-800 px-2 py-0.5">
-              <code className="font-mono text-[10px] text-stone-500 whitespace-nowrap">{op.example}</code>
+            <code
+              className="font-mono text-xs font-bold whitespace-nowrap min-w-[100px]"
+              style={{ color: op.color }}
+            >
+              {op.method}
+            </code>
+            <span className="text-xs text-graphite flex-1">{op.desc}</span>
+            <div className="rounded px-2 py-0.5" style={{ background: DARK }}>
+              <code className="font-mono text-[10px]" style={{ color: SUBTEXT }}>{op.example}</code>
             </div>
           </div>
         ))}
       </div>
+
+      <InsightBox title="range() is lazy">
+        <code className="font-mono text-xs">range()</code> does not create a list in memory -- it generates numbers one at a time. This makes it efficient even for <code className="font-mono text-xs">range(1000000)</code>.
+      </InsightBox>
 
       <button
         onClick={onComplete}
@@ -275,8 +389,8 @@ function RangeAndOps({ onComplete }) {
 export default function Lesson3({ currentPhase, currentStep, onComplete }) {
   if (currentPhase === "learn") {
     if (currentStep === 0) return <WhatIsList onComplete={onComplete} />;
-    if (currentStep === 1) return <ForLoops onComplete={onComplete} />;
-    if (currentStep === 2) return <LoopVisualizer onComplete={onComplete} />;
+    if (currentStep === 1) return <AccessingElements onComplete={onComplete} />;
+    if (currentStep === 2) return <ForLoopVisualizer onComplete={onComplete} />;
     if (currentStep === 3) return <RangeAndOps onComplete={onComplete} />;
   }
 
@@ -284,23 +398,20 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
     if (currentStep === 0)
       return (
         <div className="space-y-6 animate-fade-in-up">
-          <h2 className="text-xl font-bold text-ink">Loop Output</h2>
+          <h2 className="text-xl font-bold text-ink">List Access</h2>
           <CodeSnippet filename="quiz.py" className="mb-2">
             <div className="space-y-1">
-              <CodeLine><Var>nums</Var> <Op>=</Op> <span className="text-stone-400">[</span><Num>3</Num><span className="text-stone-400">,</span> <Num>7</Num><span className="text-stone-400">,</span> <Num>2</Num><span className="text-stone-400">]</span></CodeLine>
-              <CodeLine><Var>result</Var> <Op>=</Op> <Num>0</Num></CodeLine>
-              <CodeLine><Kw>for </Kw><Var>n</Var><Kw> in </Kw><Var>nums</Var><span className="text-stone-400">:</span></CodeLine>
-              <CodeLine>    <Var>result</Var> <Op>=</Op> <Var>result</Var> <Op>+</Op> <Var>n</Var></CodeLine>
-              <CodeLine><Kw>print</Kw><span className="text-stone-400">(</span><Var>result</Var><span className="text-stone-400">)</span></CodeLine>
+              <Ln><V>fruits</V> <Op>=</Op> <Punc>[</Punc><Str>"apple"</Str><Punc>,</Punc> <Str>"banana"</Str><Punc>,</Punc> <Str>"cherry"</Str><Punc>]</Punc></Ln>
+              <Ln><Kw>print</Kw><Punc>(</Punc><V>fruits</V><Punc>[</Punc><Num>1</Num><Punc>])</Punc></Ln>
             </div>
           </CodeSnippet>
           <Quiz
             data={{
-              question: "What does this code print?",
-              options: ["372", "12", "7", "0"],
+              question: "What does fruits[1] return?",
+              options: ['"apple"', '"banana"', '"cherry"', "IndexError"],
               correctIndex: 1,
               explanation:
-                "The loop adds each number to result: 0+3=3, 3+7=10, 10+2=12. The final value of result is 12.",
+                "List indexing starts at 0. So fruits[0] is \"apple\", fruits[1] is \"banana\", and fruits[2] is \"cherry\".",
             }}
             onComplete={onComplete}
           />

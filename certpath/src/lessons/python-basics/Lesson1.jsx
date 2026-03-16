@@ -3,59 +3,56 @@ import Quiz from "../../components/widgets/Quiz";
 import InsightBox from "../../components/widgets/InsightBox";
 import VariableVisualizer from "../../components/lesson-widgets/VariableVisualizer";
 
-/* ─── Shared syntax highlighter ─────────────────────────────────── */
-function CodeSnippet({ children, className = "" }) {
+/* ─── Catppuccin palette ─────────────────────────────────────────── */
+const DARK = "#1e1e2e";
+const SURFACE = "#181825";
+const MANTLE = "#11111b";
+const GUTTER = "#313244";
+const SUBTEXT = "#585b70";
+
+/* ─── Shared syntax helpers ──────────────────────────────────────── */
+function CodeSnippet({ children, filename = "python", className = "" }) {
   return (
-    <div className={`overflow-hidden rounded-xl border border-stone-700 shadow-lg ${className}`}>
-      <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-        <span className="ml-2 font-mono text-[10px] text-stone-600">python</span>
+    <div className={`overflow-hidden rounded-xl shadow-2xl ${className}`} style={{ border: `1px solid ${GUTTER}` }}>
+      <div className="flex items-center gap-1.5 px-4 py-2" style={{ background: SURFACE }}>
+        <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
+        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
-      <div className="bg-[#1c1917] p-4 font-mono text-sm leading-relaxed">{children}</div>
+      <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>
   );
 }
 
-function CodeLine({ children }) {
-  return <p className="font-mono text-sm">{children}</p>;
-}
-
-function Kw({ children }) { return <span style={{ color: "#60a5fa" }}>{children}</span>; }
-function Str({ children }) { return <span style={{ color: "#4ade80" }}>{children}</span>; }
-function Num({ children }) { return <span style={{ color: "#fb923c" }}>{children}</span>; }
-function Var({ children }) { return <span className="text-stone-300">{children}</span>; }
-function Op({ children }) { return <span className="text-stone-500">{children}</span>; }
-function Cmt({ children }) { return <span style={{ color: "#78716c" }}>{children}</span>; }
+function Ln({ children }) { return <p className="font-mono text-sm">{children}</p>; }
+function Kw({ children }) { return <span style={{ color: "#89b4fa", fontWeight: 600 }}>{children}</span>; }
+function Str({ children }) { return <span style={{ color: "#a6e3a1" }}>{children}</span>; }
+function Num({ children }) { return <span style={{ color: "#fab387" }}>{children}</span>; }
+function V({ children }) { return <span style={{ color: "#cdd6f4" }}>{children}</span>; }
+function Op({ children }) { return <span style={{ color: "#f5c2e7" }}>{children}</span>; }
+function Cmt({ children }) { return <span style={{ color: "#585b70", fontStyle: "italic" }}>{children}</span>; }
 
 /* ─── Learn Step 0: What is a variable? ──────────────────────────── */
 function WhatIsVariable({ onComplete }) {
-  const [dropped, setDropped] = useState([false, false, false]);
-  const boxes = [
-    { name: "name", value: '"Alice"', type: "str", delay: 400 },
-    { name: "age", value: "21", type: "int", delay: 700 },
-    { name: "gpa", value: "3.7", type: "float", delay: 1000 },
-  ];
+  const [stage, setStage] = useState(0);
+  const [typedChars, setTypedChars] = useState(0);
+  const label = "age";
 
-  // Staggered drop animation
   useEffect(() => {
-    boxes.forEach((box, i) => {
-      setTimeout(() => {
-        setDropped((prev) => {
-          const next = [...prev];
-          next[i] = true;
-          return next;
-        });
-      }, box.delay);
-    });
+    // Stage 0: box appears, stage 1: value drops, stage 2: label types
+    const t1 = setTimeout(() => setStage(1), 600);
+    const t2 = setTimeout(() => setStage(2), 1400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  const typeColors = {
-    str: { bg: "bg-blue-500/15", border: "border-blue-400/50", text: "text-blue-300", pill: "bg-blue-500/20 text-blue-400" },
-    int: { bg: "bg-emerald-500/15", border: "border-emerald-400/50", text: "text-emerald-300", pill: "bg-emerald-500/20 text-emerald-400" },
-    float: { bg: "bg-orange-500/15", border: "border-orange-400/50", text: "text-orange-300", pill: "bg-orange-500/20 text-orange-400" },
-  };
+  // Typewriter for label
+  useEffect(() => {
+    if (stage < 2) return;
+    if (typedChars >= label.length) return;
+    const t = setTimeout(() => setTypedChars((c) => c + 1), 120);
+    return () => clearTimeout(t);
+  }, [stage, typedChars]);
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -64,55 +61,84 @@ function WhatIsVariable({ onComplete }) {
         A <strong className="text-ink">variable</strong> is like a labeled box that stores a value. You give it a name, put something inside, and can use or change it later.
       </p>
 
-      {/* Animated box metaphor — dark theme */}
-      <div className="rounded-xl border border-stone-700 bg-[#1c1917] p-8">
-        <div className="flex items-end justify-center gap-6">
-          {boxes.map((box, i) => {
-            const colors = typeColors[box.type];
-            return (
-              <div key={box.name} className="flex flex-col items-center">
-                {/* Floating value */}
-                <div
-                  className={`mb-2 font-mono text-lg font-bold transition-all duration-700 ease-out ${colors.text}`}
-                  style={{
-                    opacity: dropped[i] ? 1 : 0,
-                    transform: dropped[i] ? "translateY(0)" : "translateY(-30px)",
-                  }}
-                >
-                  {box.value}
-                </div>
+      {/* Animated SVG illustration */}
+      <div className="rounded-xl p-8 flex items-center justify-center" style={{ background: DARK, border: `1px solid ${GUTTER}` }}>
+        <svg width="280" height="200" viewBox="0 0 280 200">
+          {/* Box */}
+          <rect
+            x="70" y="70" width="140" height="100" rx="12"
+            fill="rgba(137, 180, 250, 0.08)"
+            stroke="#89b4fa"
+            strokeWidth="2"
+            strokeDasharray={stage >= 0 ? "0" : "8 4"}
+            className="transition-all duration-700"
+            style={{
+              opacity: stage >= 0 ? 1 : 0,
+              transform: stage >= 0 ? "scale(1)" : "scale(0.8)",
+              transformOrigin: "140px 120px",
+            }}
+          />
 
-                {/* Box */}
-                <div
-                  className={`flex h-20 w-24 items-center justify-center rounded-xl border-2 ${colors.border} ${colors.bg} transition-all duration-500`}
-                  style={{
-                    transform: dropped[i] ? "scale(1)" : "scale(0.9)",
-                    opacity: dropped[i] ? 1 : 0.5,
-                  }}
-                >
-                  {dropped[i] && (
-                    <span className={`font-mono text-lg font-bold ${colors.text}`} style={{ animation: "counter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards" }}>
-                      {box.value}
-                    </span>
-                  )}
-                </div>
+          {/* The value "42" dropping in */}
+          <text
+            x="140" y="130"
+            textAnchor="middle"
+            className="font-mono"
+            style={{
+              fill: "#fab387",
+              fontSize: "36px",
+              fontWeight: 700,
+              opacity: stage >= 1 ? 1 : 0,
+              transform: stage >= 1 ? "translateY(0)" : "translateY(-40px)",
+              transition: "all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+          >
+            42
+          </text>
 
-                {/* Label */}
-                <div className="mt-2 flex items-center gap-1.5 rounded-full bg-stone-800 px-3 py-1 border border-stone-700">
-                  <span className="font-mono text-xs font-bold text-stone-300">{box.name}</span>
-                  <span className={`rounded px-1 py-px font-mono text-[9px] ${colors.pill}`}>{box.type}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+          {/* Bounce shadow under value */}
+          {stage >= 1 && (
+            <ellipse
+              cx="140" cy="155" rx="30" ry="4"
+              fill="rgba(250, 179, 135, 0.15)"
+              style={{ animation: "counter 0.4s ease-out" }}
+            />
+          )}
+
+          {/* Label tag */}
+          <g style={{
+            opacity: stage >= 2 ? 1 : 0,
+            transform: stage >= 2 ? "translateY(0)" : "translateY(8px)",
+            transition: "all 0.4s ease-out",
+          }}>
+            <rect x="100" y="54" width="80" height="22" rx="6" fill="#89b4fa" />
+            <text x="140" y="69" textAnchor="middle" className="font-mono" style={{ fill: MANTLE, fontSize: "12px", fontWeight: 700 }}>
+              {label.slice(0, typedChars)}
+              {typedChars < label.length && (
+                <tspan style={{ opacity: 0.5 }}>|</tspan>
+              )}
+            </text>
+          </g>
+
+          {/* Arrow from label to box */}
+          {stage >= 2 && (
+            <line x1="140" y1="76" x2="140" y2="70" stroke="#89b4fa" strokeWidth="1.5" strokeDasharray="3 2" />
+          )}
+
+          {/* Type pill */}
+          {stage >= 1 && (
+            <g style={{ animation: "counter 0.3s ease-out 0.8s both" }}>
+              <rect x="182" y="100" width="30" height="16" rx="8" fill="rgba(250, 179, 135, 0.15)" stroke="rgba(250, 179, 135, 0.3)" strokeWidth="1" />
+              <text x="197" y="112" textAnchor="middle" className="font-mono" style={{ fill: "#fab387", fontSize: "9px", fontWeight: 700 }}>int</text>
+            </g>
+          )}
+        </svg>
       </div>
 
       <CodeSnippet>
         <div className="space-y-1">
-          <CodeLine><Var>name</Var> <Op>=</Op> <Str>"Alice"</Str></CodeLine>
-          <CodeLine><Var>age</Var> <Op>=</Op> <Num>21</Num></CodeLine>
-          <CodeLine><Var>gpa</Var> <Op>=</Op> <Num>3.7</Num></CodeLine>
+          <Ln><V>age</V> <Op>=</Op> <Num>42</Num>  <Cmt># create a variable</Cmt></Ln>
+          <Ln><Kw>print</Kw><span style={{ color: "#585b70" }}>(</span><V>age</V><span style={{ color: "#585b70" }}>)</span>  <Cmt># use it: prints 42</Cmt></Ln>
         </div>
       </CodeSnippet>
 
@@ -132,54 +158,56 @@ function WhatIsVariable({ onComplete }) {
 
 /* ─── Learn Step 1: Data types ───────────────────────────────────── */
 function DataTypes({ onComplete }) {
-  const [hoveredType, setHoveredType] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(0);
 
   const types = [
     {
-      name: "str", label: "String",
-      bg: "bg-blue-500/10", border: "border-blue-400/40 hover:border-blue-400/70",
-      accent: "text-blue-400", shapeBg: "bg-blue-500/20",
-      example: '"hello"', desc: "Text -- letters, words, sentences",
-      shape: (
-        <svg width="40" height="40" viewBox="0 0 40 40">
-          <rect x="3" y="12" width="34" height="16" rx="8" fill="currentColor" opacity="0.3" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.5" />
+      name: "str", label: "String", value: '"hello"', code: 'name = "Anna"',
+      color: "#a6e3a1", bg: "rgba(166, 227, 161, 0.08)", border: "rgba(166, 227, 161, 0.3)",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="5" width="18" height="14" rx="3" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M7 10h10M7 14h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       ),
     },
     {
-      name: "int", label: "Integer",
-      bg: "bg-emerald-500/10", border: "border-emerald-400/40 hover:border-emerald-400/70",
-      accent: "text-emerald-400", shapeBg: "bg-emerald-500/20",
-      example: "42", desc: "Whole numbers -- no decimal point",
-      shape: (
-        <svg width="40" height="40" viewBox="0 0 40 40">
-          <rect x="8" y="8" width="24" height="24" rx="5" fill="currentColor" opacity="0.3" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.5" />
+      name: "int", label: "Integer", value: "42", code: "age = 21",
+      color: "#fab387", bg: "rgba(250, 179, 135, 0.08)", border: "rgba(250, 179, 135, 0.3)",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.5" />
+          <text x="12" y="16" textAnchor="middle" fill="currentColor" style={{ fontSize: "10px", fontWeight: 700 }}>42</text>
         </svg>
       ),
     },
     {
-      name: "float", label: "Float",
-      bg: "bg-orange-500/10", border: "border-orange-400/40 hover:border-orange-400/70",
-      accent: "text-orange-400", shapeBg: "bg-orange-500/20",
-      example: "3.14", desc: "Decimal numbers -- for precision",
-      shape: (
-        <svg width="40" height="40" viewBox="0 0 40 40">
-          <polygon points="20,4 36,13 36,27 20,36 4,27 4,13" fill="currentColor" opacity="0.3" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.5" />
+      name: "float", label: "Float", value: "3.14", code: "gpa = 3.7",
+      color: "#f9e2af", bg: "rgba(249, 226, 175, 0.08)", border: "rgba(249, 226, 175, 0.3)",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <polygon points="12,3 22,9 22,15 12,21 2,15 2,9" stroke="currentColor" strokeWidth="1.5" fill="none" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
         </svg>
       ),
     },
     {
-      name: "bool", label: "Boolean",
-      bg: "bg-purple-500/10", border: "border-purple-400/40 hover:border-purple-400/70",
-      accent: "text-purple-400", shapeBg: "bg-purple-500/20",
-      example: "True", desc: "True or False -- for yes/no decisions",
-      shape: (
-        <svg width="40" height="40" viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r="14" fill="currentColor" opacity="0.3" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.5" />
+      name: "bool", label: "Boolean", value: "True", code: "enrolled = True",
+      color: "#cba6f7", bg: "rgba(203, 166, 247, 0.08)", border: "rgba(203, 166, 247, 0.3)",
+      icon: (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 12l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ),
     },
   ];
+
+  useEffect(() => {
+    types.forEach((_, i) => {
+      setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), 200 + i * 150);
+    });
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -192,25 +220,38 @@ function DataTypes({ onComplete }) {
         {types.map((t, i) => (
           <div
             key={t.name}
-            className={`group rounded-xl border-2 ${t.border} ${t.bg} p-4 transition-all duration-300 cursor-default animate-fade-in-up`}
-            style={{ animationDelay: `${i * 100}ms` }}
-            onMouseEnter={() => setHoveredType(t.name)}
-            onMouseLeave={() => setHoveredType(null)}
+            className="rounded-xl p-4 transition-all duration-500 cursor-default"
+            style={{
+              background: t.bg,
+              border: `2px solid ${t.border}`,
+              opacity: i < visibleCount ? 1 : 0,
+              transform: i < visibleCount ? "translateY(0) scale(1)" : "translateY(16px) scale(0.95)",
+            }}
           >
             <div className="flex items-start justify-between mb-2">
               <div>
-                <span className={`text-sm font-bold ${t.accent}`}>{t.label}</span>
-                <span className={`ml-2 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${t.shapeBg} ${t.accent}`}>
+                <span className="text-sm font-bold" style={{ color: t.color }}>{t.label}</span>
+                <span
+                  className="ml-2 rounded-full px-2 py-0.5 font-mono text-[10px] font-bold"
+                  style={{ background: `${t.color}22`, color: t.color }}
+                >
                   {t.name}
                 </span>
               </div>
-              <div className={`${t.accent} transition-transform duration-300 ${hoveredType === t.name ? "scale-110" : ""}`}>
-                {t.shape}
-              </div>
+              <div style={{ color: t.color }} className="opacity-60">{t.icon}</div>
             </div>
-            <p className="text-xs text-graphite mb-2">{t.desc}</p>
-            <div className="rounded-lg bg-[#1c1917] px-3 py-1.5 border border-stone-800">
-              <code className="font-mono text-sm text-stone-200">{t.example}</code>
+
+            {/* Value display */}
+            <div
+              className="rounded-lg px-3 py-2 mb-2 font-mono text-center"
+              style={{ background: DARK, border: `1px solid ${GUTTER}` }}
+            >
+              <span className="text-lg font-bold" style={{ color: t.color }}>{t.value}</span>
+            </div>
+
+            {/* Code example */}
+            <div className="rounded-md px-2 py-1" style={{ background: `${t.color}08` }}>
+              <code className="font-mono text-xs" style={{ color: "#a6adc8" }}>{t.code}</code>
             </div>
           </div>
         ))}
@@ -269,40 +310,40 @@ function TypeErrors({ onComplete }) {
       </p>
 
       {/* Error example */}
-      <div className="overflow-hidden rounded-xl border border-red-800/50 shadow-lg">
-        <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-          <span className="ml-2 font-mono text-[10px] text-red-500">error_example.py</span>
+      <div className="overflow-hidden rounded-xl shadow-2xl" style={{ border: "1px solid rgba(243, 139, 168, 0.3)" }}>
+        <div className="flex items-center gap-1.5 px-4 py-2" style={{ background: SURFACE }}>
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
+          <span className="ml-2 font-mono text-[10px] text-[#f38ba8]">error_example.py</span>
         </div>
-        <div className="bg-[#1c1917] p-4">
+        <div className="p-4" style={{ background: DARK }}>
           <div className="space-y-1">
-            <CodeLine><Var>age</Var> <Op>=</Op> <Num>21</Num></CodeLine>
-            <CodeLine><Var>message</Var> <Op>=</Op> <Str>"I am "</Str> <Op>+</Op> <Var>age</Var>  <Cmt># TypeError!</Cmt></CodeLine>
+            <Ln><V>age</V> <Op>=</Op> <Num>21</Num></Ln>
+            <Ln><V>message</V> <Op>=</Op> <Str>"I am "</Str> <Op>+</Op> <V>age</V>  <Cmt># TypeError!</Cmt></Ln>
           </div>
-          <div className="mt-3 rounded-lg bg-red-950/50 border border-red-800/50 px-3 py-2">
-            <p className="font-mono text-xs text-red-400">
-              <span className="text-red-500 font-bold">TypeError:</span> can only concatenate str to str
+          <div className="mt-3 rounded-lg px-3 py-2" style={{ background: "rgba(243, 139, 168, 0.08)", border: "1px solid rgba(243, 139, 168, 0.2)" }}>
+            <p className="font-mono text-xs" style={{ color: "#f38ba8" }}>
+              <span className="font-bold">TypeError:</span> can only concatenate str to str
             </p>
           </div>
         </div>
       </div>
 
       {/* Fix example */}
-      <div className="overflow-hidden rounded-xl border border-emerald-800/50 shadow-lg">
-        <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-          <span className="ml-2 font-mono text-[10px] text-emerald-500">fix: convert the type</span>
+      <div className="overflow-hidden rounded-xl shadow-2xl" style={{ border: "1px solid rgba(166, 227, 161, 0.3)" }}>
+        <div className="flex items-center gap-1.5 px-4 py-2" style={{ background: SURFACE }}>
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
+          <span className="ml-2 font-mono text-[10px] text-[#a6e3a1]">fix: convert the type</span>
         </div>
-        <div className="bg-[#1c1917] p-4">
+        <div className="p-4" style={{ background: DARK }}>
           <div className="space-y-1">
-            <CodeLine><Var>message</Var> <Op>=</Op> <Str>"I am "</Str> <Op>+</Op> <Kw>str</Kw><span className="text-stone-400">(</span><Var>age</Var><span className="text-stone-400">)</span></CodeLine>
+            <Ln><V>message</V> <Op>=</Op> <Str>"I am "</Str> <Op>+</Op> <Kw>str</Kw><span style={{ color: "#585b70" }}>(</span><V>age</V><span style={{ color: "#585b70" }}>)</span></Ln>
           </div>
-          <div className="mt-3 rounded-lg bg-emerald-950/50 border border-emerald-800/50 px-3 py-2">
-            <p className="font-mono text-xs text-emerald-400">"I am 21"</p>
+          <div className="mt-3 rounded-lg px-3 py-2" style={{ background: "rgba(166, 227, 161, 0.08)", border: "1px solid rgba(166, 227, 161, 0.2)" }}>
+            <p className="font-mono text-xs" style={{ color: "#a6e3a1" }}>"I am 21"</p>
           </div>
         </div>
       </div>
@@ -336,7 +377,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Type Check</h2>
           <CodeSnippet className="mb-2">
-            <CodeLine><Var>x</Var> <Op>=</Op> <Str>"42"</Str></CodeLine>
+            <Ln><V>x</V> <Op>=</Op> <Str>"42"</Str></Ln>
           </CodeSnippet>
           <Quiz
             data={{
@@ -355,7 +396,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-ink">Type Conversion</h2>
           <CodeSnippet className="mb-2">
-            <CodeLine><Kw>print</Kw><span className="text-stone-400">(</span><Kw>int</Kw><span className="text-stone-400">(</span><Str>"7"</Str><span className="text-stone-400">)</span> <Op>+</Op> <Num>3</Num><span className="text-stone-400">)</span></CodeLine>
+            <Ln><Kw>print</Kw><span style={{ color: "#585b70" }}>(</span><Kw>int</Kw><span style={{ color: "#585b70" }}>(</span><Str>"7"</Str><span style={{ color: "#585b70" }}>)</span> <Op>+</Op> <Num>3</Num><span style={{ color: "#585b70" }}>)</span></Ln>
           </CodeSnippet>
           <Quiz
             data={{
@@ -378,9 +419,9 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
           <h2 className="text-xl font-bold text-ink">Challenge</h2>
           <CodeSnippet className="mb-2">
             <div className="space-y-1">
-              <CodeLine><Var>x</Var> <Op>=</Op> <Str>"3"</Str></CodeLine>
-              <CodeLine><Var>y</Var> <Op>=</Op> <Num>2</Num></CodeLine>
-              <CodeLine><Kw>print</Kw><span className="text-stone-400">(</span><Var>x</Var> <Op>*</Op> <Var>y</Var><span className="text-stone-400">)</span></CodeLine>
+              <Ln><V>x</V> <Op>=</Op> <Str>"3"</Str></Ln>
+              <Ln><V>y</V> <Op>=</Op> <Num>2</Num></Ln>
+              <Ln><Kw>print</Kw><span style={{ color: "#585b70" }}>(</span><V>x</V> <Op>*</Op> <V>y</V><span style={{ color: "#585b70" }}>)</span></Ln>
             </div>
           </CodeSnippet>
           <Quiz

@@ -1,20 +1,51 @@
 import { useState, useRef, useEffect } from "react";
 
-/* ─── Syntax highlighter ────────────────────────────────────────── */
+/* ─── Catppuccin-inspired dark theme ────────────────────────────── */
+const DARK_BG = "#1e1e2e";
+const DARK_SURFACE = "#181825";
+const DARK_MANTLE = "#11111b";
+const LINE_NUM_COLOR = "#585b70";
+const GUTTER_BORDER = "#313244";
+
+/* ─── Syntax highlighter (vibrant colors) ───────────────────────── */
 function colorize(code) {
   return code
     .replace(
       /\b(def |for |in |if |elif |return |import |print|while |else:|class |range|not |and |or |True|False|None)\b/g,
-      '<span style="color:#60a5fa">$1</span>'
+      '<span class="cbp-kw">$1</span>'
     )
-    .replace(/(".*?"|'.*?')/g, '<span style="color:#4ade80">$1</span>')
-    .replace(/(?<![a-zA-Z_])(\d+\.?\d*)(?![a-zA-Z_])/g, '<span style="color:#fb923c">$1</span>')
-    .replace(/(#.*)/g, '<span style="color:#78716c">$1</span>');
+    .replace(/(".*?"|'.*?')/g, '<span class="cbp-str">$1</span>')
+    .replace(/(?<![a-zA-Z_])(\d+\.?\d*)(?![a-zA-Z_])/g, '<span class="cbp-num">$1</span>')
+    .replace(/(#.*)/g, '<span class="cbp-cmt">$1</span>');
 }
 
+/* ─── Detect block type for left border color ───────────────────── */
+function getBlockType(code) {
+  const trimmed = code.trimStart();
+  if (/^(def |class )/.test(trimmed)) return "func";
+  if (/^(if |elif |else)/.test(trimmed)) return "cond";
+  if (/^(for |while )/.test(trimmed)) return "loop";
+  if (/^return /.test(trimmed)) return "ret";
+  if (/^print/.test(trimmed)) return "io";
+  if (/["']/.test(trimmed)) return "str";
+  return "default";
+}
+
+const BLOCK_BORDER_COLORS = {
+  func: "#cba6f7",    // purple
+  cond: "#89b4fa",    // blue
+  loop: "#fab387",    // orange/peach
+  ret: "#a6e3a1",     // green
+  io: "#94e2d5",      // teal
+  str: "#a6e3a1",     // green
+  default: "#6c7086", // gray
+};
+
 /* ─── Single draggable code block ───────────────────────────────── */
-function CodeBlock({ block, onDragStart, isDragging, isDistractorDismissed, isWrongPosition, isPlaced }) {
+function CodeBlock({ block, onDragStart, onTouchStart, isDragging, isDistractorDismissed }) {
   const isDistractor = block.isDistractor;
+  const blockType = getBlockType(block.code);
+  const borderColor = BLOCK_BORDER_COLORS[blockType];
 
   return (
     <div
@@ -23,38 +54,56 @@ function CodeBlock({ block, onDragStart, isDragging, isDistractorDismissed, isWr
         e.dataTransfer.effectAllowed = "move";
         onDragStart(block.id);
       }}
+      onTouchStart={() => onTouchStart?.(block.id)}
       className={[
-        "group relative cursor-grab select-none rounded-lg border px-3 py-2 font-mono text-sm transition-all duration-200",
+        "group relative cursor-grab select-none rounded-lg border px-3 py-2.5 font-mono text-sm transition-all duration-200",
         "active:cursor-grabbing",
         isDragging
-          ? "scale-105 rotate-2 shadow-xl shadow-amber-500/20 opacity-80 border-amber-500/50 z-50"
-          : "hover:-translate-y-0.5 hover:shadow-lg",
+          ? "scale-105 shadow-xl opacity-80 z-50"
+          : "hover:-translate-y-1 hover:shadow-lg",
         isDistractor && isDistractorDismissed
-          ? "opacity-30 border-stone-700 bg-stone-800/30 line-through pointer-events-none"
+          ? "opacity-20 pointer-events-none border-[#313244] bg-[#11111b]"
           : isDistractor
-            ? "border-stone-600 bg-stone-800/60 text-stone-400"
-            : "border-stone-600 bg-stone-800 text-stone-200",
-        isPlaced
-          ? "border-amber-500/30 bg-stone-800"
-          : "",
-        isWrongPosition
-          ? "animate-shake border-red-500/60"
-          : "",
+            ? "border-[#45475a] bg-[#1e1e2e]/80 text-[#a6adc8]"
+            : "border-[#45475a] bg-[#1e1e2e] text-[#cdd6f4]",
       ].filter(Boolean).join(" ")}
+      style={{
+        borderLeftWidth: "3px",
+        borderLeftColor: isDistractor && isDistractorDismissed ? "#313244" : borderColor,
+        transform: isDragging ? "rotate(2deg)" : undefined,
+        boxShadow: isDragging ? `0 12px 28px -4px ${borderColor}33` : undefined,
+      }}
     >
       <div className="flex items-center gap-2">
-        {/* Code icon */}
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="shrink-0 opacity-40">
-          <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        {/* Grip dots */}
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="none" className="shrink-0 opacity-30">
+          <circle cx="2" cy="2" r="1.2" fill="currentColor" />
+          <circle cx="6" cy="2" r="1.2" fill="currentColor" />
+          <circle cx="2" cy="7" r="1.2" fill="currentColor" />
+          <circle cx="6" cy="7" r="1.2" fill="currentColor" />
+          <circle cx="2" cy="12" r="1.2" fill="currentColor" />
+          <circle cx="6" cy="12" r="1.2" fill="currentColor" />
         </svg>
         <code dangerouslySetInnerHTML={{ __html: colorize(block.code) }} />
       </div>
       {isDistractor && isDistractorDismissed && (
-        <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-stone-600 text-[10px] font-bold text-stone-300">
-          x
-        </span>
+        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-[#11111b]/60">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#f38ba8]">
+            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </div>
       )}
     </div>
+  );
+}
+
+/* ─── Blinking cursor ───────────────────────────────────────────── */
+function BlinkingCursor() {
+  return (
+    <span
+      className="inline-block w-[2px] h-4 bg-[#a6e3a1] ml-1 align-middle"
+      style={{ animation: "sql-cursor-blink 1s step-end infinite" }}
+    />
   );
 }
 
@@ -67,6 +116,7 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
   const [wrongPositions, setWrongPositions] = useState([]);
   const [dismissedDistractors, setDismissedDistractors] = useState([]);
   const [snapAnimation, setSnapAnimation] = useState(null);
+  const [showOutput, setShowOutput] = useState(false);
   const outputRef = useRef(null);
 
   const nonDistractorCount = blocks.filter((b) => !b.isDistractor).length;
@@ -82,7 +132,7 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
     next.splice(slotIndex, 0, draggedId);
     setPlaced(next);
     setSnapAnimation(slotIndex);
-    setTimeout(() => setSnapAnimation(null), 300);
+    setTimeout(() => setSnapAnimation(null), 400);
     setDraggedId(null);
     setResult(null);
     setWrongPositions([]);
@@ -105,19 +155,18 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
   const runCode = () => {
     const isCorrect = JSON.stringify(placed) === JSON.stringify(correctOrder);
     setResult(isCorrect ? "success" : "error");
+    setShowOutput(true);
 
     if (isCorrect) {
-      // Mark distractors as correctly identified
       const distractorIds = blocks.filter((b) => b.isDistractor).map((b) => b.id);
       setDismissedDistractors(distractorIds);
       onComplete?.();
     } else {
-      // Find wrong positions and shake them
       const wrong = placed
         .map((id, i) => (correctOrder[i] !== id ? i : -1))
         .filter((i) => i !== -1);
       setWrongPositions(wrong);
-      setTimeout(() => setWrongPositions([]), 600);
+      setTimeout(() => setWrongPositions([]), 700);
     }
   };
 
@@ -126,9 +175,9 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
     setResult(null);
     setWrongPositions([]);
     setDismissedDistractors([]);
+    setShowOutput(false);
   };
 
-  // Scroll output into view
   useEffect(() => {
     if (result && outputRef.current) {
       outputRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -137,78 +186,110 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
 
   return (
     <div className="space-y-4">
-      {/* ── Code Editor Area ─────────────────────────────────────── */}
-      <div className="overflow-hidden rounded-xl border border-stone-700 shadow-lg">
+      {/* ── Code Editor Panel ─────────────────────────────────────── */}
+      <div className="overflow-hidden rounded-xl shadow-2xl" style={{ border: `1px solid ${GUTTER_BORDER}` }}>
         {/* Title bar */}
-        <div className="flex items-center gap-1.5 bg-stone-800 px-4 py-2.5">
-          <span className="h-3 w-3 rounded-full bg-red-400/80" />
-          <span className="h-3 w-3 rounded-full bg-amber-400/80" />
-          <span className="h-3 w-3 rounded-full bg-green-400/80" />
-          <span className="ml-3 font-mono text-[11px] text-stone-500">solution.py</span>
+        <div className="flex items-center gap-2 px-4 py-2.5" style={{ background: DARK_SURFACE }}>
+          <span className="h-3 w-3 rounded-full bg-[#f38ba8]" />
+          <span className="h-3 w-3 rounded-full bg-[#f9e2af]" />
+          <span className="h-3 w-3 rounded-full bg-[#a6e3a1]" />
+          <span className="ml-3 font-mono text-[11px]" style={{ color: LINE_NUM_COLOR }}>solution.py</span>
+          <div className="flex-1" />
+          <div className="flex items-center gap-1.5 rounded-md px-2 py-0.5" style={{ background: DARK_MANTLE }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className="text-[#585b70]">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+              <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <span className="font-mono text-[9px] text-[#585b70]">Python 3</span>
+          </div>
         </div>
 
         {/* Code lines / drop zones */}
-        <div className="min-h-[180px] bg-[#1c1917] p-4">
-          <div className="space-y-1">
+        <div className="min-h-[180px] p-0" style={{ background: DARK_BG }}>
+          <div className="space-y-0">
             {Array.from({ length: nonDistractorCount }, (_, i) => {
               const blockId = placed[i];
               const block = blocks.find((b) => b.id === blockId);
               const isWrong = wrongPositions.includes(i);
               const isSnapping = snapAnimation === i;
+              const isCorrectResult = result === "success";
 
               return (
                 <div
                   key={i}
                   onDrop={(e) => { e.preventDefault(); handleDropOnSlot(i); }}
-                  onDragOver={(e) => e.preventDefault()}
+                  onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; }}
                   className={[
-                    "flex items-center gap-3 rounded-lg border-2 px-3 py-2.5 transition-all duration-200",
-                    block
-                      ? isWrong
-                        ? "border-red-500/50 bg-red-950/30 animate-shake"
-                        : "border-stone-600/40 bg-stone-800/50"
-                      : draggedId
-                        ? "border-dashed border-amber-500/40 bg-amber-500/5"
-                        : "border-dashed border-stone-700/60 bg-stone-900/30",
-                    isSnapping ? "scale-[1.02]" : "",
+                    "flex items-center transition-all duration-300 group/line",
+                    isWrong ? "animate-shake" : "",
                   ].filter(Boolean).join(" ")}
-                  style={isSnapping ? {
-                    animation: "counter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards"
-                  } : undefined}
+                  style={{
+                    background: block
+                      ? isWrong
+                        ? "rgba(243, 139, 168, 0.08)"
+                        : isCorrectResult
+                          ? "rgba(166, 227, 161, 0.04)"
+                          : "transparent"
+                      : draggedId
+                        ? "rgba(137, 180, 250, 0.04)"
+                        : "transparent",
+                    borderBottom: `1px solid ${i < nonDistractorCount - 1 ? "#1e1e2e" : "transparent"}`,
+                  }}
                 >
-                  {/* Line number */}
-                  <span className="w-5 text-right font-mono text-xs text-stone-600 select-none">
-                    {i + 1}
-                  </span>
-
-                  {/* Separator */}
-                  <div className="h-5 w-px bg-stone-700/50" />
-
-                  {block ? (
-                    <div className="flex flex-1 items-center justify-between">
-                      <code
-                        className="font-mono text-sm text-stone-200"
-                        dangerouslySetInnerHTML={{ __html: colorize(block.code) }}
-                      />
-                      <button
-                        onClick={() => handleRemove(block.id)}
-                        className="ml-2 flex h-5 w-5 items-center justify-center rounded-full text-stone-600 transition-all hover:bg-red-500/20 hover:text-red-400"
-                      >
-                        <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                          <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                        </svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="font-mono text-xs text-stone-700 italic select-none">
-                      drop code here
+                  {/* Line number gutter */}
+                  <div
+                    className="flex w-12 shrink-0 items-center justify-end pr-3 self-stretch select-none"
+                    style={{
+                      borderRight: `1px solid ${GUTTER_BORDER}`,
+                      background: DARK_SURFACE,
+                    }}
+                  >
+                    <span className="font-mono text-[11px]" style={{ color: isWrong ? "#f38ba8" : LINE_NUM_COLOR }}>
+                      {i + 1}
                     </span>
-                  )}
+                  </div>
 
-                  {/* Wrong position underline */}
-                  {isWrong && (
-                    <div className="absolute bottom-0 left-8 right-3 h-0.5 rounded-full bg-red-500/60" />
-                  )}
+                  {/* Code content area */}
+                  <div className="flex-1 px-4 py-2.5 min-h-[42px] flex items-center">
+                    {block ? (
+                      <div
+                        className="flex flex-1 items-center justify-between"
+                        style={isSnapping ? {
+                          animation: "snapIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards"
+                        } : undefined}
+                      >
+                        <code
+                          className="font-mono text-sm"
+                          style={{ color: "#cdd6f4" }}
+                          dangerouslySetInnerHTML={{ __html: colorize(block.code) }}
+                        />
+                        {!isCorrectResult && (
+                          <button
+                            onClick={() => handleRemove(block.id)}
+                            className="ml-3 flex h-5 w-5 items-center justify-center rounded opacity-0 group-hover/line:opacity-100 transition-opacity hover:bg-[#f38ba8]/20"
+                          >
+                            <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                              <path d="M4 4L12 12M12 4L4 12" stroke="#f38ba8" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 w-full">
+                        <div
+                          className="flex-1 rounded-md border border-dashed py-1.5 px-3 transition-all duration-200"
+                          style={{
+                            borderColor: draggedId ? "rgba(137, 180, 250, 0.4)" : "rgba(88, 91, 112, 0.4)",
+                            background: draggedId ? "rgba(137, 180, 250, 0.04)" : "transparent",
+                          }}
+                        >
+                          <span className="font-mono text-xs italic" style={{ color: LINE_NUM_COLOR }}>
+                            {draggedId ? "drop here" : "empty line"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -218,16 +299,28 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
 
       {/* ── Available Blocks Tray ────────────────────────────────── */}
       <div>
-        <p className="mb-2 font-mono text-[10px] font-bold uppercase tracking-widest text-stone-500">
-          Code blocks
-        </p>
+        <div className="flex items-center gap-2 mb-2.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-[#585b70]">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-graphite">
+            Code blocks — drag to editor
+          </p>
+        </div>
         <div
-          className="flex flex-wrap gap-2 min-h-[48px] rounded-xl border border-dashed border-stone-300 bg-stone-50/50 p-3"
+          className="flex flex-wrap gap-2 min-h-[48px] rounded-xl border border-dashed p-3 transition-colors duration-200"
+          style={{
+            borderColor: draggedId ? "rgba(137, 180, 250, 0.3)" : "rgba(214, 211, 205, 0.5)",
+            background: draggedId ? "rgba(137, 180, 250, 0.02)" : "rgba(253, 252, 250, 0.5)",
+          }}
           onDrop={(e) => { e.preventDefault(); handleDropOnAvailable(); }}
           onDragOver={(e) => e.preventDefault()}
         >
           {available.length === 0 && (
-            <span className="text-xs italic text-stone-400 self-center">All blocks placed</span>
+            <span className="text-xs italic text-pencil self-center">All blocks placed -- looking good!</span>
           )}
           {available.map((block) => (
             <CodeBlock
@@ -236,8 +329,6 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
               onDragStart={handleDragStart}
               isDragging={draggedId === block.id}
               isDistractorDismissed={dismissedDistractors.includes(block.id)}
-              isWrongPosition={false}
-              isPlaced={false}
             />
           ))}
         </div>
@@ -247,77 +338,111 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
       {placed.length === nonDistractorCount && result === null && (
         <button
           onClick={runCode}
-          className="group flex items-center gap-2.5 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-900/30 active:scale-[0.98] animate-lesson-enter"
+          className="group flex items-center gap-2.5 rounded-lg px-5 py-2.5 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.98] animate-lesson-enter"
+          style={{
+            background: "linear-gradient(135deg, #a6e3a1 0%, #94e2d5 100%)",
+            color: DARK_MANTLE,
+            boxShadow: "0 4px 14px rgba(166, 227, 161, 0.25)",
+          }}
         >
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/40">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
               <path d="M4 2L14 8L4 14V2Z" />
             </svg>
           </span>
-          Run Code
+          Run
+          <span className="font-mono text-xs opacity-70">python solution.py</span>
         </button>
       )}
 
       {/* ── Output Terminal ─────────────────────────────────────── */}
-      {result && (
+      {showOutput && result && (
         <div
           ref={outputRef}
-          className={[
-            "overflow-hidden rounded-xl border shadow-lg animate-lesson-enter",
-            result === "success"
-              ? "border-emerald-600/40"
-              : "border-red-600/40",
-          ].join(" ")}
+          className="overflow-hidden rounded-xl shadow-lg animate-lesson-enter"
+          style={{
+            border: `1px solid ${result === "success" ? "#a6e3a133" : "#f38ba833"}`,
+          }}
         >
           {/* Terminal header */}
-          <div className={[
-            "flex items-center gap-2 px-4 py-2",
-            result === "success" ? "bg-emerald-950/80" : "bg-red-950/80",
-          ].join(" ")}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={result === "success" ? "text-emerald-400" : "text-red-400"}>
+          <div className="flex items-center gap-2 px-4 py-2" style={{ background: DARK_SURFACE }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ color: result === "success" ? "#a6e3a1" : "#f38ba8" }}>
               <path d="M4 17l6-5-6-5M12 19h8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-stone-500">
-              Output
+            <span className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: LINE_NUM_COLOR }}>
+              Terminal
             </span>
+            <div className="flex-1" />
+            {result === "success" && (
+              <span className="rounded-full px-2 py-0.5 font-mono text-[9px] font-bold bg-[#a6e3a1]/15 text-[#a6e3a1]">
+                EXIT 0
+              </span>
+            )}
           </div>
 
           {/* Terminal body */}
-          <div className={[
-            "px-4 py-3 font-mono text-sm",
-            result === "success" ? "bg-emerald-950/40" : "bg-red-950/40",
-          ].join(" ")}>
-            <div className="flex items-start gap-2">
-              <span className="text-stone-600 select-none">$</span>
+          <div className="px-4 py-3 font-mono text-sm" style={{ background: DARK_MANTLE }}>
+            <div className="space-y-1.5">
+              {/* Command line */}
+              <div className="flex items-center gap-2 text-[#585b70]">
+                <span className="text-[#a6e3a1]">$</span>
+                <span>python solution.py</span>
+              </div>
+
               {result === "success" ? (
-                <div>
-                  <p className="text-emerald-400">{expectedOutput}</p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-emerald-500">
-                      <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="text-xs text-emerald-500/80">Process exited with code 0</span>
+                <>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#585b70] select-none">{">>>"}</span>
+                    <span className="text-[#a6e3a1]">{expectedOutput}</span>
+                    <BlinkingCursor />
                   </div>
-                </div>
+                  <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: `1px solid ${GUTTER_BORDER}` }}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#a6e3a1]">
+                      <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M5 8.5L7 10.5L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="text-xs text-[#a6e3a1]/70">Process exited successfully</span>
+                  </div>
+                </>
               ) : (
-                <div>
-                  <p className="text-red-400">SyntaxError: incorrect block order</p>
-                  <p className="mt-1 text-xs text-red-500/60">Traceback: check the highlighted lines above</p>
+                <>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#585b70] select-none">{">>>"}</span>
+                    <div>
+                      <p className="text-[#f38ba8]">SyntaxError: incorrect block order</p>
+                      <p className="mt-0.5 text-xs text-[#f38ba8]/50">
+                        Traceback (most recent call last): check highlighted lines
+                      </p>
+                    </div>
+                  </div>
                   <button
                     onClick={handleReset}
-                    className="mt-3 flex items-center gap-1.5 rounded-md bg-amber-500/10 px-3 py-1.5 font-mono text-xs font-semibold text-amber-400 transition-colors hover:bg-amber-500/20"
+                    className="mt-3 flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-xs font-semibold transition-all duration-200 hover:brightness-110"
+                    style={{
+                      background: "rgba(249, 226, 175, 0.1)",
+                      color: "#f9e2af",
+                      border: "1px solid rgba(249, 226, 175, 0.2)",
+                    }}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
                     </svg>
                     Reset and try again
                   </button>
-                </div>
+                </>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* ── Inline styles for syntax colors ──────────────────────── */}
+      <style>{`
+        .cbp-kw { color: #89b4fa; font-weight: 600; }
+        .cbp-str { color: #a6e3a1; }
+        .cbp-num { color: #fab387; }
+        .cbp-cmt { color: #585b70; font-style: italic; }
+      `}</style>
     </div>
   );
 }
