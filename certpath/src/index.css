@@ -170,6 +170,11 @@ body {
   animation: correct-flash 0.8s ease-out;
 }
 
+/* ── Cloud Theme: draw-line animation for architecture diagrams ── */
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
 /* ── SQL Theme Animations ────────────────────────────────────── */
 
 @keyframes sql-cursor-blink {
