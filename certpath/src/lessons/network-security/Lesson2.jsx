@@ -4,23 +4,24 @@ import Quiz from "../../components/widgets/Quiz";
 import PacketFlowAnimator from "../../components/lesson-widgets/PacketFlowAnimator";
 import FirewallRuleBuilder from "../../components/lesson-widgets/FirewallRuleBuilder";
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    LESSON 2 — "How Firewalls Work"
-   Dark cyber-terminal aesthetic.
-   ═══════════════════════════════════════════════════════════════════ */
+   DARK CYBER aesthetic.
+   ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── Shared helpers ────────────────────────────────────────────── */
+/* ── Shared helpers ──────────────────────────────────────────────── */
 function DarkPanel({ children, className = "" }) {
   return (
     <div
       className={`relative overflow-hidden rounded-2xl ${className}`}
       style={{
         background: `
-          linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px),
-          #0a1628
+          radial-gradient(circle at 30% 20%, rgba(6,182,212,0.04) 0%, transparent 50%),
+          linear-gradient(rgba(6,182,212,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(6,182,212,0.025) 1px, transparent 1px),
+          #0f172a
         `,
-        backgroundSize: "40px 40px",
+        backgroundSize: "100% 100%, 32px 32px, 32px 32px, 100% 100%",
       }}
     >
       {children}
@@ -34,9 +35,9 @@ function CyberButton({ onClick, children }) {
       onClick={onClick}
       className="group flex items-center gap-2 rounded-xl px-6 py-3 font-mono text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
       style={{
-        background: "linear-gradient(135deg, #00d4aa 0%, #0891b2 100%)",
-        color: "#0a1628",
-        boxShadow: "0 0 20px rgba(0,212,170,0.25), 0 4px 12px rgba(0,0,0,0.3)",
+        background: "linear-gradient(135deg, #06b6d4 0%, #22c55e 100%)",
+        color: "#0f172a",
+        boxShadow: "0 0 24px rgba(6,182,212,0.3), 0 4px 12px rgba(0,0,0,0.3)",
       }}
     >
       <span style={{ color: "#064e3b" }}>$</span> {children}
@@ -44,103 +45,164 @@ function CyberButton({ onClick, children }) {
   );
 }
 
-/* ─── Learn Step 0: What are packets? ────────────────────────────
-   Animated packet diagram showing Header / Payload / Footer
-   with labeled parts that animate in.
-   ──────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   Learn Step 0 — "What are packets?"
+   Animated packet construction: layers wrapping around data.
+   ═══════════════════════════════════════════════════════════════════════ */
 function WhatArePackets({ onComplete }) {
   const [entered, setEntered] = useState(false);
+  const [step, setStep] = useState(0); // 0-3 for animated reveal
   useEffect(() => {
     const t = setTimeout(() => setEntered(true), 150);
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    if (!entered) return;
+    const timers = [
+      setTimeout(() => setStep(1), 600),
+      setTimeout(() => setStep(2), 1200),
+      setTimeout(() => setStep(3), 1800),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [entered]);
+
   const parts = [
-    {
-      name: "HEADER",
-      color: "#fbbf24",
-      desc: "Source IP, Dest IP, Port, Protocol",
-      width: "25%",
-    },
-    {
-      name: "PAYLOAD",
-      color: "#38bdf8",
-      desc: "The actual data (webpage, email, file...)",
-      width: "50%",
-    },
-    {
-      name: "FOOTER",
-      color: "#00d4aa",
-      desc: "Error checking (checksum)",
-      width: "25%",
-    },
+    { name: "HEADER", color: "#fbbf24", desc: "Source IP, Dest IP, Port, Protocol", width: "25%" },
+    { name: "PAYLOAD", color: "#06b6d4", desc: "The actual data (webpage, email, file...)", width: "50%" },
+    { name: "FOOTER", color: "#22c55e", desc: "Error checking (checksum)", width: "25%" },
   ];
 
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e0f0ff" }}>
+          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
             What Are Packets?
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#7c9ab5" }}>
+          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
             When you send data across a network, it does not travel as one big chunk.
             Instead, it gets broken into small pieces called{" "}
-            <strong style={{ color: "#00d4aa" }}>packets</strong>. Each packet contains:
+            <strong style={{ color: "#06b6d4" }}>packets</strong>. Each packet contains:
           </p>
 
-          {/* Animated packet diagram */}
+          {/* ── Animated Packet Construction SVG ────────────────────── */}
+          <svg viewBox="0 0 500 160" className="mx-auto w-full max-w-lg mb-5">
+            <defs>
+              <filter id="pkt-glow-yellow">
+                <feGaussianBlur stdDeviation="4" />
+                <feFlood floodColor="#fbbf24" floodOpacity="0.3" />
+                <feComposite in2="SourceGraphic" operator="in" />
+                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="pkt-glow-cyan">
+                <feGaussianBlur stdDeviation="4" />
+                <feFlood floodColor="#06b6d4" floodOpacity="0.3" />
+                <feComposite in2="SourceGraphic" operator="in" />
+                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <filter id="pkt-glow-green">
+                <feGaussianBlur stdDeviation="4" />
+                <feFlood floodColor="#22c55e" floodOpacity="0.3" />
+                <feComposite in2="SourceGraphic" operator="in" />
+                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+
+            {/* Background box */}
+            <rect x={20} y={20} width={460} height={120} rx={12} fill="#1e293b" stroke="#334155" strokeWidth="1" />
+
+            {/* Step-by-step reveal */}
+            {/* Data core (always visible after entered) */}
+            <rect
+              x={160} y={45} width={180} height={50} rx={8}
+              fill={step >= 0 ? "rgba(6,182,212,0.15)" : "transparent"}
+              stroke="#06b6d4" strokeWidth={step >= 0 ? "1.5" : "0"}
+              filter={step >= 1 ? "url(#pkt-glow-cyan)" : undefined}
+              style={{
+                opacity: entered ? 1 : 0,
+                transition: "all 0.5s ease",
+              }}
+            />
+            <text x={250} y={65} textAnchor="middle" fill="#06b6d4" fontSize="10" fontFamily="IBM Plex Mono" fontWeight="700"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.5s ease 200ms" }}>
+              PAYLOAD
+            </text>
+            <text x={250} y={82} textAnchor="middle" fill="#06b6d480" fontSize="8" fontFamily="IBM Plex Mono"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.5s ease 300ms" }}>
+              Your actual data
+            </text>
+
+            {/* Header wraps left */}
+            <rect
+              x={40} y={40} width={120} height={60} rx={8}
+              fill={step >= 1 ? "rgba(251,191,36,0.12)" : "transparent"}
+              stroke={step >= 1 ? "#fbbf24" : "transparent"} strokeWidth="1.5"
+              filter={step >= 1 ? "url(#pkt-glow-yellow)" : undefined}
+              style={{
+                opacity: step >= 1 ? 1 : 0,
+                transform: step >= 1 ? "translateX(0)" : "translateX(40px)",
+                transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            />
+            {step >= 1 && (
+              <>
+                <text x={100} y={62} textAnchor="middle" fill="#fbbf24" fontSize="10" fontFamily="IBM Plex Mono" fontWeight="700">HEADER</text>
+                <text x={100} y={78} textAnchor="middle" fill="#fbbf2480" fontSize="7" fontFamily="IBM Plex Mono">Src IP, Dst IP</text>
+                <text x={100} y={90} textAnchor="middle" fill="#fbbf2480" fontSize="7" fontFamily="IBM Plex Mono">Port, Protocol</text>
+              </>
+            )}
+
+            {/* Footer wraps right */}
+            <rect
+              x={340} y={40} width={120} height={60} rx={8}
+              fill={step >= 2 ? "rgba(34,197,94,0.12)" : "transparent"}
+              stroke={step >= 2 ? "#22c55e" : "transparent"} strokeWidth="1.5"
+              filter={step >= 2 ? "url(#pkt-glow-green)" : undefined}
+              style={{
+                opacity: step >= 2 ? 1 : 0,
+                transform: step >= 2 ? "translateX(0)" : "translateX(-40px)",
+                transition: "all 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            />
+            {step >= 2 && (
+              <>
+                <text x={400} y={65} textAnchor="middle" fill="#22c55e" fontSize="10" fontFamily="IBM Plex Mono" fontWeight="700">FOOTER</text>
+                <text x={400} y={82} textAnchor="middle" fill="#22c55e80" fontSize="7" fontFamily="IBM Plex Mono">Error checking</text>
+              </>
+            )}
+
+            {/* Assembly arrows */}
+            {step >= 3 && (
+              <>
+                <line x1={35} y1={70} x2={45} y2={70} stroke="#fbbf24" strokeWidth="2" markerEnd="url(#arrowhead)">
+                  <animate attributeName="opacity" values="0;1" dur="0.3s" fill="freeze" />
+                </line>
+                <line x1={455} y1={70} x2={465} y2={70} stroke="#22c55e" strokeWidth="2">
+                  <animate attributeName="opacity" values="0;1" dur="0.3s" fill="freeze" />
+                </line>
+                {/* Complete packet label */}
+                <text x={250} y={130} textAnchor="middle" fill="#06b6d4" fontSize="9" fontFamily="IBM Plex Mono" fontWeight="700">
+                  COMPLETE PACKET
+                </text>
+                <rect x={35} y={35} width={430} height={75} rx={12} fill="none" stroke="#06b6d4" strokeWidth="1" strokeDasharray="6 4" opacity="0.3">
+                  <animate attributeName="opacity" values="0;0.3" dur="0.5s" fill="freeze" />
+                </rect>
+              </>
+            )}
+          </svg>
+
+          {/* Port highlight bar */}
           <div
             className="rounded-xl overflow-hidden"
-            style={{
-              background: "#0d1f3c",
-              border: "1px solid #1e3a5f",
-            }}
+            style={{ background: "#1e293b", border: "1px solid #334155" }}
           >
-            {/* Packet structure */}
-            <div className="flex items-stretch" style={{ minHeight: 90 }}>
-              {parts.map((part, i) => (
-                <div
-                  key={part.name}
-                  className="flex flex-col items-center justify-center px-3 py-4 text-center"
-                  style={{
-                    width: part.width,
-                    background: `${part.color}10`,
-                    borderRight: i < 2 ? `1px dashed ${part.color}30` : "none",
-                    opacity: entered ? 1 : 0,
-                    transform: entered ? "translateY(0)" : "translateY(20px)",
-                    transition: `all 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${i * 200}ms`,
-                  }}
-                >
-                  <span
-                    className="font-mono text-[10px] font-bold tracking-widest"
-                    style={{ color: part.color }}
-                  >
-                    {part.name}
-                  </span>
-                  <span
-                    className="mt-1 text-[10px] leading-snug"
-                    style={{ color: `${part.color}90` }}
-                  >
-                    {part.desc}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Port highlight bar */}
-            <div
-              className="flex items-center gap-3 px-4 py-3"
-              style={{
-                background: "#0a1628",
-                borderTop: "1px solid #1e3a5f",
-              }}
-            >
+            <div className="flex items-center gap-3 px-4 py-3">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4l3 3" />
               </svg>
-              <p className="text-xs" style={{ color: "#7c9ab5" }}>
+              <p className="text-xs" style={{ color: "#94a3b8" }}>
                 The <strong style={{ color: "#fbbf24" }}>port number</strong> in the header
                 tells the receiving device which service should handle this packet.
                 Port 80 = HTTP, 443 = HTTPS, 22 = SSH.
@@ -148,13 +210,13 @@ function WhatArePackets({ onComplete }) {
             </div>
           </div>
 
-          {/* Common ports */}
+          {/* Common ports with neon pills */}
           <div className="mt-5 flex flex-wrap gap-2">
             {[
-              { port: 80, name: "HTTP", color: "#38bdf8" },
-              { port: 443, name: "HTTPS", color: "#00d4aa" },
+              { port: 80, name: "HTTP", color: "#06b6d4" },
+              { port: 443, name: "HTTPS", color: "#22c55e" },
               { port: 22, name: "SSH", color: "#a78bfa" },
-              { port: 23, name: "Telnet", color: "#f87171" },
+              { port: 23, name: "Telnet", color: "#ef4444" },
               { port: 53, name: "DNS", color: "#fbbf24" },
             ].map((p) => (
               <span
@@ -164,6 +226,7 @@ function WhatArePackets({ onComplete }) {
                   background: `${p.color}10`,
                   color: p.color,
                   border: `1px solid ${p.color}25`,
+                  boxShadow: `0 0 8px ${p.color}10`,
                 }}
               >
                 :{p.port} {p.name}
@@ -180,9 +243,10 @@ function WhatArePackets({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 1: What is a firewall? ──────────────────────────
-   Dark-themed firewall diagram with animated rule table.
-   ──────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   Learn Step 1 — "What is a firewall?"
+   Flow diagram + animated rule table.
+   ═══════════════════════════════════════════════════════════════════════ */
 function WhatIsFirewall({ onComplete }) {
   const [entered, setEntered] = useState(false);
   useEffect(() => {
@@ -191,77 +255,98 @@ function WhatIsFirewall({ onComplete }) {
   }, []);
 
   const demoRules = [
-    { action: "ALLOW", port: "443", protocol: "HTTPS", color: "#00d4aa" },
-    { action: "ALLOW", port: "80", protocol: "HTTP", color: "#38bdf8" },
-    { action: "BLOCK", port: "23", protocol: "Telnet", color: "#f87171" },
-    { action: "BLOCK", port: "*", protocol: "All other", color: "#f87171" },
+    { action: "ALLOW", port: "443", protocol: "HTTPS", color: "#22c55e" },
+    { action: "ALLOW", port: "80", protocol: "HTTP", color: "#06b6d4" },
+    { action: "BLOCK", port: "23", protocol: "Telnet", color: "#ef4444" },
+    { action: "BLOCK", port: "*", protocol: "All other", color: "#ef4444" },
   ];
 
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e0f0ff" }}>
+          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
             What is a Firewall?
           </h2>
-          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#7c9ab5" }}>
-            A <strong style={{ color: "#00d4aa" }}>firewall</strong> is like a security guard
+          <p className="mb-6 text-sm leading-relaxed" style={{ color: "#94a3b8" }}>
+            A <strong style={{ color: "#06b6d4" }}>firewall</strong> is like a security guard
             for your network. It sits between your devices and the internet, inspecting every
             packet that tries to enter or leave. Based on a set of{" "}
-            <strong style={{ color: "#00d4aa" }}>rules</strong>, it decides: allow or block?
+            <strong style={{ color: "#06b6d4" }}>rules</strong>, it decides: allow or block?
           </p>
 
-          {/* Firewall flow diagram */}
-          <svg viewBox="0 0 500 100" className="mx-auto w-full max-w-lg mb-5">
+          {/* ── Firewall Flow Diagram SVG ──────────────────────────── */}
+          <svg viewBox="0 0 500 120" className="mx-auto w-full max-w-lg mb-5">
             <defs>
-              <filter id="fw-glow">
-                <feGaussianBlur stdDeviation="5" />
-                <feFlood floodColor="#00d4aa" floodOpacity="0.3" />
+              <filter id="fw2-glow">
+                <feGaussianBlur stdDeviation="6" />
+                <feFlood floodColor="#06b6d4" floodOpacity="0.35" />
                 <feComposite in2="SourceGraphic" operator="in" />
-                <feMerge>
-                  <feMergeNode />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
               </filter>
             </defs>
 
             {/* Internet node */}
-            <rect x={20} y={25} width={80} height={50} rx={12} fill="#111d33" stroke="#1e3a5f" strokeWidth="1.5" />
-            <text x={60} y={47} textAnchor="middle" fill="#38bdf8" fontSize="18">{"🌐"}</text>
-            <text x={60} y={66} textAnchor="middle" fill="#4b6a8a" fontSize="8" fontFamily="IBM Plex Mono">Internet</text>
+            <rect x={20} y={30} width={90} height={60} rx={14} fill="#1e293b" stroke="#334155" strokeWidth="1.5"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease" }} />
+            <g transform="translate(45, 45)" stroke="#64748b" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10" />
+            </g>
+            <text x={65} y={82} textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="IBM Plex Mono" fontWeight="600">Internet</text>
 
-            {/* Arrow */}
-            <line x1={110} y1={50} x2={180} y2={50} stroke="#1e3a5f" strokeWidth="2" strokeDasharray="4 4">
+            {/* Arrow with animated packets */}
+            <line x1={120} y1={60} x2={185} y2={60} stroke="#334155" strokeWidth="2" strokeDasharray="4 4">
               <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1s" repeatCount="indefinite" />
             </line>
+            <circle r="3" fill="#06b6d4" opacity="0.5">
+              <animateMotion dur="1.5s" repeatCount="indefinite" path="M120,60 L185,60" />
+            </circle>
 
             {/* Firewall */}
-            <rect x={190} y={15} width={120} height={70} rx={14} fill="#111d33" stroke="#00d4aa" strokeWidth="2" filter="url(#fw-glow)" />
-            <text x={250} y={42} textAnchor="middle" fill="#00d4aa" fontSize="22">{"🛡️"}</text>
-            <text x={250} y={68} textAnchor="middle" fill="#00d4aa" fontSize="9" fontFamily="IBM Plex Mono" fontWeight="700">FIREWALL</text>
+            <rect x={195} y={15} width={110} height={90} rx={16} fill="#0f172a" stroke="#06b6d4" strokeWidth="2" filter="url(#fw2-glow)"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 200ms" }} />
+            <g transform="translate(230, 35)" stroke="#06b6d4" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2l8 4v5c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z" fill="rgba(6,182,212,0.1)" />
+              <path d="M9 12l2 2 4-4" />
+            </g>
+            <text x={250} y={82} textAnchor="middle" fill="#06b6d4" fontSize="9" fontFamily="IBM Plex Mono" fontWeight="700">FIREWALL</text>
+            {/* Pulse ring */}
+            <rect x={195} y={15} width={110} height={90} rx={16} fill="none" stroke="#06b6d4" strokeWidth="1" opacity="0.15">
+              <animate attributeName="opacity" values="0.15;0.05;0.15" dur="2.5s" repeatCount="indefinite" />
+            </rect>
 
             {/* Arrow */}
-            <line x1={320} y1={50} x2={390} y2={50} stroke="#1e3a5f" strokeWidth="2" strokeDasharray="4 4">
+            <line x1={315} y1={60} x2={380} y2={60} stroke="#334155" strokeWidth="2" strokeDasharray="4 4">
               <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1s" repeatCount="indefinite" />
             </line>
 
             {/* Network node */}
-            <rect x={400} y={25} width={80} height={50} rx={12} fill="#111d33" stroke="#1e3a5f" strokeWidth="1.5" />
-            <text x={440} y={47} textAnchor="middle" fill="#00d4aa" fontSize="18">{"💻"}</text>
-            <text x={440} y={66} textAnchor="middle" fill="#4b6a8a" fontSize="8" fontFamily="IBM Plex Mono">Your Network</text>
+            <rect x={390} y={30} width={90} height={60} rx={14} fill="#1e293b" stroke="#334155" strokeWidth="1.5"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 400ms" }} />
+            <g transform="translate(415, 42)" stroke="#22c55e" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <rect x="2" y="2" width="20" height="14" rx="2" />
+              <line x1="7" y1="20" x2="17" y2="20" />
+              <line x1="12" y1="16" x2="12" y2="20" />
+            </g>
+            <text x={435} y={82} textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="IBM Plex Mono" fontWeight="600">Your Network</text>
           </svg>
 
-          {/* Rule table */}
+          {/* ── Rule Table ─────────────────────────────────────────── */}
           <div
             className="rounded-xl overflow-hidden"
-            style={{ background: "#0d1f3c", border: "1px solid #1e3a5f" }}
+            style={{ background: "#0f172a", border: "1px solid #1e293b" }}
           >
-            <div className="px-4 py-2" style={{ borderBottom: "1px solid #1e3a5f" }}>
-              <span className="font-mono text-[9px] font-bold uppercase tracking-widest" style={{ color: "#2a3f5f" }}>
+            <div className="flex items-center gap-2 px-4 py-2" style={{ borderBottom: "1px solid #1e293b" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round">
+                <polyline points="4 17 10 11 4 5" />
+                <line x1="12" y1="19" x2="20" y2="19" />
+              </svg>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
                 Example rule table
               </span>
             </div>
-            <div className="divide-y" style={{ borderColor: "#1e3a5f20" }}>
+            <div className="divide-y" style={{ borderColor: "#1e293b40" }}>
               {demoRules.map((rule, i) => (
                 <div
                   key={i}
@@ -272,10 +357,7 @@ function WhatIsFirewall({ onComplete }) {
                     transition: `all 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${i * 100}ms`,
                   }}
                 >
-                  <span
-                    className="font-mono text-xs font-bold"
-                    style={{ color: "#4b6a8a", width: "24px" }}
-                  >
+                  <span className="font-mono text-xs font-bold" style={{ color: "#475569", width: "24px" }}>
                     #{i + 1}
                   </span>
                   <span
@@ -284,14 +366,15 @@ function WhatIsFirewall({ onComplete }) {
                       background: `${rule.color}15`,
                       color: rule.color,
                       border: `1px solid ${rule.color}30`,
+                      boxShadow: `0 0 6px ${rule.color}10`,
                     }}
                   >
                     {rule.action}
                   </span>
-                  <span className="font-mono text-xs" style={{ color: "#c4d5e8" }}>
-                    Port :{rule.port}
+                  <span className="font-mono text-xs" style={{ color: "#cbd5e1" }}>
+                    Port <span style={{ color: "#06b6d4" }}>:{rule.port}</span>
                   </span>
-                  <span className="font-mono text-[10px]" style={{ color: "#4b6a8a" }}>
+                  <span className="font-mono text-[10px]" style={{ color: "#475569" }}>
                     {rule.protocol}
                   </span>
                 </div>
@@ -316,16 +399,18 @@ function WhatIsFirewall({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 2: PacketFlow — allowed packets ─────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   Learn Step 2 — PacketFlow: allowed packets
+   ═══════════════════════════════════════════════════════════════════════ */
 function AllowedPackets({ onComplete }) {
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-xl font-bold" style={{ color: "#e0f0ff" }}>
+          <h2 className="mb-1 text-xl font-bold" style={{ color: "#e2e8f0" }}>
             Allowing Safe Traffic
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#7c9ab5" }}>
+          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
             Watch how a firewall handles common web traffic. Ports 443 (HTTPS) and 80 (HTTP)
             are typically allowed because they serve regular web pages.
           </p>
@@ -355,18 +440,20 @@ function AllowedPackets({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 3: PacketFlow — blocked packets ─────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   Learn Step 3 — PacketFlow: blocked packets
+   ═══════════════════════════════════════════════════════════════════════ */
 function BlockedPackets({ onComplete }) {
   return (
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-xl font-bold" style={{ color: "#e0f0ff" }}>
+          <h2 className="mb-1 text-xl font-bold" style={{ color: "#e2e8f0" }}>
             Blocking Suspicious Traffic
           </h2>
-          <p className="mb-5 text-sm" style={{ color: "#7c9ab5" }}>
+          <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
             Now watch what happens when packets arrive on dangerous or unusual ports. The
-            firewall blocks them.
+            firewall blocks them -- you will see the packets shatter on impact.
           </p>
           <PacketFlowAnimator
             data={{
@@ -394,7 +481,9 @@ function BlockedPackets({ onComplete }) {
   );
 }
 
-/* ─── Learn Step 4: Stateful vs stateless ────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════
+   Learn Step 4 — Stateful vs Stateless firewalls
+   ═══════════════════════════════════════════════════════════════════════ */
 function StatefulStateless({ onComplete }) {
   const [entered, setEntered] = useState(false);
   useEffect(() => {
@@ -406,38 +495,89 @@ function StatefulStateless({ onComplete }) {
     <div className="skill-theme-network animate-lesson-enter">
       <DarkPanel>
         <div className="p-5 sm:p-8">
-          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e0f0ff" }}>
+          <h2 className="mb-1 text-2xl font-bold" style={{ color: "#e2e8f0" }}>
             Stateful vs Stateless Firewalls
           </h2>
-          <p className="mb-6 text-sm" style={{ color: "#7c9ab5" }}>
-            Not all firewalls are created equal. The key difference is <strong style={{ color: "#00d4aa" }}>memory</strong>.
+          <p className="mb-6 text-sm" style={{ color: "#94a3b8" }}>
+            Not all firewalls are created equal. The key difference is{" "}
+            <strong style={{ color: "#06b6d4" }}>memory</strong>.
           </p>
+
+          {/* ── Comparison SVG ─────────────────────────────────────── */}
+          <svg viewBox="0 0 500 130" className="mx-auto w-full max-w-lg mb-5">
+            <defs>
+              <filter id="sf-glow">
+                <feGaussianBlur stdDeviation="4" />
+                <feFlood floodColor="#22c55e" floodOpacity="0.25" />
+                <feComposite in2="SourceGraphic" operator="in" />
+                <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+
+            {/* Stateless side */}
+            <rect x={10} y={10} width={230} height={110} rx={12} fill="#1e293b" stroke="#334155" strokeWidth="1"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease" }} />
+            <text x={125} y={35} textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="IBM Plex Mono" fontWeight="700">STATELESS</text>
+            {/* No memory icon */}
+            <g transform="translate(100, 50)" stroke="#64748b" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <rect x="0" y="0" width="20" height="14" rx="2" />
+              <line x1="10" y1="5" x2="10" y2="9" />
+              <text x="26" y="10" fill="#475569" fontSize="8" fontFamily="IBM Plex Mono">No memory</text>
+            </g>
+            {/* Individual packets checked */}
+            {[0, 1, 2].map((i) => (
+              <g key={i} style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${200 + i * 100}ms` }}>
+                <rect x={30 + i * 65} y={80} width={50} height={20} rx={4} fill="#334155" stroke="#47556940" strokeWidth="1" />
+                <text x={55 + i * 65} y={93} textAnchor="middle" fill="#64748b" fontSize="7" fontFamily="IBM Plex Mono">CHECK</text>
+              </g>
+            ))}
+
+            {/* Stateful side */}
+            <rect x={260} y={10} width={230} height={110} rx={12} fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.2)" strokeWidth="1.5" filter="url(#sf-glow)"
+              style={{ opacity: entered ? 1 : 0, transition: "opacity 0.4s ease 150ms" }} />
+            <text x={375} y={35} textAnchor="middle" fill="#22c55e" fontSize="10" fontFamily="IBM Plex Mono" fontWeight="700">STATEFUL</text>
+            <text x={440} y={35} fill="#22c55e80" fontSize="7" fontFamily="IBM Plex Mono" fontWeight="600">Recommended</text>
+            {/* Memory icon */}
+            <g transform="translate(350, 50)" stroke="#22c55e" strokeWidth="1.5" fill="none" strokeLinecap="round">
+              <rect x="0" y="0" width="20" height="14" rx="2" fill="rgba(34,197,94,0.1)" />
+              <line x1="4" y1="5" x2="16" y2="5" opacity="0.5" />
+              <line x1="4" y1="9" x2="12" y2="9" opacity="0.5" />
+              <text x="26" y="10" fill="#22c55e90" fontSize="8" fontFamily="IBM Plex Mono">Remembers</text>
+            </g>
+            {/* Connected chain */}
+            <line x1={290} y1={90} x2={460} y2={90} stroke="#22c55e" strokeWidth="1" strokeDasharray="4 4" opacity="0.3">
+              <animate attributeName="stroke-dashoffset" from="16" to="0" dur="1.5s" repeatCount="indefinite" />
+            </line>
+            {[0, 1, 2].map((i) => (
+              <circle key={i} cx={310 + i * 65} cy={90} r="6" fill="rgba(34,197,94,0.15)" stroke="#22c55e" strokeWidth="1"
+                style={{ opacity: entered ? 1 : 0, transition: `opacity 0.4s ease ${300 + i * 100}ms` }}>
+                <animate attributeName="r" values="6;7.5;6" dur={`${2 + i * 0.3}s`} repeatCount="indefinite" />
+              </circle>
+            ))}
+          </svg>
 
           <div className="grid gap-3 sm:grid-cols-2">
             {/* Stateless */}
             <div
               className="rounded-xl p-4"
               style={{
-                background: "#111d33",
-                border: "1px solid #1e3a5f",
+                background: "#1e293b",
+                border: "1px solid #334155",
                 opacity: entered ? 1 : 0,
                 transform: entered ? "translateX(0)" : "translateX(-20px)",
                 transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0ms",
               }}
             >
-              <span
-                className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold"
-                style={{ background: "#1e3a5f", color: "#4b6a8a" }}
-              >
+              <span className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold"
+                style={{ background: "#334155", color: "#64748b" }}>
                 STATELESS
               </span>
-              <p className="mt-3 text-sm" style={{ color: "#c4d5e8" }}>
+              <p className="mt-3 text-sm" style={{ color: "#cbd5e1" }}>
                 Checks each packet individually against the rules. Has no memory of previous
                 packets. Fast but limited.
               </p>
-              <p className="mt-2 font-mono text-xs" style={{ color: "#2a3f5f" }}>
-                // Like a bouncer who checks your ID every time -- even if you just stepped
-                outside for a moment.
+              <p className="mt-2 font-mono text-xs" style={{ color: "#334155" }}>
+                {"// Like a bouncer who checks your ID every time"}
               </p>
             </div>
 
@@ -445,30 +585,28 @@ function StatefulStateless({ onComplete }) {
             <div
               className="rounded-xl p-4"
               style={{
-                background: "rgba(0,212,170,0.05)",
-                border: "1px solid rgba(0,212,170,0.2)",
+                background: "rgba(34,197,94,0.05)",
+                border: "1px solid rgba(34,197,94,0.2)",
                 opacity: entered ? 1 : 0,
                 transform: entered ? "translateX(0)" : "translateX(20px)",
                 transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1) 150ms",
               }}
             >
               <div className="flex items-center gap-2">
-                <span
-                  className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold"
-                  style={{ background: "rgba(0,212,170,0.15)", color: "#00d4aa" }}
-                >
+                <span className="inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold"
+                  style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e" }}>
                   STATEFUL
                 </span>
-                <span className="text-[10px] font-bold" style={{ color: "#00d4aa" }}>
+                <span className="text-[10px] font-bold" style={{ color: "#22c55e" }}>
                   Recommended
                 </span>
               </div>
-              <p className="mt-3 text-sm" style={{ color: "#c4d5e8" }}>
+              <p className="mt-3 text-sm" style={{ color: "#cbd5e1" }}>
                 Remembers active connections. If you started a web request, it automatically
                 allows the response back. Smarter and more secure.
               </p>
-              <p className="mt-2 font-mono text-xs" style={{ color: "#2a3f5f" }}>
-                // Like a bouncer who remembers your face after checking your ID once.
+              <p className="mt-2 font-mono text-xs" style={{ color: "#334155" }}>
+                {"// Like a bouncer who remembers your face"}
               </p>
             </div>
           </div>
@@ -505,9 +643,9 @@ function StatefulStateless({ onComplete }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Main Lesson Component
-   ═══════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════ */
 export default function Lesson2({ currentPhase, currentStep, onComplete }) {
   if (currentPhase === "learn") {
     if (currentStep === 0) return <WhatArePackets onComplete={onComplete} />;
@@ -523,10 +661,10 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e0f0ff" }}>
+              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e2e8f0" }}>
                 Build Your First Firewall
               </h2>
-              <p className="mb-5 text-sm" style={{ color: "#7c9ab5" }}>
+              <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
                 A small company needs to allow web traffic but block insecure remote access.
                 Drag the rules into the correct order.
               </p>
@@ -557,10 +695,10 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e0f0ff" }}>
+              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e2e8f0" }}>
                 Tighter Security
               </h2>
-              <p className="mb-5 text-sm" style={{ color: "#7c9ab5" }}>
+              <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
                 Now the company also needs SSH access for their admins, but wants to block
                 everything else. Pay attention to rule order!
               </p>
@@ -595,10 +733,10 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
         <div className="skill-theme-network animate-lesson-enter">
           <DarkPanel>
             <div className="p-5 sm:p-8">
-              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e0f0ff" }}>
+              <h2 className="mb-1 text-xl font-bold" style={{ color: "#e2e8f0" }}>
                 Firewall Challenge
               </h2>
-              <p className="mb-5 text-sm" style={{ color: "#7c9ab5" }}>
+              <p className="mb-5 text-sm" style={{ color: "#94a3b8" }}>
                 A hospital network needs HTTPS for their patient portal, DNS for domain
                 resolution, and must block all remote access protocols. No hints this time --
                 configure the firewall from scratch.
