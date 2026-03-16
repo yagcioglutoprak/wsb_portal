@@ -295,15 +295,6 @@ function NetworkLayers({ onComplete }) {
                   }}
                 >
                   <div className="flex items-stretch">
-                    {/* Neon side bar */}
-                    <div
-                      className="w-1.5 shrink-0"
-                      style={{
-                        background: `linear-gradient(to bottom, ${layer.color}, ${layer.color}60)`,
-                        boxShadow: `0 0 10px ${layer.color}40`,
-                      }}
-                    />
-
                     <div className="flex flex-1 items-center gap-4 px-4 py-3.5">
                       {/* Icon circle */}
                       <div

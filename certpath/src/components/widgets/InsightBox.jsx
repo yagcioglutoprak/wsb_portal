@@ -67,26 +67,17 @@ export default function InsightBox({ title = "Key insight", children }) {
         }}
       />
 
-      {/* Left accent bar -- gradient */}
-      <div
-        className="absolute inset-y-0 left-0 w-1.5"
-        style={{
-          background: "linear-gradient(to bottom, #f59e0b, #f97316, #ef4444)",
-          borderRadius: "0 4px 4px 0",
-          boxShadow: "2px 0 8px rgba(245, 158, 11, 0.2)",
-        }}
-      />
-
-      {/* Subtle shadow for depth */}
+      {/* Subtle border ring + shadow for depth */}
       <div
         className="absolute inset-0 rounded-xl"
         style={{
           boxShadow: "0 4px 16px rgba(245, 158, 11, 0.08), 0 1px 4px rgba(0,0,0,0.04)",
+          border: "1px solid rgba(245, 158, 11, 0.15)",
         }}
       />
 
       {/* Content */}
-      <div className="relative px-6 py-5 pl-7">
+      <div className="relative px-6 py-5">
         <div className="mb-2 flex items-center gap-2.5">
           <LightbulbIcon />
           <p className="text-xs font-bold uppercase tracking-wider text-amber-700/90">
