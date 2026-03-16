@@ -11,7 +11,7 @@ export default function SkillCard({ skill, progress, currentLesson }) {
       {currentLesson ? (
         <div className="mt-2 rounded-lg border-l-3 border-rust bg-stone-50 p-3">
           <p className="text-sm font-semibold text-ink">
-            {skill.name} \u00b7 Lesson {currentLesson.number}
+            {skill.name} · Lesson {currentLesson.number}
           </p>
           <p className="mt-0.5 text-xs text-graphite">
             {currentLesson.title}
@@ -20,7 +20,7 @@ export default function SkillCard({ skill, progress, currentLesson }) {
             to={`/skills/${skill.slug}/${currentLesson.id}`}
             className="mt-2 inline-block rounded-lg bg-rust px-4 py-2 text-xs font-semibold text-white hover:bg-rust/90"
           >
-            {isComplete ? "Review \u2192" : "Continue \u2192"}
+            {isComplete ? "Review →" : "Continue →"}
           </Link>
         </div>
       ) : (
@@ -32,7 +32,7 @@ export default function SkillCard({ skill, progress, currentLesson }) {
             to={`/skills/${skill.slug}`}
             className="mt-2 inline-block rounded-lg bg-rust px-4 py-2 text-xs font-semibold text-white"
           >
-            Start Learning \u2192
+            Start Learning →
           </Link>
         </div>
       )}

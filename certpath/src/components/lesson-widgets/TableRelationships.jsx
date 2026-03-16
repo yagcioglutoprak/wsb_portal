@@ -143,7 +143,7 @@ export default function TableRelationships({ data, onComplete }) {
       {activeRelObj && (
         <div className="rounded-lg border-l-3 border-rust bg-rust/5 p-3 animate-fade-in-up">
           <p className="font-mono text-xs font-semibold text-rust">
-            {activeRelObj.from} {"\u2192"} {activeRelObj.to}
+            {activeRelObj.from} {"→"} {activeRelObj.to}
           </p>
           <p className="mt-1 text-sm text-graphite">{activeRelObj.label}</p>
         </div>

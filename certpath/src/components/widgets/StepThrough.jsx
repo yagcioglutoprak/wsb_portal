@@ -46,7 +46,7 @@ export default function StepThrough({
             disabled={!canAdvance}
             className="rounded-lg bg-rust px-5 py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-40"
           >
-            {currentStep === total - 1 ? "Complete" : "Next \u2192"}
+            {currentStep === total - 1 ? "Complete" : "Next →"}
           </button>
         </div>
       </div>

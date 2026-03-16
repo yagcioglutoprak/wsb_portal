@@ -89,7 +89,7 @@ export default function LessonViewer() {
             to={`/skills/${skillSlug}`}
             className="text-sm text-graphite hover:text-rust"
           >
-            \u2190 {skill.name}
+            ← {skill.name}
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-xs text-pencil">
@@ -105,7 +105,7 @@ export default function LessonViewer() {
         <div className="flex-1 px-8 py-6">
           <div className="mx-auto max-w-3xl">
             <p className="mb-1 text-xs font-bold uppercase tracking-wider text-rust">
-              {currentPhase} \u00b7 Step {currentStepIndex + 1}
+              {currentPhase} · Step {currentStepIndex + 1}
             </p>
             <Suspense
               fallback={
@@ -128,7 +128,7 @@ export default function LessonViewer() {
                 {currentPhase === "challenge" &&
                 currentStepIndex === lesson.phases.challenge.steps - 1
                   ? "Complete Lesson"
-                  : "Next \u2192"}
+                  : "Next →"}
               </button>
             </div>
           </div>

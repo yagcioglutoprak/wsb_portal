@@ -19,8 +19,8 @@ export default function ActionPlan({ profile, progress }) {
       id: skill.id,
       title: `Complete ${skill.name}`,
       subtitle: isComplete
-        ? `${skillLessons.length} lessons \u00b7 Done`
-        : `${completedLessons.length} of ${skillLessons.length} lessons${inProgress ? " \u00b7 In progress" : ""}`,
+        ? `${skillLessons.length} lessons · Done`
+        : `${completedLessons.length} of ${skillLessons.length} lessons${inProgress ? " · In progress" : ""}`,
       status: isComplete ? "completed" : inProgress ? "in-progress" : "upcoming",
       link: `/skills/${skill.slug}`,
       progress: skillLessons.length

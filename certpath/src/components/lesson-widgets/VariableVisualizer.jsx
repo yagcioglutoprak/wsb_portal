@@ -136,7 +136,7 @@ export default function VariableVisualizer({ data, onComplete }) {
               onClick={handleStep}
               className="rounded-lg bg-rust px-5 py-2 text-sm font-semibold text-white transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
-              {stepIndex === steps.length - 1 ? "Finish" : "Step \u2192"}
+              {stepIndex === steps.length - 1 ? "Finish" : "Step →"}
             </button>
           )}
         </div>

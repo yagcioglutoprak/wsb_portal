@@ -37,11 +37,11 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold text-ink">Welcome back</h1>
           <p className="text-sm text-pencil">
-            {profile.year} year \u00b7 {profile.program} \u00b7 {profile.field}
+            {profile.year} year · {profile.program} · {profile.field}
           </p>
         </div>
         <div className="rounded-full bg-rust px-4 py-1.5 text-xs font-semibold text-white">
-          Level {level} \u00b7 {xp} XP
+          Level {level} · {xp} XP
         </div>
       </div>
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
                 >
                   <p className="text-sm font-semibold text-ink">{job.title}</p>
                   <p className="text-xs text-pencil">
-                    {job.company} \u00b7 {job.location} \u00b7{" "}
+                    {job.company} · {job.location} ·{" "}
                     {job.salaryMin.toLocaleString()} PLN/mo
                   </p>
                 </Link>
@@ -117,7 +117,7 @@ export default function Dashboard() {
               to="/jobs"
               className="mt-3 block text-xs font-semibold text-rust hover:underline"
             >
-              View all opportunities \u2192
+              View all opportunities →
             </Link>
           </div>
         </div>
