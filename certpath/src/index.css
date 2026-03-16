@@ -169,3 +169,58 @@ body {
 .animate-correct {
   animation: correct-flash 0.8s ease-out;
 }
+
+/* ── SQL Theme Animations ────────────────────────────────────── */
+
+@keyframes sql-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes sql-row-highlight {
+  0% { background-color: rgba(250, 204, 21, 0.35); }
+  100% { background-color: rgba(250, 204, 21, 0); }
+}
+
+@keyframes sql-slide-in-col {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sql-slide-in-row {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes sql-dash-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes sql-pulse-indigo {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2); }
+}
+
+@keyframes sql-slot-in {
+  from { opacity: 0; transform: scale(0.8) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes sql-table-slide {
+  from { opacity: 0; transform: translateX(var(--slide-dir, -40px)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes sql-venn-fill {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-sql-cursor { animation: sql-cursor-blink 1s step-end infinite; }
+.animate-sql-row-flash { animation: sql-row-highlight 1.2s ease-out forwards; }
+.animate-sql-col-in { animation: sql-slide-in-col 0.4s ease-out both; }
+.animate-sql-row-in { animation: sql-slide-in-row 0.35s ease-out both; }
+.animate-sql-pulse-indigo { animation: sql-pulse-indigo 1.5s ease-in-out infinite; }
+.animate-sql-slot-in { animation: sql-slot-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-sql-table-slide { animation: sql-table-slide 0.6s ease-out both; }
+.animate-sql-venn-fill { animation: sql-venn-fill 0.5s ease-out both; }
