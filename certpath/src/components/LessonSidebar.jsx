@@ -5,7 +5,7 @@ const PHASE_META = {
     badge: "bg-blue-50 text-blue-700 border-blue-200",
     activeBg: "bg-blue-600",
     activeGlow: "shadow-blue-300/40",
-    borderColor: "border-blue-500",
+    activeTint: "bg-blue-50/60 ring-1 ring-blue-400/30",
   },
   apply: {
     label: "Apply",
@@ -13,7 +13,7 @@ const PHASE_META = {
     badge: "bg-amber-50 text-amber-700 border-amber-200",
     activeBg: "bg-amber-500",
     activeGlow: "shadow-amber-300/40",
-    borderColor: "border-amber-500",
+    activeTint: "bg-amber-50/60 ring-1 ring-amber-400/30",
   },
   challenge: {
     label: "Challenge",
@@ -21,7 +21,7 @@ const PHASE_META = {
     badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
     activeBg: "bg-emerald-600",
     activeGlow: "shadow-emerald-300/40",
-    borderColor: "border-emerald-500",
+    activeTint: "bg-emerald-50/60 ring-1 ring-emerald-400/30",
   },
 };
 
@@ -105,7 +105,7 @@ export default function LessonSidebar({
             {/* Phase badge with icon */}
             <span
               className={[
-                "mb-3 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all duration-300",
+                "mb-3 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider transition-all duration-300",
                 unlocked
                   ? `${meta.badge} shadow-sm`
                   : "border-stone-200 bg-stone-100/80 text-pencil/40",
@@ -139,7 +139,7 @@ export default function LessonSidebar({
                     className={[
                       "group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs font-medium transition-all duration-200",
                       isCurrent
-                        ? `bg-white/90 text-ink shadow-sm ${meta.borderColor} border-l-2`
+                        ? `text-ink shadow-sm ${meta.activeTint}`
                         : isCompleted
                           ? "text-ink/70 hover:bg-white/50"
                           : unlocked
@@ -150,13 +150,7 @@ export default function LessonSidebar({
                       .join(" ")}
                     style={
                       isCurrent
-                        ? {
-                            boxShadow: `0 1px 4px rgba(0,0,0,0.05), -2px 0 0 ${
-                              phase === "learn" ? "#3b82f6" :
-                              phase === "apply" ? "#f59e0b" :
-                              "#22c55e"
-                            }`,
-                          }
+                        ? { boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }
                         : undefined
                     }
                   >
@@ -173,14 +167,14 @@ export default function LessonSidebar({
                       ) : isCurrent ? (
                         <span
                           className={[
-                            "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white animate-step-pulse-ring",
+                            "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white animate-step-pulse-ring",
                             meta.activeBg,
                           ].join(" ")}
                         >
                           {i + 1}
                         </span>
                       ) : (
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-graphite shadow-sm border border-stone-200/60 transition-colors duration-200 group-hover:border-stone-300 group-hover:bg-stone-50">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-graphite shadow-sm border border-stone-200/60 transition-colors duration-200 group-hover:border-stone-300 group-hover:bg-stone-50">
                           {i + 1}
                         </span>
                       )}

@@ -26,7 +26,7 @@ function SQLBlock({ filename, children }) {
           <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
           <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
         </div>
-        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <span className="ml-2 font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
           {filename}
         </span>
       </div>
@@ -66,24 +66,24 @@ function DataGrid({
             <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
             <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
           </svg>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
             {tableName || "Result"}
           </span>
         </div>
         {headerLabel && (
-          <span className="rounded-full bg-orange-100 px-2 py-0.5 font-mono text-[10px] font-bold text-orange-600">
+          <span className="rounded-full bg-orange-100 px-2 py-0.5 font-mono text-xs font-bold text-orange-600">
             {headerLabel}
           </span>
         )}
         {showCount && matchFn && (
           <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-400 line-through">
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-400 line-through">
               {rows.length} rows
             </span>
             <svg width="10" height="10" viewBox="0 0 10 10" className="text-slate-400">
               <path d="M2 5h6M6 3l2 2-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-xs font-bold text-emerald-700">
               {rows.filter(matchFn).length} rows
             </span>
           </div>
@@ -97,7 +97,7 @@ function DataGrid({
               {cols.map((col) => (
                 <th
                   key={col}
-                  className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                  className={`px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
                     highlightCols?.has(col)
                       ? "text-blue-700 bg-blue-50/60"
                       : "text-slate-500 bg-slate-50/80"
@@ -150,7 +150,7 @@ function DataGrid({
 
       {matchFn && (
         <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2">
-          <p className="font-mono text-[10px] text-slate-500">
+          <p className="font-mono text-xs text-slate-500">
             <span className="font-bold text-emerald-600">{rows.filter(matchFn).length}</span> of{" "}
             {rows.length} rows match the filter
           </p>
@@ -200,11 +200,11 @@ function SelectBasics({ onComplete }) {
       {/* Table with column fading */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
             Result
           </span>
           {phase === "selected" && (
-            <span className="animate-lesson-enter rounded-full bg-blue-100 px-2 py-0.5 font-mono text-[10px] font-bold text-blue-700">
+            <span className="animate-lesson-enter rounded-full bg-blue-100 px-2 py-0.5 font-mono text-xs font-bold text-blue-700">
               2 of 5 columns selected
             </span>
           )}
@@ -216,7 +216,7 @@ function SelectBasics({ onComplete }) {
                 {ALL_COLS.map((col) => (
                   <th
                     key={col}
-                    className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-700 ${
+                    className={`px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-700 ${
                       selectedCols.has(col)
                         ? "text-blue-700 bg-blue-50/60"
                         : "text-slate-200 bg-slate-50/30"
@@ -243,7 +243,7 @@ function SelectBasics({ onComplete }) {
                 </tr>
               ))}
               <tr>
-                <td colSpan={ALL_COLS.length} className="px-4 py-1.5 text-[10px] text-slate-400 italic">
+                <td colSpan={ALL_COLS.length} className="px-4 py-1.5 text-xs text-slate-400 italic">
                   ... {EMPLOYEES.length - 5} more rows
                 </td>
               </tr>
@@ -306,7 +306,7 @@ function FromClause({ onComplete }) {
               </svg>
               {table}
               {activeTable === table && (
-                <p className="font-sans text-[10px] font-normal text-blue-500 animate-lesson-enter">
+                <p className="font-sans text-xs font-normal text-blue-500 animate-lesson-enter">
                   selected
                 </p>
               )}
@@ -381,18 +381,18 @@ function WhereFiltering({ onComplete }) {
       {/* Table with animated filtering */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
             employees
           </span>
           {filterActive && (
             <div className="flex items-center gap-1.5 animate-lesson-enter">
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-400 line-through">
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-400 line-through">
                 {EMPLOYEES.length} rows
               </span>
               <svg width="10" height="10" viewBox="0 0 10 10" className="text-slate-400">
                 <path d="M2 5h6M6 3l2 2-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-xs font-bold text-emerald-700">
                 {matchCount} rows matching
               </span>
             </div>
@@ -403,7 +403,7 @@ function WhereFiltering({ onComplete }) {
             <thead>
               <tr className="border-b border-slate-200">
                 {["id", "name", "department", "salary"].map((col) => (
-                  <th key={col} className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">
+                  <th key={col} className="px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">
                     {col}
                   </th>
                 ))}
@@ -442,7 +442,7 @@ function WhereFiltering({ onComplete }) {
         </div>
         {filterActive && (
           <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2 animate-lesson-enter">
-            <p className="font-mono text-[10px] text-slate-500">
+            <p className="font-mono text-xs text-slate-500">
               <span className="font-bold text-emerald-600">{matchCount}</span> of {EMPLOYEES.length} rows match{" "}
               <code className="text-orange-600">salary &gt; 5000</code>
             </p>
@@ -662,17 +662,17 @@ function OrderByStep({ onComplete }) {
       {/* Sorted table with animation */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">Result</span>
-          <span className="rounded-full bg-purple-100 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-700">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">Result</span>
+          <span className="rounded-full bg-purple-100 px-2 py-0.5 font-mono text-xs font-bold text-purple-700">
             Sorted by salary {sortDir.toUpperCase()}
           </span>
         </div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200">
-              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80 w-8">#</th>
-              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">name</th>
-              <th className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50/40">
+              <th className="px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80 w-8">#</th>
+              <th className="px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">name</th>
+              <th className="px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50/40">
                 <div className="flex items-center gap-1">
                   salary
                   <svg width="10" height="10" viewBox="0 0 10 10" className="text-purple-500">
@@ -695,7 +695,7 @@ function OrderByStep({ onComplete }) {
                   "--sort-offset": `${(i % 2 === 0 ? -1 : 1) * 12}px`,
                 }}
               >
-                <td className="px-4 py-2 font-mono text-[10px] text-slate-400">{i + 1}</td>
+                <td className="px-4 py-2 font-mono text-xs text-slate-400">{i + 1}</td>
                 <td className="px-4 py-2 text-xs text-slate-700">{e.name}</td>
                 <td className="px-4 py-2 font-mono text-xs font-semibold text-slate-700">
                   {e.salary.toLocaleString()} PLN
@@ -791,7 +791,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
                   <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.5 11.5c0-1.5 1.12-2.5 2.5-2.5s2.5 1 2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
               </span>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-700">
+              <p className="font-sans text-xs font-bold uppercase tracking-wider text-blue-700">
                 Manager request
               </p>
             </div>

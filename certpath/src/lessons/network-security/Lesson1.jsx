@@ -774,7 +774,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
                 className="mb-5 rounded-xl p-4"
                 style={{ background: "rgba(40,86,166,0.03)", border: "1px solid rgba(214,211,205,0.5)" }}
               >
-                <p className="mb-1.5 font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-pencil">
+                <p className="mb-1.5 font-sans text-[9px] font-bold uppercase tracking-wide text-pencil">
                   Scenario
                 </p>
                 <p className="text-base leading-relaxed text-graphite">

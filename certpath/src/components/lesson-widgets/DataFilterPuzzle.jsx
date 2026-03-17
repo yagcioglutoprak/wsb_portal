@@ -157,9 +157,9 @@ export default function DataFilterPuzzle({ data, onComplete }) {
               <path d="M1 2h14L9 9v5l-2 1V9L1 2z" />
             </svg>
           </div>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-violet-600">Filters</span>
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-violet-600">Filters</span>
           {hasActiveFilters && (
-            <span className="ml-auto rounded-full bg-violet-100 px-2.5 py-0.5 font-mono text-[10px] font-bold text-violet-600">
+            <span className="ml-auto rounded-full bg-violet-100 px-2.5 py-0.5 font-mono text-xs font-bold text-violet-600">
               Active
             </span>
           )}
@@ -237,7 +237,7 @@ export default function DataFilterPuzzle({ data, onComplete }) {
               <line x1="1" y1="5.5" x2="15" y2="5.5" />
               <line x1="6" y1="5.5" x2="6" y2="15" />
             </svg>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/90">
+            <span className="font-sans text-xs font-bold uppercase tracking-widest text-white/90">
               Data Table
             </span>
           </div>
@@ -286,7 +286,7 @@ export default function DataFilterPuzzle({ data, onComplete }) {
                             ? "bg-violet-50"
                             : i % 2 === 0 ? "bg-white" : "bg-violet-50/20"
                       }`}
-                      style={matches && hasActiveFilters ? { borderLeft: "3px solid #8b5cf6" } : {}}
+                      style={matches && hasActiveFilters ? { background: "rgba(139, 92, 246, 0.08)" } : {}}
                     >
                       {columns.map((col) => (
                         <td key={col} className={`px-4 py-2 font-mono text-xs transition-all duration-300 ${

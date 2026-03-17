@@ -19,7 +19,7 @@ function colorize(code) {
     .replace(/(#.*)/g, '<span class="cbp-cmt">$1</span>');
 }
 
-/* ─── Detect block type for left border color ───────────────────── */
+/* ─── Detect block type for border color ─────────────────────────── */
 function getBlockType(code) {
   const trimmed = code.trimStart();
   if (/^(def |class )/.test(trimmed)) return "func";
@@ -68,8 +68,8 @@ function CodeBlock({ block, onDragStart, onTouchStart, isDragging, isDistractorD
             : "border-[#45475a] bg-[#1e1e2e] text-[#cdd6f4]",
       ].filter(Boolean).join(" ")}
       style={{
-        borderLeftWidth: "3px",
-        borderLeftColor: isDistractor && isDistractorDismissed ? "#313244" : borderColor,
+        borderBottomWidth: "2px",
+        borderBottomColor: isDistractor && isDistractorDismissed ? "#313244" : borderColor,
         transform: isDragging ? "rotate(2deg)" : undefined,
         boxShadow: isDragging ? `0 12px 28px -4px ${borderColor}33` : undefined,
       }}
@@ -306,7 +306,7 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
             <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
             <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
           </svg>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-graphite">
+          <p className="font-sans text-xs font-bold uppercase tracking-widest text-graphite">
             Code blocks — drag to editor
           </p>
         </div>
@@ -369,7 +369,7 @@ export default function CodeBlockPuzzle({ data, onComplete }) {
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ color: result === "success" ? "#a6e3a1" : "#f38ba8" }}>
               <path d="M4 17l6-5-6-5M12 19h8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: LINE_NUM_COLOR }}>
+            <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: LINE_NUM_COLOR }}>
               Terminal
             </span>
             <div className="flex-1" />

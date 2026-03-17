@@ -362,7 +362,7 @@ export default function ArchitectureCanvas({ data, onComplete }) {
                 {/* Tier label */}
                 <div className="mb-3 flex items-center gap-3">
                   <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(99,130,191,0.25), transparent)" }} />
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70">
+                  <span className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70">
                     {tier}
                   </span>
                   <div className="h-px flex-1" style={{ background: "linear-gradient(90deg, transparent, rgba(99,130,191,0.25), transparent)" }} />
@@ -433,7 +433,7 @@ export default function ArchitectureCanvas({ data, onComplete }) {
                         ) : (
                           <>
                             <span className="text-xs font-semibold text-indigo-500/60">{slot.label}</span>
-                            <span className="mt-1 font-mono text-[9px] text-indigo-400/40 uppercase tracking-wider">drop here</span>
+                            <span className="mt-1 font-sans font-semibold text-[9px] text-indigo-400/40 uppercase tracking-wider">drop here</span>
                           </>
                         )}
                       </div>
@@ -454,7 +454,7 @@ export default function ArchitectureCanvas({ data, onComplete }) {
       >
         {available.length > 0 ? (
           <>
-            <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/60">
+            <p className="mb-3 font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/60">
               Components
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
@@ -474,7 +474,7 @@ export default function ArchitectureCanvas({ data, onComplete }) {
             </div>
           </>
         ) : (
-          <p className="py-1 text-center font-mono text-[10px] text-indigo-400/40">
+          <p className="py-1 text-center font-mono text-xs text-indigo-400/40">
             All components placed
           </p>
         )}

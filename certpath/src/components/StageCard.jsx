@@ -28,7 +28,7 @@ export default function StageCard({
         {/* Numbered dot */}
         <div
           className={[
-            "flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-mono text-sm font-medium transition-colors duration-300",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-sans text-base font-medium transition-colors duration-300",
             isActive
               ? "bg-rust text-white"
               : "border-2 border-pencil/30 text-pencil",
@@ -38,20 +38,20 @@ export default function StageCard({
         </div>
 
         <div>
-          <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
+          <span className="block font-sans text-xs uppercase tracking-wide text-pencil">
             Stage {String(stageNum).padStart(2, "0")}
           </span>
-          <span className="block font-serif text-xl italic text-ink">
+          <span className="block font-sans text-xl font-semibold text-ink">
             {label}
           </span>
-          <span className="block font-mono text-xs tracking-wider text-pencil">
+          <span className="block font-mono text-xs tracking-wide text-pencil">
             ~{stageMonths} months
           </span>
         </div>
       </div>
 
       {/* Cert list */}
-      <div className="flex flex-col gap-3 pl-4 border-l-2 border-pencil/20">
+      <div className="flex flex-col gap-3 pl-4">
         {certs.map((cert) => (
           <CertCard
             key={cert.id}

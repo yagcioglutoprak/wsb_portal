@@ -144,14 +144,14 @@ function VariableCard({ name, value, prevValue, isActive, isNew }) {
         {/* Top row: name + type pill */}
         <div className="flex items-center gap-2 mb-1.5">
           <span
-            className="rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider"
+            className="rounded-md px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-wider"
             style={{ background: style.labelBg, color: style.labelColor }}
           >
             {name}
           </span>
           {isActive && (
             <span
-              className="rounded-full px-1.5 py-px font-mono text-[8px] font-bold uppercase"
+              className="rounded-full px-1.5 py-px font-sans text-[8px] font-bold uppercase"
               style={{ background: style.pillBg, color: style.pillColor }}
             >
               {type}
@@ -247,7 +247,7 @@ export default function VariableVisualizer({ data, onComplete }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ color: "#89b4fa" }}>
               <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: LINE_NUM }}>
+            <p className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: LINE_NUM }}>
               Source
             </p>
           </div>
@@ -318,7 +318,7 @@ export default function VariableVisualizer({ data, onComplete }) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ color: "#cba6f7" }}>
               <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: LINE_NUM }}>
+            <p className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: LINE_NUM }}>
               Inspector
             </p>
           </div>
@@ -344,7 +344,7 @@ export default function VariableVisualizer({ data, onComplete }) {
                 <p className="font-mono text-xs" style={{ color: LINE_NUM }}>
                   No variables yet
                 </p>
-                <p className="font-mono text-[10px] mt-1" style={{ color: "#45475a" }}>
+                <p className="font-mono text-xs mt-1" style={{ color: "#45475a" }}>
                   Click Step to begin
                 </p>
               </div>
@@ -375,7 +375,7 @@ export default function VariableVisualizer({ data, onComplete }) {
               />
             ))}
           </div>
-          <span className="font-mono text-[10px] text-pencil">
+          <span className="font-mono text-xs text-pencil">
             Line {highlightLine + 1} of {lines.length}
           </span>
 
@@ -442,7 +442,7 @@ export default function VariableVisualizer({ data, onComplete }) {
                 <>
                   Step
                   <span
-                    className="flex h-5 w-5 items-center justify-center rounded font-mono text-[10px]"
+                    className="flex h-5 w-5 items-center justify-center rounded font-mono text-xs"
                     style={{ background: "rgba(17, 17, 27, 0.2)" }}
                   >
                     {highlightLine + 1}

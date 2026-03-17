@@ -17,7 +17,7 @@ function CodeSnippet({ children, filename = "python", className = "" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
+        <span className="ml-2 font-mono text-xs" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
       <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>
@@ -79,7 +79,7 @@ function FunctionMachine({ onComplete }) {
           }}>
             <rect x="30" y="72" width="60" height="36" rx="8" fill="rgba(137, 180, 250, 0.12)" stroke="#89b4fa" strokeWidth="1.5" />
             <text x="60" y="95" textAnchor="middle" className="font-mono" style={{ fill: "#89b4fa", fontSize: "16px", fontWeight: 700 }}>5</text>
-            <text x="60" y="68" textAnchor="middle" className="font-mono" style={{ fill: "#89b4fa", fontSize: "9px", fontWeight: 600, textTransform: "uppercase" }}>INPUT</text>
+            <text x="60" y="68" textAnchor="middle" className="font-sans font-semibold" style={{ fill: "#89b4fa", fontSize: "9px", fontWeight: 600, textTransform: "uppercase" }}>INPUT</text>
           </g>
 
           {/* Machine body */}
@@ -150,7 +150,7 @@ function FunctionMachine({ onComplete }) {
             </g>
 
             {/* Function label */}
-            <text x="240" y="24" textAnchor="middle" className="font-mono" style={{ fill: "#cba6f7", fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px" }}>
+            <text x="240" y="24" textAnchor="middle" className="font-sans font-semibold" style={{ fill: "#cba6f7", fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px" }}>
               FUNCTION
             </text>
             <text x="240" y="126" textAnchor="middle" className="font-mono" style={{ fill: SUBTEXT, fontSize: "9px" }}>
@@ -172,7 +172,7 @@ function FunctionMachine({ onComplete }) {
           }}>
             <rect x="370" y="72" width="70" height="36" rx="8" fill="rgba(166, 227, 161, 0.12)" stroke="#a6e3a1" strokeWidth="1.5" />
             <text x="405" y="95" textAnchor="middle" className="font-mono" style={{ fill: "#a6e3a1", fontSize: "16px", fontWeight: 700 }}>11</text>
-            <text x="405" y="68" textAnchor="middle" className="font-mono" style={{ fill: "#a6e3a1", fontSize: "9px", fontWeight: 600, textTransform: "uppercase" }}>OUTPUT</text>
+            <text x="405" y="68" textAnchor="middle" className="font-sans font-semibold" style={{ fill: "#a6e3a1", fontSize: "9px", fontWeight: 600, textTransform: "uppercase" }}>OUTPUT</text>
           </g>
 
           {/* Labels */}
@@ -324,7 +324,7 @@ function DefiningFunction({ onComplete }) {
             }}
           >
             <span
-              className="rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider shrink-0"
+              className="rounded-md px-2 py-0.5 font-sans text-xs font-bold uppercase tracking-wider shrink-0"
               style={{ background: `${part.color}18`, color: part.color }}
             >
               {part.label}
@@ -440,7 +440,7 @@ function CallingFunction({ onComplete }) {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl p-4" style={{ background: `rgba(203, 166, 247, 0.05)`, border: `1px solid rgba(203, 166, 247, 0.2)` }}>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#cba6f7" }}>Reusable</p>
+          <p className="font-sans text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: "#cba6f7" }}>Reusable</p>
           <div className="space-y-1">
             <div className="rounded-md px-2 py-1" style={{ background: DARK }}>
               <code className="font-mono text-xs" style={{ color: "#a6adc8" }}>greet("Anna")  <span style={{ color: "#a6e3a1" }}># Hello, Anna!</span></code>
@@ -454,7 +454,7 @@ function CallingFunction({ onComplete }) {
           </div>
         </div>
         <div className="rounded-xl p-4" style={{ background: `rgba(137, 180, 250, 0.05)`, border: `1px solid rgba(137, 180, 250, 0.2)` }}>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#89b4fa" }}>Why functions?</p>
+          <p className="font-sans text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: "#89b4fa" }}>Why functions?</p>
           <ul className="space-y-1.5 text-sm text-graphite">
             <li className="flex items-start gap-2">
               <span style={{ color: "#a6e3a1" }}>1.</span> Write once, use many times
@@ -496,7 +496,7 @@ function Scope({ onComplete }) {
           style={{ background: "rgba(137, 180, 250, 0.05)", border: "2px solid rgba(137, 180, 250, 0.25)" }}
         >
           <span
-            className="absolute -top-2.5 left-3 rounded-md px-2.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
+            className="absolute -top-2.5 left-3 rounded-md px-2.5 py-0.5 font-sans text-[9px] font-bold uppercase tracking-wider"
             style={{ background: DARK, color: "#89b4fa", border: "1px solid rgba(137, 180, 250, 0.3)" }}
           >
             Global Scope
@@ -504,11 +504,11 @@ function Scope({ onComplete }) {
 
           <div className="mt-2 flex items-center gap-2 mb-3">
             <div className="rounded-lg px-3 py-1.5" style={{ background: "rgba(250, 179, 135, 0.08)", border: "1px solid rgba(250, 179, 135, 0.25)" }}>
-              <span className="font-mono text-[10px] font-bold" style={{ color: "#fab387" }}>x</span>
+              <span className="font-mono text-xs font-bold" style={{ color: "#fab387" }}>x</span>
               <span className="font-mono text-sm ml-1.5" style={{ color: "#fab387" }}>=</span>
               <span className="font-mono text-sm font-bold ml-1" style={{ color: "#fab387" }}>10</span>
             </div>
-            <span className="text-[10px]" style={{ color: "rgba(137, 180, 250, 0.5)" }}>visible everywhere</span>
+            <span className="text-xs" style={{ color: "rgba(137, 180, 250, 0.5)" }}>visible everywhere</span>
           </div>
 
           {/* Local scope */}
@@ -517,18 +517,18 @@ function Scope({ onComplete }) {
             style={{ background: "rgba(203, 166, 247, 0.05)", border: "2px solid rgba(203, 166, 247, 0.25)" }}
           >
             <span
-              className="absolute -top-2.5 left-3 rounded-md px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
+              className="absolute -top-2.5 left-3 rounded-md px-2 py-0.5 font-sans text-[9px] font-bold uppercase tracking-wider"
               style={{ background: "rgba(137, 180, 250, 0.05)", color: "#cba6f7", border: "1px solid rgba(203, 166, 247, 0.3)" }}
             >
               Local: my_func()
             </span>
             <div className="mt-2 flex items-center gap-2">
               <div className="rounded-lg px-3 py-1.5" style={{ background: "rgba(166, 227, 161, 0.08)", border: "1px solid rgba(166, 227, 161, 0.25)" }}>
-                <span className="font-mono text-[10px] font-bold" style={{ color: "#a6e3a1" }}>y</span>
+                <span className="font-mono text-xs font-bold" style={{ color: "#a6e3a1" }}>y</span>
                 <span className="font-mono text-sm ml-1.5" style={{ color: "#a6e3a1" }}>=</span>
                 <span className="font-mono text-sm font-bold ml-1" style={{ color: "#a6e3a1" }}>5</span>
               </div>
-              <span className="text-[10px]" style={{ color: "rgba(203, 166, 247, 0.5)" }}>only inside my_func</span>
+              <span className="text-xs" style={{ color: "rgba(203, 166, 247, 0.5)" }}>only inside my_func</span>
             </div>
           </div>
         </div>

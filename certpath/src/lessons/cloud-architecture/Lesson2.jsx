@@ -58,7 +58,7 @@ function ArchNode({ type, label, desc, x, y, isNew, color = "border-indigo-200 b
       <div className={`flex h-14 w-14 items-center justify-center rounded-xl border-2 shadow-md transition-shadow hover:shadow-lg ${color}`}>
         <NodeIcon type={type} />
       </div>
-      <span className="mt-1.5 whitespace-nowrap rounded-lg bg-white/90 px-2.5 py-0.5 font-mono text-[10px] font-bold text-indigo-900 shadow-sm">
+      <span className="mt-1.5 whitespace-nowrap rounded-lg bg-white/90 px-2.5 py-0.5 font-sans text-xs font-bold text-indigo-900 shadow-sm">
         {label}
       </span>
       {desc && (
@@ -246,7 +246,7 @@ function StepCDN({ onComplete }) {
         <div className="p-4 flex gap-2">
           <button
             onClick={() => setShowCDN(false)}
-            className={`flex-1 rounded-lg px-3 py-2 font-mono text-[11px] font-bold transition-all ${
+            className={`flex-1 rounded-lg px-3 py-2 font-sans text-xs font-semibold transition-all ${
               !showCDN ? "bg-indigo-500 text-white shadow-md" : "bg-white text-indigo-500 border border-indigo-200/50"
             }`}
           >
@@ -254,7 +254,7 @@ function StepCDN({ onComplete }) {
           </button>
           <button
             onClick={() => setShowCDN(true)}
-            className={`flex-1 rounded-lg px-3 py-2 font-mono text-[11px] font-bold transition-all ${
+            className={`flex-1 rounded-lg px-3 py-2 font-sans text-xs font-semibold transition-all ${
               showCDN ? "bg-emerald-500 text-white shadow-md" : "bg-white text-indigo-500 border border-indigo-200/50"
             }`}
           >
@@ -462,7 +462,7 @@ function StepCache({ onComplete }) {
             <button
               key={s.key}
               onClick={() => setScenario(s.key)}
-              className={`flex-1 rounded-lg px-3 py-2 font-mono text-[11px] font-bold transition-all ${
+              className={`flex-1 rounded-lg px-3 py-2 font-sans text-xs font-semibold transition-all ${
                 scenario === s.key
                   ? s.color === "emerald" ? "bg-emerald-500 text-white shadow-md" : "bg-amber-500 text-white shadow-md"
                   : "bg-white text-indigo-500 border border-indigo-200/50"
@@ -636,7 +636,7 @@ function StepFullArch({ onComplete }) {
       {/* Request lifecycle */}
       {step >= 5 && (
         <div className="rounded-xl border border-indigo-200/50 bg-white p-4 shadow-sm animate-lesson-enter">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-3">Request lifecycle</p>
+          <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-3">Request lifecycle</p>
           <div className="space-y-2">
             {[
               { n: 1, label: "User visits site", comp: "CDN", desc: "Static files served from nearest edge" },
@@ -646,7 +646,7 @@ function StepFullArch({ onComplete }) {
               { n: 5, label: "Response", comp: "Server", desc: "Data returns through LB to user" },
             ].map((item) => (
               <div key={item.n} className="flex items-start gap-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white">{item.n}</div>
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white">{item.n}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-indigo-900">{item.label}</span>
@@ -748,7 +748,7 @@ export default function Lesson2({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Design an E-Commerce Backend</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Requirements</p>
+            <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-2">Requirements</p>
             <p className="text-base text-slate-600 leading-relaxed">
               Design a complete e-commerce backend with: global content delivery, traffic distribution, application processing, fast data caching, and persistent storage. No hints this time.
             </p>

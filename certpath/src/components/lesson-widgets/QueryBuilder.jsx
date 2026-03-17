@@ -174,7 +174,7 @@ export default function QueryBuilder({ data, onComplete }) {
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
             <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
           </div>
-          <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="ml-2 font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
             query.sql
           </span>
           {placed.length > 0 && (
@@ -240,7 +240,7 @@ export default function QueryBuilder({ data, onComplete }) {
             }}
             onDragOver={(e) => e.preventDefault()}
           >
-            <span className="font-mono text-[10px] text-slate-600 italic">
+            <span className="font-mono text-xs text-slate-600 italic">
               Drop next clause here
             </span>
           </div>
@@ -256,7 +256,7 @@ export default function QueryBuilder({ data, onComplete }) {
         }}
         onDragOver={(e) => e.preventDefault()}
       >
-        <p className="mb-2.5 font-mono text-[9px] font-bold uppercase tracking-widest text-slate-400">
+        <p className="mb-2.5 font-sans text-[9px] font-bold uppercase tracking-widest text-slate-400">
           Available clauses -- drag or click to add
         </p>
         <div className="flex flex-wrap gap-2">
@@ -290,7 +290,7 @@ export default function QueryBuilder({ data, onComplete }) {
             );
           })}
           {available.length === 0 && (
-            <span className="font-mono text-[10px] italic text-slate-400">
+            <span className="font-mono text-xs italic text-slate-400">
               All clauses placed -- check your query
             </span>
           )}
@@ -307,25 +307,25 @@ export default function QueryBuilder({ data, onComplete }) {
               <line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" strokeWidth="1.2" />
               <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" strokeWidth="1.2" />
             </svg>
-            <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
               Result Preview
             </span>
           </div>
           <div className="flex items-center gap-2">
             {hasFilters ? (
               <>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-400 line-through">
+                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-400 line-through">
                   {sampleData.length} rows
                 </span>
                 <svg width="10" height="10" viewBox="0 0 10 10" className="text-slate-400">
                   <path d="M2 5h6M6 3l2 2-2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-mono text-xs font-bold text-emerald-700">
                   {filteredRows.length} rows matching
                 </span>
               </>
             ) : (
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-500">
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">
                 {sampleData.length} rows
               </span>
             )}
@@ -340,7 +340,7 @@ export default function QueryBuilder({ data, onComplete }) {
                 {visibleCols.map((col) => (
                   <th
                     key={col}
-                    className="px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80"
+                    className="px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80"
                   >
                     {col}
                   </th>
@@ -397,7 +397,7 @@ export default function QueryBuilder({ data, onComplete }) {
         {/* Filter summary bar */}
         {hasFilters && (
           <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2">
-            <p className="font-mono text-[10px] text-slate-500">
+            <p className="font-mono text-xs text-slate-500">
               <span className="font-bold text-emerald-600">{filteredRows.length}</span> of{" "}
               {sampleData.length} rows pass the WHERE filter --{" "}
               <span className="text-slate-400">
@@ -424,10 +424,10 @@ export default function QueryBuilder({ data, onComplete }) {
       {/* ─── Feedback ───────────────────────────────────────── */}
       {checked && (
         <div
-          className={`animate-lesson-enter rounded-xl border-l-[3px] p-4 ${
+          className={`animate-lesson-enter rounded-xl p-4 ${
             isCorrect
-              ? "border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50/30"
-              : "border-red-400 bg-gradient-to-r from-red-50 to-orange-50/20"
+              ? "ring-1 ring-emerald-400/40 bg-gradient-to-r from-emerald-50 to-teal-50/30"
+              : "ring-1 ring-red-300/40 bg-gradient-to-r from-red-50 to-orange-50/20"
           }`}
         >
           <div className="flex items-start gap-3">

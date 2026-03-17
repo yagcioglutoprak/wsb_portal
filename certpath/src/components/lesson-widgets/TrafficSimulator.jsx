@@ -430,7 +430,7 @@ export default function TrafficSimulator({ data, onComplete }) {
                     : "bg-indigo-100"
               }`} />
               <div>
-                <span className={`block font-mono text-[10px] font-bold ${
+                <span className={`block font-mono text-xs font-bold ${
                   phase === p.key ? "text-indigo-700" : "text-indigo-400/60"
                 }`}>{p.label}</span>
               </div>
@@ -456,7 +456,7 @@ export default function TrafficSimulator({ data, onComplete }) {
       {phase === "quiz" && (
         <div className="space-y-4 animate-lesson-enter">
           <div className="rounded-xl border border-indigo-200/50 bg-indigo-50/30 p-4" style={blueprintBg}>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Analysis Question</p>
+            <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-2">Analysis Question</p>
             <p className="text-base font-semibold text-indigo-900">{question}</p>
           </div>
 

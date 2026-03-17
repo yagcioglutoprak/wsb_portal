@@ -45,7 +45,7 @@ function SQLBlock({ filename, children }) {
           <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
           <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
         </div>
-        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <span className="ml-2 font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
           {filename}
         </span>
       </div>
@@ -75,7 +75,7 @@ function MiniTable({ name, header, rows, highlight, color = "blue", animDelay = 
         <span className="font-mono text-[11px] font-bold text-white">{name}</span>
       </div>
       <div className="divide-y divide-slate-100 text-[11px]">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-sans font-bold text-slate-500 uppercase text-xs">
           {header.map((h) => (
             <span key={h} className={`flex-1 ${highlight?.includes(h) ? "text-blue-700" : ""}`}>
               {h}
@@ -262,7 +262,7 @@ function InnerJoinViz({ onComplete }) {
             style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(-20px)" }}
           >
             <div className="bg-[#2856a6] px-3 py-2">
-              <span className="font-mono text-[10px] font-bold text-white">employees</span>
+              <span className="font-mono text-xs font-bold text-white">employees</span>
             </div>
             {EMPLOYEES.slice(0, 6).map((e) => (
               <div
@@ -271,18 +271,18 @@ function InnerJoinViz({ onComplete }) {
                   phase >= 2 ? "bg-blue-50/50" : ""
                 }`}
               >
-                <span className="font-mono text-[10px] font-bold text-blue-700">
+                <span className="font-mono text-xs font-bold text-blue-700">
                   dept_id={e.dept_id}
                 </span>
-                <span className="text-[10px] text-slate-600 truncate">{e.name.split(" ")[0]}</span>
+                <span className="text-xs text-slate-600 truncate">{e.name.split(" ")[0]}</span>
               </div>
             ))}
             {/* Ola has no dept - show she will be excluded */}
             <div className={`flex items-center gap-2 border-b border-blue-100 px-3 py-1.5 transition-all duration-500 ${
               phase >= 2 ? "opacity-20 bg-red-50/30" : ""
             }`}>
-              <span className="font-mono text-[10px] text-slate-400">dept_id=null</span>
-              <span className="text-[10px] text-slate-400">Ola</span>
+              <span className="font-mono text-xs text-slate-400">dept_id=null</span>
+              <span className="text-xs text-slate-400">Ola</span>
               {phase >= 2 && (
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="ml-auto text-red-400">
                   <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -309,7 +309,7 @@ function InnerJoinViz({ onComplete }) {
             style={{ transform: phase >= 1 ? "translateX(0)" : "translateX(20px)" }}
           >
             <div className="bg-emerald-600 px-3 py-2">
-              <span className="font-mono text-[10px] font-bold text-white">departments</span>
+              <span className="font-mono text-xs font-bold text-white">departments</span>
             </div>
             {DEPARTMENTS.slice(0, 3).map((d) => (
               <div
@@ -318,16 +318,16 @@ function InnerJoinViz({ onComplete }) {
                   phase >= 2 ? "bg-emerald-50/50" : ""
                 }`}
               >
-                <span className="font-mono text-[10px] font-bold text-emerald-700">id={d.id}</span>
-                <span className="text-[10px] text-slate-600">{d.name}</span>
+                <span className="font-mono text-xs font-bold text-emerald-700">id={d.id}</span>
+                <span className="text-xs text-slate-600">{d.name}</span>
               </div>
             ))}
             {/* Finance dept - no employees reference it */}
             <div className={`flex items-center gap-2 border-b border-emerald-100 px-3 py-1.5 transition-all duration-500 ${
               phase >= 2 ? "opacity-20 bg-red-50/30" : ""
             }`}>
-              <span className="font-mono text-[10px] text-slate-400">id=4</span>
-              <span className="text-[10px] text-slate-400">Finance</span>
+              <span className="font-mono text-xs text-slate-400">id=4</span>
+              <span className="text-xs text-slate-400">Finance</span>
               {phase >= 2 && (
                 <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="ml-auto text-red-400">
                   <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -342,22 +342,22 @@ function InnerJoinViz({ onComplete }) {
           <div className="mt-6 animate-lesson-enter">
             <div className="mb-2 flex items-center justify-center gap-2">
               <div className="h-px flex-1 bg-slate-200" />
-              <span className="font-mono text-[10px] font-bold text-violet-600">INNER JOIN RESULT</span>
+              <span className="font-mono text-xs font-bold text-violet-600">INNER JOIN RESULT</span>
               <div className="h-px flex-1 bg-slate-200" />
             </div>
             <div className="overflow-hidden rounded-xl border border-violet-200 shadow-sm">
               <div className="flex items-center justify-between border-b border-violet-100 bg-violet-50/50 px-4 py-2">
-                <span className="font-mono text-[10px] font-bold text-violet-600">Result</span>
-                <span className="rounded-full bg-violet-100 px-2 py-0.5 font-mono text-[10px] font-bold text-violet-700">
+                <span className="font-mono text-xs font-bold text-violet-600">Result</span>
+                <span className="rounded-full bg-violet-100 px-2 py-0.5 font-mono text-xs font-bold text-violet-700">
                   {matchPairs.length} rows
                 </span>
               </div>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-violet-100 bg-white">
-                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-blue-600">e.name</th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-emerald-600">d.name</th>
-                    <th className="px-3 py-2 text-left font-mono text-[10px] font-bold text-slate-500">salary</th>
+                    <th className="px-3 py-2 text-left font-mono text-xs font-bold text-blue-600">e.name</th>
+                    <th className="px-3 py-2 text-left font-mono text-xs font-bold text-emerald-600">d.name</th>
+                    <th className="px-3 py-2 text-left font-mono text-xs font-bold text-slate-500">salary</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -375,7 +375,7 @@ function InnerJoinViz({ onComplete }) {
                 </tbody>
               </table>
               <div className="border-t border-violet-100 bg-violet-50/30 px-4 py-2">
-                <p className="font-mono text-[10px] text-slate-500">
+                <p className="font-mono text-xs text-slate-500">
                   Ola (no dept) and Finance (no employees) are <strong className="text-red-500">excluded</strong> from INNER JOIN
                 </p>
               </div>
@@ -477,10 +477,10 @@ function LeftVsInner({ onComplete }) {
       {/* Result table */}
       <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2.5">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
             {activeType === "inner" ? "INNER JOIN" : "LEFT JOIN"} Result
           </span>
-          <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] font-bold ${
+          <span className={`rounded-full px-2 py-0.5 font-mono text-xs font-bold ${
             activeType === "inner" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"
           }`}>
             {activeData.length} rows
@@ -517,7 +517,7 @@ function LeftVsInner({ onComplete }) {
         </table>
         {activeType === "left" && (
           <div className="border-t border-slate-100 bg-amber-50/30 px-4 py-2">
-            <p className="font-mono text-[10px] text-slate-500">
+            <p className="font-mono text-xs text-slate-500">
               Ola has <strong className="text-amber-600">NULL</strong> for department -- LEFT JOIN
               keeps her even without a match
             </p>
@@ -704,7 +704,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
                   <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.5 11.5c0-1.5 1.12-2.5 2.5-2.5s2.5 1 2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
               </span>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-700">
+              <p className="font-sans text-xs font-bold uppercase tracking-wider text-blue-700">
                 Manager request
               </p>
             </div>

@@ -442,10 +442,10 @@ export default function InteractiveChart({ data, onComplete }) {
             <line x1="1" y1="5.5" x2="15" y2="5.5" />
             <line x1="6" y1="5.5" x2="6" y2="15" />
           </svg>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-white/90">
+          <span className="font-sans text-xs font-bold uppercase tracking-widest text-white/90">
             Dataset
           </span>
-          <span className="ml-auto font-mono text-[10px] text-white/60">{dataset.length} records</span>
+          <span className="ml-auto font-mono text-xs text-white/60">{dataset.length} records</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

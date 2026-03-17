@@ -145,47 +145,47 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
         className="rounded-2xl overflow-hidden"
         style={{
           background: `
-            radial-gradient(circle at 20% 80%, rgba(6,182,212,0.03) 0%, transparent 50%),
-            linear-gradient(rgba(6,182,212,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6,182,212,0.02) 1px, transparent 1px),
-            #0f172a
+            radial-gradient(circle at 20% 80%, rgba(40,86,166,0.02) 0%, transparent 50%),
+            linear-gradient(rgba(40,86,166,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(40,86,166,0.03) 1px, transparent 1px),
+            #fdfcfa
           `,
           backgroundSize: "100% 100%, 24px 24px, 24px 24px, 100% 100%",
-          border: "1px solid #1e293b",
+          border: "1px solid rgba(214,211,205,0.6)",
         }}
       >
-        {/* Terminal header bar */}
+        {/* Header bar */}
         <div
           className="flex items-center gap-2.5 px-4 py-2.5"
-          style={{ background: "#0f172a", borderBottom: "1px solid #1e293b" }}
+          style={{ background: "rgba(40,86,166,0.04)", borderBottom: "1px solid rgba(214,211,205,0.5)" }}
         >
           <div className="flex gap-1.5">
-            <span className="h-3 w-3 rounded-full" style={{ background: "#ef4444", boxShadow: "0 0 4px rgba(239,68,68,0.4)" }} />
-            <span className="h-3 w-3 rounded-full" style={{ background: "#fbbf24", boxShadow: "0 0 4px rgba(251,191,36,0.4)" }} />
-            <span className="h-3 w-3 rounded-full" style={{ background: "#22c55e", boxShadow: "0 0 4px rgba(34,197,94,0.4)" }} />
+            <span className="h-3 w-3 rounded-full bg-red-400/80" />
+            <span className="h-3 w-3 rounded-full bg-amber-400/80" />
+            <span className="h-3 w-3 rounded-full bg-green-400/80" />
           </div>
-          <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: "#475569" }}>
+          <span className="ml-2 font-sans text-xs font-bold uppercase tracking-wide text-graphite">
             firewall-rules.conf
           </span>
           <div className="ml-auto flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#22c55e", boxShadow: "0 0 6px #22c55e" }} />
-            <span className="font-mono text-[9px]" style={{ color: "#22c55e80" }}>LIVE</span>
+            <span className="h-1.5 w-1.5 rounded-full animate-pulse bg-green-500" />
+            <span className="font-mono text-[9px] text-green-600/60">LIVE</span>
           </div>
         </div>
 
         {/* ── Packet travel animation (visible during testing) ──── */}
         {testing && packetX >= 0 && currentTestIdx < testPackets.length && (
-          <div className="relative h-8 overflow-hidden" style={{ background: "#0c1424" }}>
+          <div className="relative h-8 overflow-hidden" style={{ background: "rgba(40,86,166,0.03)" }}>
             <div className="absolute inset-0 flex items-center">
               {/* Track line */}
-              <div className="absolute inset-x-4 top-1/2 h-px" style={{ background: "linear-gradient(90deg, #06b6d480, #06b6d420)" }} />
+              <div className="absolute inset-x-4 top-1/2 h-px" style={{ background: "linear-gradient(90deg, rgba(40,86,166,0.3), rgba(40,86,166,0.1))" }} />
               {/* Packet dot */}
               <div
                 className="absolute h-3 w-3 rounded-full transition-all duration-700 ease-out"
                 style={{
                   left: `${4 + (packetX / 100) * 90}%`,
-                  background: testPackets[currentTestIdx]?.expected === "allow" ? "#22c55e" : "#06b6d4",
-                  boxShadow: `0 0 12px ${testPackets[currentTestIdx]?.expected === "allow" ? "#22c55e" : "#06b6d4"}`,
+                  background: testPackets[currentTestIdx]?.expected === "allow" ? "#16a34a" : "#2856a6",
+                  boxShadow: `0 1px 4px rgba(0,0,0,0.15)`,
                 }}
               />
               {/* Port label */}
@@ -219,19 +219,18 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
                 <div
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-300"
                   style={{
-                    background: isHighlighted ? "rgba(6,182,212,0.08)" : "transparent",
+                    background: isHighlighted ? "rgba(40,86,166,0.06)" : "transparent",
                     boxShadow: isHighlighted
-                      ? "inset 0 0 0 1px rgba(6,182,212,0.4), 0 0 16px rgba(6,182,212,0.12)"
+                      ? "inset 0 0 0 1px rgba(40,86,166,0.3), 0 0 12px rgba(40,86,166,0.06)"
                       : "none",
                   }}
                 >
                   <span
                     className="flex h-7 w-7 shrink-0 items-center justify-center rounded font-mono text-xs font-bold"
                     style={{
-                      background: isHighlighted ? "rgba(6,182,212,0.15)" : "#1e293b",
-                      color: isHighlighted ? "#06b6d4" : "#475569",
-                      border: `1px solid ${isHighlighted ? "#06b6d4" : "#334155"}`,
-                      boxShadow: isHighlighted ? "0 0 8px rgba(6,182,212,0.3)" : "none",
+                      background: isHighlighted ? "rgba(40,86,166,0.1)" : "rgba(40,86,166,0.05)",
+                      color: isHighlighted ? "#2856a6" : "#64748b",
+                      border: `1px solid ${isHighlighted ? "rgba(40,86,166,0.4)" : "rgba(214,211,205,0.5)"}`,
                       transition: "all 0.3s ease",
                     }}
                   >
@@ -243,32 +242,29 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
                         className="rounded px-2 py-0.5 font-mono text-[11px] font-bold"
                         style={{
                           background: placedItem.action === "allow"
-                            ? "rgba(34,197,94,0.15)"
-                            : "rgba(239,68,68,0.15)",
-                          color: placedItem.action === "allow" ? "#22c55e" : "#f87171",
-                          border: `1px solid ${placedItem.action === "allow" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
+                            ? "rgba(22,163,74,0.1)"
+                            : "rgba(220,38,38,0.1)",
+                          color: placedItem.action === "allow" ? "#16a34a" : "#dc2626",
+                          border: `1px solid ${placedItem.action === "allow" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
                         }}
                       >
                         {placedItem.action?.toUpperCase()}
                       </span>
-                      <span className="flex-1 font-mono text-xs font-medium" style={{ color: "#cbd5e1" }}>
-                        <span style={{ color: "#06b6d4" }}>&gt; </span>
+                      <span className="flex-1 font-mono text-xs font-medium text-ink">
+                        <span className="text-rust/50">&gt; </span>
                         {placedItem.label}
                       </span>
                       {!done && (
                         <button
                           onClick={onRemove}
-                          className="flex h-5 w-5 items-center justify-center rounded transition-colors"
-                          style={{ color: "#475569" }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#475569")}
+                          className="flex h-5 w-5 items-center justify-center rounded transition-colors text-pencil hover:text-red-500"
                         >
                           {"\u2715"}
                         </button>
                       )}
                     </div>
                   ) : (
-                    <span className="font-mono text-xs italic" style={{ color: "#334155" }}>
+                    <span className="font-mono text-xs italic text-pencil">
                       {"// drop rule here"}
                     </span>
                   )}
@@ -280,12 +276,11 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
                 <span
                   className="h-3 w-1 rounded-full"
                   style={{
-                    background: item.action === "allow" ? "#22c55e" : "#ef4444",
-                    boxShadow: `0 0 8px ${item.action === "allow" ? "#22c55e" : "#ef4444"}`,
+                    background: item.action === "allow" ? "#16a34a" : "#dc2626",
                   }}
                 />
-                <span className="font-mono text-xs font-medium" style={{ color: "#cbd5e1" }}>
-                  <span style={{ color: "#06b6d480" }}>&gt; </span>
+                <span className="font-mono text-xs font-medium text-ink">
+                  <span className="text-rust/30">&gt; </span>
                   {item.label}
                 </span>
               </span>
@@ -300,25 +295,25 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
           onClick={runTest}
           className="group flex items-center gap-3 rounded-xl px-6 py-3 font-mono text-sm font-bold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
           style={{
-            background: "linear-gradient(135deg, #06b6d4 0%, #22c55e 100%)",
-            color: "#0f172a",
-            boxShadow: "0 0 24px rgba(6,182,212,0.3), 0 4px 12px rgba(0,0,0,0.3)",
+            background: "#2856a6",
+            color: "#fff",
+            boxShadow: "0 4px 12px rgba(40,86,166,0.2)",
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>
-          $ test-firewall --run-all
+          Test firewall rules
         </button>
       )}
 
       {/* ── Testing indicator ────────────────────────────────────── */}
       {testing && currentTestIdx >= 0 && currentTestIdx < testPackets.length && (
-        <div className="flex items-center gap-3 font-mono text-xs" style={{ color: "#06b6d4" }}>
+        <div className="flex items-center gap-3 font-mono text-xs text-rust">
           <span className="relative flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-500" />
+            <span className="absolute inline-flex h-full w-full rounded-full bg-rust opacity-75 animate-ping" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-rust" />
           </span>
           Testing packet {currentTestIdx + 1} of {testPackets.length}...
         </div>
@@ -349,7 +344,7 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
               <polyline points="4 17 10 11 4 5" />
               <line x1="12" y1="19" x2="20" y2="19" />
             </svg>
-            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
+            <span className="font-sans text-[9px] font-bold uppercase tracking-wide" style={{ color: "#334155" }}>
               Packet test log
             </span>
           </div>
@@ -426,12 +421,11 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
             <div
               className="rounded-xl p-4"
               style={{
-                background: "rgba(34,197,94,0.08)",
-                border: "1px solid rgba(34,197,94,0.3)",
-                boxShadow: "0 0 20px rgba(34,197,94,0.08)",
+                background: "rgba(22,163,74,0.06)",
+                border: "1px solid rgba(22,163,74,0.2)",
               }}
             >
-              <p className="font-mono text-sm font-bold" style={{ color: "#22c55e", textShadow: "0 0 12px rgba(34,197,94,0.3)" }}>
+              <p className="font-mono text-sm font-bold text-green-700">
                 {"\u2713"} All packets handled correctly. Firewall configured.
               </p>
             </div>
@@ -440,14 +434,14 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
               <div
                 className="rounded-xl p-4"
                 style={{
-                  background: "rgba(251,191,36,0.06)",
-                  border: "1px solid rgba(251,191,36,0.2)",
+                  background: "rgba(217,119,6,0.06)",
+                  border: "1px solid rgba(217,119,6,0.2)",
                 }}
               >
-                <p className="font-mono text-sm font-bold" style={{ color: "#fbbf24" }}>
+                <p className="font-mono text-sm font-bold text-amber-700">
                   Some packets were not handled as expected.
                 </p>
-                <p className="mt-1 font-mono text-xs" style={{ color: "#64748b" }}>
+                <p className="mt-1 font-mono text-xs text-graphite">
                   Check your rule order and try again.
                 </p>
               </div>
@@ -459,10 +453,9 @@ export default function FirewallRuleBuilder({ data, onComplete }) {
                   setCurrentTestIdx(-1);
                   setPacketX(-1);
                 }}
-                className="font-mono text-sm font-bold transition-all hover:brightness-125"
-                style={{ color: "#06b6d4" }}
+                className="font-mono text-sm font-bold transition-all text-rust hover:brightness-110"
               >
-                $ reset --retry
+                Reset and retry
               </button>
             </>
           )}

@@ -369,7 +369,7 @@ export default function TableRelationships({ data, onComplete }) {
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: getRelColor(activeRel) }}
             />
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider" style={{ color: getRelColor(activeRel) }}>
+            <span className="font-sans text-xs font-bold uppercase tracking-wider" style={{ color: getRelColor(activeRel) }}>
               Relationship
             </span>
           </div>
@@ -441,10 +441,10 @@ export default function TableRelationships({ data, onComplete }) {
         {/* Feedback */}
         {showResult && (
           <div
-            className={`animate-lesson-enter rounded-xl border-l-[3px] p-4 ${
+            className={`animate-lesson-enter rounded-xl p-4 ${
               selected === correctIndex
-                ? "border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50/30"
-                : "border-red-400 bg-gradient-to-r from-red-50 to-orange-50/20"
+                ? "ring-1 ring-emerald-400/40 bg-gradient-to-r from-emerald-50 to-teal-50/30"
+                : "ring-1 ring-red-300/40 bg-gradient-to-r from-red-50 to-orange-50/20"
             }`}
           >
             <div className="flex items-start gap-3">

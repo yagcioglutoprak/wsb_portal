@@ -62,10 +62,10 @@ export default function JobDetail() {
   if (!job) {
     return (
       <div className="py-24 text-center">
-        <h1 className="font-serif text-3xl italic text-ink">Job not found</h1>
+        <h1 className="font-sans text-3xl font-medium text-ink">Job not found</h1>
         <Link
           to="/jobs"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-wider text-rust hover:underline"
+          className="mt-4 inline-block font-sans text-sm font-semibold text-rust hover:underline"
         >
           Back to jobs
         </Link>
@@ -91,7 +91,7 @@ export default function JobDetail() {
         className="mb-6 animate-fade-in-up"
         style={{ animationDelay: "0ms" }}
       >
-        <ol className="flex flex-wrap items-center gap-2 font-mono text-xs tracking-wider text-pencil">
+        <ol className="flex flex-wrap items-center gap-2 font-sans text-sm text-pencil">
           <li>
             <Link to="/jobs" className="transition-colors hover:text-rust">
               Jobs
@@ -110,7 +110,7 @@ export default function JobDetail() {
         <div className="flex flex-wrap items-center gap-3 mb-3">
           <span
             className={[
-              "rounded-full border px-4 py-1.5 font-mono text-xs tracking-wider",
+              "rounded-full border px-4 py-1.5 font-sans text-sm font-medium",
               levelStyle[job.experienceLevel] || "bg-warm/50 text-graphite border-faint",
             ].join(" ")}
           >
@@ -119,16 +119,16 @@ export default function JobDetail() {
           {field && (
             <Link
               to={`/fields/${field.slug}`}
-              className="rounded-full border border-faint bg-card px-4 py-1.5 font-mono text-xs tracking-wider text-graphite transition-colors hover:border-rust hover:text-rust"
+              className="rounded-full border border-faint bg-card px-4 py-1.5 font-sans text-sm font-medium text-graphite transition-colors hover:border-rust hover:text-rust"
             >
               {field.name}
             </Link>
           )}
         </div>
-        <h1 className="font-serif text-3xl italic text-ink sm:text-4xl">
+        <h1 className="font-sans text-4xl font-bold text-ink sm:text-5xl">
           {job.title}
         </h1>
-        <p className="mt-2 text-lg text-graphite">{job.company}</p>
+        <p className="mt-2 text-xl text-graphite">{job.company}</p>
       </div>
 
       {/* Details grid */}
@@ -140,33 +140,33 @@ export default function JobDetail() {
             className="grid grid-cols-1 gap-4 sm:grid-cols-3 animate-fade-in-up"
             style={{ animationDelay: "160ms" }}
           >
-            <div className="rounded-md border border-faint bg-card p-6">
-              <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
+            <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6">
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Location
               </span>
-              <span className="mt-1.5 block font-serif text-2xl italic text-ink">
+              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
                 {job.location}
               </span>
             </div>
-            <div className="rounded-md border border-success/20 bg-success/5 p-6">
-              <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
+            <div className="rounded-xl border-[1.5px] border-success/20 bg-success/5 p-6 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Salary range
               </span>
-              <span className="mt-1.5 block font-serif text-2xl italic text-ink">
+              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
                 {job.salaryMin.toLocaleString("pl-PL")} - {job.salaryMax.toLocaleString("pl-PL")} PLN
               </span>
-              <span className="mt-1 block text-xs text-graphite">
+              <span className="mt-1 block text-sm text-graphite">
                 Monthly gross, Poland
               </span>
             </div>
-            <div className="rounded-md border border-faint bg-card p-6">
-              <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
+            <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6">
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Experience level
               </span>
-              <span className="mt-1.5 block font-serif text-2xl italic text-ink">
+              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
                 {levelLabel[job.experienceLevel] || job.experienceLevel}
               </span>
-              <span className="mt-1 block text-xs text-graphite">
+              <span className="mt-1 block text-sm text-graphite">
                 Posted {job.postedAt}
               </span>
             </div>
@@ -177,11 +177,11 @@ export default function JobDetail() {
             className="animate-fade-in-up"
             style={{ animationDelay: "220ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-              Job description
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+              About this role
             </h2>
-            <div className="rounded-lg border border-faint bg-card p-6">
-              <p className="text-sm leading-relaxed text-graphite">
+            <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6">
+              <p className="text-base leading-relaxed text-graphite">
                 {generateJobDescription(job, field)}
               </p>
             </div>
@@ -192,19 +192,19 @@ export default function JobDetail() {
             className="animate-fade-in-up"
             style={{ animationDelay: "280ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-              What employers expect
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+              Skills they're looking for
             </h2>
             <div className="flex flex-col gap-3">
               {job.requiredSkills.map((skill) => (
                 <div
                   key={skill}
-                  className="rounded-md border border-faint bg-card px-5 py-4"
+                  className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card px-5 py-4"
                 >
-                  <span className="block text-sm font-semibold text-ink">
+                  <span className="block text-base font-semibold text-ink">
                     {skill}
                   </span>
-                  <span className="mt-1 block text-sm leading-relaxed text-graphite">
+                  <span className="mt-1 block text-base leading-relaxed text-graphite">
                     {generateSkillDescription(skill)}
                   </span>
                 </div>
@@ -221,9 +221,9 @@ export default function JobDetail() {
               href={job.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-rust px-6 py-3 font-mono text-xs uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-px hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200"
             >
-              View original posting
+              View original listing
               <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
@@ -234,32 +234,32 @@ export default function JobDetail() {
               className="animate-fade-in-up"
               style={{ animationDelay: "400ms" }}
             >
-              <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-                Similar positions
+              <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+                Similar opportunities
               </h2>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {similarJobs.map((sj) => (
                   <Link
                     key={sj.id}
                     to={`/jobs/${sj.id}`}
-                    className="group rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md"
+                    className="group rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md"
                   >
-                    <span className="block text-sm font-semibold text-ink transition-colors duration-200 group-hover:text-rust">
+                    <span className="block text-base font-semibold text-ink transition-colors duration-200 group-hover:text-rust">
                       {sj.title}
                     </span>
-                    <span className="mt-1 block text-sm text-graphite">
+                    <span className="mt-1 block text-base text-graphite">
                       {sj.company} &middot; {sj.location}
                     </span>
                     <div className="mt-2 flex items-center gap-2">
                       <span
                         className={[
-                          "rounded-full border px-2.5 py-0.5 font-mono text-xs tracking-wider",
+                          "rounded-full border px-2.5 py-0.5 font-sans text-sm font-medium",
                           levelStyle[sj.experienceLevel] || "bg-warm/50 text-graphite border-faint",
                         ].join(" ")}
                       >
                         {levelLabel[sj.experienceLevel] || sj.experienceLevel}
                       </span>
-                      <span className="font-mono text-xs tracking-wider text-graphite">
+                      <span className="font-mono text-sm text-graphite">
                         {sj.salaryMin.toLocaleString("pl-PL")} - {sj.salaryMax.toLocaleString("pl-PL")} PLN
                       </span>
                     </div>
@@ -273,11 +273,11 @@ export default function JobDetail() {
         {/* Right column -- related certs */}
         <div>
           <div
-            className="rounded-lg border border-faint bg-card p-6 animate-fade-in-up"
+            className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6 animate-fade-in-up"
             style={{ animationDelay: "240ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-              Related certifications
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+              Certifications that help
             </h2>
             {relatedCerts.length > 0 ? (
               <div className="flex flex-col gap-3">
@@ -287,32 +287,32 @@ export default function JobDetail() {
                   return (
                     <div
                       key={cert.id}
-                      className="group rounded-md border border-faint bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-pencil/30 animate-fade-in-up"
+                      className="group rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card px-5 py-4 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-pencil/30 animate-fade-in-up"
                       style={{ animationDelay: `${(i + 4) * 80}ms` }}
                     >
                       <Link
                         to={`/fields/${certFieldSlug}/certs/${cert.id}`}
                         className="block"
                       >
-                        <span className="block font-serif text-sm italic text-ink transition-colors duration-200 group-hover:text-rust">
+                        <span className="block font-sans text-base font-medium text-ink transition-colors duration-200 group-hover:text-rust">
                           {cert.name}
                         </span>
-                        <span className="mt-1 block text-xs leading-relaxed text-graphite line-clamp-2">
+                        <span className="mt-1 block text-sm leading-relaxed text-graphite line-clamp-2">
                           {cert.description}
                         </span>
                         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                          <span className="font-mono text-xs tracking-wider text-pencil">
+                          <span className="font-mono text-sm text-pencil">
                             {cert.costPln.toLocaleString("pl-PL")} PLN
                           </span>
                           <span className="text-faint">|</span>
-                          <span className="font-mono text-xs tracking-wider text-pencil">
+                          <span className="font-mono text-sm text-pencil">
                             ~{Math.round(cert.durationWeeks / 4)} months
                           </span>
                         </div>
                       </Link>
                       <Link
                         to={`/fields/${certFieldSlug}`}
-                        className="mt-2 inline-block font-mono text-xs uppercase tracking-wider text-rust transition-colors duration-200 hover:underline"
+                        className="mt-2 inline-block font-sans text-sm font-semibold text-rust transition-colors duration-200 hover:underline"
                       >
                         View roadmap &rarr;
                       </Link>
@@ -321,7 +321,7 @@ export default function JobDetail() {
                 })}
               </div>
             ) : (
-              <p className="text-sm text-pencil">
+              <p className="text-base text-pencil">
                 No specific certifications listed for this role.
               </p>
             )}

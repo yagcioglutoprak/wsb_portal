@@ -83,7 +83,7 @@ function WhatIsCloud({ onComplete }) {
             <path d="M70 150 L70 165 L50 175" stroke="#475569" strokeWidth="1" strokeDasharray="3 2" />
             <path d="M70 150 L70 165 L90 175" stroke="#475569" strokeWidth="1" strokeDasharray="3 2" />
           </svg>
-          <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-slate-400">On-Premise</span>
+          <span className="font-sans text-xs font-bold uppercase tracking-wide text-slate-400">On-Premise</span>
           <span className="mt-1.5 text-[11px] text-slate-500">Your servers, your data center, your problem</span>
         </div>
 
@@ -149,14 +149,14 @@ function WhatIsCloud({ onComplete }) {
               </defs>
             </g>
           </svg>
-          <span className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-indigo-500">Cloud</span>
+          <span className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-500">Cloud</span>
           <span className="mt-1.5 text-[11px] text-indigo-600">Elastic, global, pay-as-you-go</span>
         </div>
 
         {/* Toggle button */}
         <button
           onClick={() => setShowCloud(!showCloud)}
-          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full bg-white/95 border border-indigo-200 px-5 py-2 font-mono text-[11px] font-bold text-indigo-600 shadow-lg backdrop-blur-sm transition-all hover:bg-indigo-50 hover:shadow-xl hover:scale-105"
+          className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 flex items-center gap-2 rounded-full bg-white/95 border border-indigo-200 px-5 py-2 font-sans text-xs font-semibold text-indigo-600 shadow-lg backdrop-blur-sm transition-all hover:bg-indigo-50 hover:shadow-xl hover:scale-105"
         >
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3 w-3">
             <path d={showCloud ? "M10 2l-4 6 4 6" : "M6 2l4 6-4 6"} />
@@ -186,7 +186,7 @@ function WhatIsCloud({ onComplete }) {
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">{item.label}</span>
-                <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${
+                <span className={`rounded-md px-2 py-0.5 font-mono text-xs font-bold ${
                   item.negative ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"
                 }`}>{item.value}</span>
               </div>
@@ -211,7 +211,7 @@ function WhatIsCloud({ onComplete }) {
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between text-xs">
                 <span className="text-indigo-600/80">{item.label}</span>
-                <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${
+                <span className={`rounded-md px-2 py-0.5 font-mono text-xs font-bold ${
                   item.negative ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
                 }`}>{item.value}</span>
               </div>
@@ -289,7 +289,7 @@ function WhyCloud({ onComplete }) {
               <div className="flex-1">
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="text-sm font-bold text-indigo-900">{b.title}</span>
-                  <span className="font-mono text-[10px] text-indigo-400">{b.subtitle}</span>
+                  <span className="font-mono text-xs text-indigo-400">{b.subtitle}</span>
                 </div>
                 <p className="text-sm leading-relaxed text-slate-600">{b.desc}</p>
               </div>
@@ -372,7 +372,7 @@ function ServiceModels({ onComplete }) {
           <svg viewBox="0 0 16 16" fill="none" stroke="#6384bf" strokeWidth="1.5" className="h-3.5 w-3.5">
             <path d="M2 12 L8 15 L14 12 M2 8 L8 11 L14 8 M2 4 L8 7 L14 4 L8 1 Z" />
           </svg>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70">Service Model Layers</span>
+          <span className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70">Service Model Layers</span>
         </div>
 
         <div className="space-y-3">
@@ -405,12 +405,12 @@ function ServiceModels({ onComplete }) {
                     hoveredLayer === i ? "opacity-100 max-h-20" : "opacity-70 max-h-8"
                   }`} style={{ overflow: "hidden" }}>
                     {layer.examples.map((ex) => (
-                      <span key={ex} className="rounded-md bg-white/80 border border-current/10 px-2 py-0.5 font-mono text-[10px] font-bold" style={{ color: layer.accent }}>
+                      <span key={ex} className="rounded-md bg-white/80 border border-current/10 px-2 py-0.5 font-mono text-xs font-bold" style={{ color: layer.accent }}>
                         {ex}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-1.5 font-mono text-[10px] text-slate-400">{layer.manages}</p>
+                  <p className="mt-1.5 font-mono text-xs text-slate-400">{layer.manages}</p>
                 </div>
               </div>
             </div>
@@ -459,7 +459,7 @@ function SharedResponsibility({ onComplete }) {
               </span>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-indigo-400 mb-1.5">You manage</p>
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-wider text-indigo-400 mb-1.5">You manage</p>
                   <div className="space-y-1">
                     {r.you.map((item) => (
                       <div key={item} className="flex items-center gap-1.5 text-[11px] text-slate-600">
@@ -470,7 +470,7 @@ function SharedResponsibility({ onComplete }) {
                   </div>
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-emerald-500 mb-1.5">Provider manages</p>
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-wider text-emerald-500 mb-1.5">Provider manages</p>
                   <div className="space-y-1">
                     {r.provider.map((item) => (
                       <div key={item} className="flex items-center gap-1.5 text-[11px] text-slate-600">
@@ -564,7 +564,7 @@ export default function Lesson1({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Scenario Challenge</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Business case</p>
+            <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-2">Business case</p>
             <p className="text-base text-slate-600 leading-relaxed leading-relaxed">
               A startup needs to deploy a web application quickly. They have developers who write code, but they do not want to manage servers, operating systems, or middleware. They expect unpredictable traffic patterns.
             </p>

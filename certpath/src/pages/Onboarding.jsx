@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { fields, certifications, jobs } from "../data/mock";
+import { useState, useCallback } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { fields } from "../data/mock";
 import { programs } from "../data/programs";
 import useProgress from "../hooks/useProgress";
 import {
@@ -17,8 +17,8 @@ import {
   LogisticsIcon,
 } from "../components/Icons";
 
-const TOTAL_STEPS = 4;
-const AUTO_ADVANCE_MS = 400;
+const TOTAL_STEPS = 3;
+const AUTO_ADVANCE_MS = 500;
 
 const years = [
   { id: "1", label: "1st year" },
@@ -411,41 +411,6 @@ const programIllustrations = {
 };
 
 /* ──────────────────────────────────────────────────────────────────── */
-/*  Step 4: Path illustration                                           */
-/* ──────────────────────────────────────────────────────────────────── */
-
-function PathIllustration({ className }) {
-  return (
-    <svg className={className} viewBox="0 0 128 96" {...svgProps}>
-      {/* Winding path — wider at bottom, narrowing toward top */}
-      <path d="M10 88c8-10 16-8 24-20s12-14 24-24 16-10 24-18 14-10 20-16" strokeWidth="3" />
-      <path d="M14 90c8-10 16-8 24-20s12-14 24-24 16-10 24-18 14-10 20-16" strokeWidth="1" opacity="0.3" />
-      {/* Milestone markers along the path */}
-      <circle cx="16" cy="86" r="4" />
-      <circle cx="36" cy="66" r="3.5" />
-      <circle cx="58" cy="44" r="3" />
-      <circle cx="82" cy="28" r="2.5" />
-      <circle cx="102" cy="14" r="2" />
-      {/* Flag at the top */}
-      <path d="M112 8V2" strokeWidth="2" />
-      <path d="M112 2h10l-3 3 3 3h-10" />
-      {/* Stars / sparkles near flag */}
-      <path d="M120 0l0.6 1.2 1.3 0.2-0.9 0.9 0.2 1.3-1.2-0.6-1.2 0.6 0.2-1.3-0.9-0.9 1.3-0.2z" />
-      <path d="M106 4l0.4 0.9 1 0.1-0.7 0.7 0.2 1-0.9-0.5-0.9 0.5 0.2-1-0.7-0.7 1-0.1z" />
-      <path d="M124 10l0.4 0.9 1 0.1-0.7 0.7 0.2 1-0.9-0.5-0.9 0.5 0.2-1-0.7-0.7 1-0.1z" />
-      {/* Perspective lines — faint path edges */}
-      <path d="M6 92c8-10 16-8 24-20" opacity="0.15" strokeWidth="2" />
-      <path d="M18 92c8-10 16-8 24-20" opacity="0.15" strokeWidth="2" />
-      {/* Small decorative dots for texture */}
-      <circle cx="26" cy="76" r="1" fill="currentColor" stroke="none" opacity="0.2" />
-      <circle cx="48" cy="54" r="1" fill="currentColor" stroke="none" opacity="0.2" />
-      <circle cx="72" cy="36" r="1" fill="currentColor" stroke="none" opacity="0.2" />
-      <circle cx="94" cy="20" r="1" fill="currentColor" stroke="none" opacity="0.2" />
-    </svg>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────────────── */
 /*  Checkmark for selected state                                        */
 /* ──────────────────────────────────────────────────────────────────── */
 
@@ -466,22 +431,18 @@ function SelectCheckmark() {
 }
 
 /* ──────────────────────────────────────────────────────────────────── */
-/*  Progress dots                                                       */
+/*  Progress bar                                                         */
 /* ──────────────────────────────────────────────────────────────────── */
 
-function ProgressDots({ current, total }) {
+function ProgressBar({ current, total }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-1.5">
       {Array.from({ length: total }, (_, i) => (
         <div
           key={i}
           className={[
-            "h-2 w-2 rounded-full transition-all duration-300",
-            i + 1 === current
-              ? "bg-rust scale-125"
-              : i + 1 < current
-                ? "bg-merito"
-                : "bg-pencil/20",
+            "h-1 flex-1 rounded-full transition-all duration-500",
+            i + 1 <= current ? "bg-rust" : "bg-pencil/20",
           ].join(" ")}
         />
       ))}
@@ -619,6 +580,7 @@ function StepWrapper({ visible, direction, children }) {
 
 export default function Onboarding() {
   const { saveProfile } = useProgress();
+  const navigate = useNavigate();
 
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState("forward");
@@ -627,12 +589,6 @@ export default function Onboarding() {
   const [year, setYear] = useState(null);
   const [program, setProgram] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
-
-  useEffect(() => {
-    if (step === 4 && year && program && selectedField) {
-      saveProfile({ year, program, field: selectedField });
-    }
-  }, [step, year, program, selectedField, saveProfile]);
 
   /* Advance with animation */
   const goToStep = useCallback(
@@ -664,28 +620,19 @@ export default function Onboarding() {
     [step, goToStep],
   );
 
+  /* Step 3 field selection — save profile and navigate to reveal */
+  const selectField = useCallback((slug) => {
+    setSelectedField(slug);
+    saveProfile({ year, program, field: slug });
+    setTimeout(() => navigate("/reveal"), AUTO_ADVANCE_MS);
+  }, [year, program, saveProfile, navigate]);
+
   /* Filtered fields for step 3 */
   const programData = programs.find((p) => p.id === program);
   const availableFields =
     programData && programData.fieldSlugs
       ? fields.filter((f) => programData.fieldSlugs.includes(f.slug))
       : fields;
-
-  /* Data for result screen */
-  const chosenField = fields.find((f) => f.slug === selectedField);
-  const fieldCerts = selectedField ? certifications[selectedField] || [] : [];
-  const stages = {};
-  fieldCerts.forEach((cert) => {
-    if (!stages[cert.stage]) stages[cert.stage] = [];
-    stages[cert.stage].push(cert);
-  });
-  const stageNums = Object.keys(stages)
-    .map(Number)
-    .sort((a, b) => a - b);
-  const previewStages = stageNums.slice(0, 2);
-
-  const yearLabel = years.find((y) => y.id === year)?.label;
-  const programLabel = programs.find((p) => p.id === program)?.name;
 
   return (
     <section className="flex min-h-[70vh] flex-col items-center justify-center py-8 sm:py-16">
@@ -695,19 +642,21 @@ export default function Onboarding() {
           <button
             type="button"
             onClick={goBack}
-            className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
+            className="font-sans text-sm font-medium text-graphite transition-colors duration-200 hover:text-rust"
           >
             &larr; Back
           </button>
         ) : (
           <Link
             to="/"
-            className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
+            className="font-sans text-sm font-medium text-graphite transition-colors duration-200 hover:text-rust"
           >
             &larr; Home
           </Link>
         )}
-        <ProgressDots current={step} total={TOTAL_STEPS} />
+        <div className="w-32">
+          <ProgressBar current={step} total={3} />
+        </div>
       </div>
 
       {/* Step content */}
@@ -716,7 +665,7 @@ export default function Onboarding() {
           {/* ── Step 1: Year ──────────────────────────────── */}
           {step === 1 && (
             <div>
-              <span className="block font-mono text-sm tracking-widest text-pencil">
+              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
                 01
               </span>
               <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
@@ -726,14 +675,15 @@ export default function Onboarding() {
                 This helps us tailor everything to where you are in your studies.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {years.map((y) => (
-                  <IllustratedCard
-                    key={y.id}
-                    label={y.label}
-                    selected={year === y.id}
-                    onClick={() => selectAndAdvance(setYear, y.id)}
-                    Illustration={yearIllustrations[y.id]}
-                  />
+                {years.map((y, idx) => (
+                  <div key={y.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                    <IllustratedCard
+                      label={y.label}
+                      selected={year === y.id}
+                      onClick={() => selectAndAdvance(setYear, y.id)}
+                      Illustration={yearIllustrations[y.id]}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -742,7 +692,7 @@ export default function Onboarding() {
           {/* ── Step 2: Program ──────────────────────────── */}
           {step === 2 && (
             <div>
-              <span className="block font-mono text-sm tracking-widest text-pencil">
+              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
                 02
               </span>
               <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
@@ -752,14 +702,15 @@ export default function Onboarding() {
                 Your program helps us recommend the right certifications and opportunities for you.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {programs.map((p) => (
-                  <IllustratedCard
-                    key={p.id}
-                    label={p.name}
-                    selected={program === p.id}
-                    onClick={() => selectAndAdvance(setProgram, p.id)}
-                    Illustration={programIllustrations[p.id]}
-                  />
+                {programs.map((p, idx) => (
+                  <div key={p.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                    <IllustratedCard
+                      label={p.name}
+                      selected={program === p.id}
+                      onClick={() => selectAndAdvance(setProgram, p.id)}
+                      Illustration={programIllustrations[p.id]}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -768,7 +719,7 @@ export default function Onboarding() {
           {/* ── Step 3: Field ────────────────────────────── */}
           {step === 3 && (
             <div>
-              <span className="block font-mono text-sm tracking-widest text-pencil">
+              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
                 03
               </span>
               <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
@@ -778,204 +729,21 @@ export default function Onboarding() {
                 Go with what excites you — you can always explore other fields later.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {availableFields.map((f) => (
-                  <FieldSelectCard
-                    key={f.id}
-                    label={f.name}
-                    description={f.description}
-                    slug={f.slug}
-                    selected={selectedField === f.slug}
-                    onClick={() =>
-                      selectAndAdvance(setSelectedField, f.slug)
-                    }
-                  />
+                {availableFields.map((f, idx) => (
+                  <div key={f.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                    <FieldSelectCard
+                      label={f.name}
+                      description={f.description}
+                      slug={f.slug}
+                      selected={selectedField === f.slug}
+                      onClick={() => selectField(f.slug)}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ── Step 4: Result ───────────────────────────── */}
-          {step === 4 && (() => {
-            const FieldIcon = selectedField ? fieldIcons[selectedField] : null;
-            const fieldJobs = chosenField ? jobs.filter(j => j.fieldId === chosenField.id) : [];
-            const salaryMin = fieldJobs.length ? Math.min(...fieldJobs.map(j => j.salaryMin)) : 0;
-            const salaryMax = fieldJobs.length ? Math.max(...fieldJobs.map(j => j.salaryMax)) : 0;
-            const totalWeeks = fieldCerts.reduce((s, c) => s + c.durationWeeks, 0);
-            const totalCost = fieldCerts.reduce((s, c) => s + c.costPln, 0);
-            const firstCert = fieldCerts.length ? fieldCerts.sort((a,b) => a.stage - b.stage)[0] : null;
-
-            return (
-            <div>
-              {/* Header with icon */}
-              <div className="flex items-start gap-5 animate-fade-in-up" style={{ animationDelay: "0ms" }}>
-                {FieldIcon && (
-                  <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-merito/10 animate-scale-in" style={{ animationDelay: "200ms" }}>
-                    <FieldIcon className="h-7 w-7 text-merito" />
-                  </div>
-                )}
-                <div>
-                  <span className="block font-mono text-sm tracking-widest text-pencil">
-                    Here's your plan
-                  </span>
-                  <h1 className="mt-1 font-sans text-4xl font-bold text-ink sm:text-5xl">
-                    {chosenField?.name || "Your path"}
-                  </h1>
-                  {chosenField && (
-                    <p className="mt-2 text-lg leading-relaxed text-graphite">
-                      Tailored for a <span className="font-medium text-ink">{yearLabel}</span>{" "}
-                      {programLabel !== "Other" ? <><span className="font-medium text-ink">{programLabel}</span> </> : ""}student.
-                      Here's what we recommend based on your profile.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Animated progress bar */}
-              <div className="mt-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
-                <div className="h-1.5 rounded-full bg-warm overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-merito to-rust transition-all duration-1000 ease-out"
-                    style={{ width: "100%", animation: "drawLine 1.2s ease-out 0.5s both" }}
-                  />
-                </div>
-              </div>
-
-              {/* Key stats row */}
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  { value: stageNums.length, label: "stages", color: "text-ink", delay: 300 },
-                  { value: fieldCerts.length, label: "certifications", color: "text-ink", delay: 400 },
-                  { value: fieldJobs.length, label: "jobs in Poland", color: "text-rust", delay: 500 },
-                  { value: `~${Math.round(totalWeeks / 4)}`, label: "months total", color: "text-ink", delay: 600 },
-                ].map(({ value, label, color, delay }) => (
-                  <div
-                    key={label}
-                    className="rounded-lg border border-faint bg-card p-4 text-center shadow-sm animate-scale-in"
-                    style={{ animationDelay: `${delay}ms` }}
-                  >
-                    <span className={`block font-sans text-2xl font-bold ${color}`}>{value}</span>
-                    <span className="block font-mono text-sm tracking-wider text-pencil mt-1">{label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Salary + cost summary */}
-              {fieldJobs.length > 0 && (
-                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg border border-success/20 bg-success/5 p-4 shadow-sm animate-slide-in-right" style={{ animationDelay: "700ms" }}>
-                    <span className="block font-mono text-sm tracking-widest text-success">Salary range in Poland</span>
-                    <span className="mt-1 block font-sans text-xl font-bold text-ink">
-                      {salaryMin.toLocaleString("pl-PL")} - {salaryMax.toLocaleString("pl-PL")} PLN/month
-                    </span>
-                  </div>
-                  <div className="rounded-lg border border-faint bg-card p-4 shadow-sm animate-slide-in-right" style={{ animationDelay: "800ms" }}>
-                    <span className="block font-mono text-sm tracking-widest text-pencil">Total certification cost</span>
-                    <span className="mt-1 block font-sans text-xl font-bold text-ink">
-                      ~{totalCost.toLocaleString("pl-PL")} PLN
-                    </span>
-                    <span className="block text-sm text-graphite mt-0.5">Many free alternatives available</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Start here highlight */}
-              {firstCert && (
-                <div className="mt-8 rounded-xl border-2 border-rust/20 bg-rust/5 p-6 shadow-sm animate-fade-in-up animate-pulse-soft" style={{ animationDelay: "900ms" }}>
-                  <span className="block font-mono text-sm tracking-widest text-rust">Start here</span>
-                  <span className="mt-2 block font-sans text-xl font-semibold text-ink">{firstCert.name}</span>
-                  <p className="mt-1 text-base leading-relaxed text-graphite">{firstCert.description}</p>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
-                      {firstCert.provider}
-                    </span>
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
-                      {firstCert.costPln > 0 ? `~${firstCert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
-                    </span>
-                    <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
-                      ~{Math.round(firstCert.durationWeeks / 4)} months
-                    </span>
-                    {firstCert.examCode && (
-                      <span className="rounded-full border border-faint bg-card px-3 py-1 font-mono text-sm text-graphite">
-                        {firstCert.examCode}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Full stage overview */}
-              <div className="mt-8 animate-fade-in-up" style={{ animationDelay: "1000ms" }}>
-                <span className="block font-mono text-sm tracking-widest text-pencil mb-4">Your full roadmap</span>
-                <div className="space-y-3">
-                  {stageNums.map((stageNum, idx) => (
-                    <div
-                      key={stageNum}
-                      className="rounded-lg border border-faint bg-card p-5 animate-fade-in-up"
-                      style={{ animationDelay: `${(idx + 3) * 100}ms` }}
-                    >
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-medium ${
-                          idx === 0 ? "bg-rust text-white" : "border-2 border-pencil/20 text-pencil"
-                        }`}>
-                          {stageNum}
-                        </div>
-                        <div className="flex-1">
-                          <span className="block font-sans text-lg font-semibold text-ink">
-                            {stages[stageNum][0]?.stageName || `Stage ${stageNum}`}
-                          </span>
-                          <span className="block font-mono text-sm text-pencil">
-                            ~{Math.round(stages[stageNum].reduce((s, c) => s + c.durationWeeks, 0) / 4)} months
-                          </span>
-                        </div>
-                        <span className="font-mono text-sm text-pencil">
-                          {stages[stageNum].length} cert{stages[stageNum].length !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-                      <div className="space-y-2 pl-12">
-                        {stages[stageNum].map((cert) => (
-                          <div key={cert.id} className="flex items-center justify-between py-1.5 border-b border-faint last:border-0">
-                            <div>
-                              <span className="text-base font-medium text-ink">{cert.name}</span>
-                              <span className="ml-2 font-mono text-sm text-pencil">{cert.provider}</span>
-                            </div>
-                            <div className="flex items-center gap-3 text-right">
-                              <span className="font-mono text-sm text-pencil">
-                                {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
-                              </span>
-                              <span className="font-mono text-sm text-pencil">
-                                ~{Math.round(cert.durationWeeks / 4)} mo
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* CTAs */}
-              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: "1200ms" }}>
-                <Link
-                  to="/dashboard"
-                  className="inline-block rounded-lg bg-rust px-10 py-4 font-mono text-base uppercase tracking-wider text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rust/20"
-                >
-                  See your personalized plan
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedField(null);
-                    goToStep(3);
-                  }}
-                  className="font-mono text-sm uppercase tracking-wider text-graphite transition-colors duration-200 hover:text-rust"
-                >
-                  Try a different field
-                </button>
-              </div>
-            </div>
-            );
-          })()}
         </StepWrapper>
       </div>
     </section>

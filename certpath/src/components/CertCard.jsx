@@ -21,16 +21,16 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
   const card = (
     <div
       className={[
-        "group relative rounded-md border bg-card px-5 py-5 transition-all duration-300",
+        "group relative rounded-xl border-[1.5px] border-ink/12 bg-card shadow-[0_2px_0_0_rgba(0,0,0,0.06)] p-5 transition-all duration-300",
         locked
-          ? "cursor-default border-faint opacity-40"
-          : "border-faint hover:-translate-y-px hover:shadow-md hover:border-pencil/30",
+          ? "cursor-default opacity-40"
+          : "hover:-translate-y-0.5 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20",
       ].join(" ")}
     >
       {/* Cert name */}
       <h4
         className={[
-          "font-sans text-sm font-semibold leading-snug",
+          "font-sans text-base font-semibold leading-snug",
           locked ? "text-pencil" : "text-ink group-hover:text-rust",
           "transition-colors duration-200",
         ].join(" ")}
@@ -40,20 +40,20 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
 
       {/* Description */}
       {cert.description && (
-        <p className="mt-1.5 text-sm leading-relaxed text-graphite line-clamp-2">
+        <p className="mt-1.5 text-base leading-relaxed text-graphite line-clamp-2">
           {cert.description}
         </p>
       )}
 
       {/* Provider badge */}
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className="rounded-full border border-faint bg-warm/50 px-2.5 py-0.5 font-mono text-xs tracking-wider text-graphite">
+        <span className="rounded-full border border-faint bg-warm/50 px-2.5 py-0.5 font-sans text-sm tracking-wider text-graphite">
           {cert.provider}
         </span>
         {cert.difficulty && (
           <span
             className={[
-              "rounded-full border px-2.5 py-0.5 font-mono text-xs tracking-wider",
+              "rounded-full border px-2.5 py-0.5 font-sans text-sm tracking-wider",
               difficultyStyles[cert.difficulty] || "bg-faint text-pencil border-faint",
             ].join(" ")}
           >
@@ -83,7 +83,7 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
 
       {/* Job count */}
       {!locked && matchingJobs > 0 && (
-        <p className="mt-2.5 font-mono text-xs tracking-wider text-success">
+        <p className="mt-2.5 font-sans text-xs tracking-wider text-success">
           {matchingJobs} matching {matchingJobs === 1 ? "job" : "jobs"}
         </p>
       )}

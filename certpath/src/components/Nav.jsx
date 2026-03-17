@@ -3,12 +3,12 @@ import useProgress from "../hooks/useProgress";
 
 const linkClass = ({ isActive }) =>
   [
-    "font-mono text-sm uppercase tracking-wider transition-colors duration-200",
+    "font-sans text-sm tracking-wide transition-colors duration-200",
     isActive ? "text-rust" : "text-graphite hover:text-ink",
   ].join(" ");
 
 export default function Nav() {
-  const { isOnboarded } = useProgress();
+  const { isOnboarded, xp, level } = useProgress();
 
   return (
     <header className="sticky top-0 z-50 border-b border-faint bg-paper/90 backdrop-blur-sm shadow-sm">
@@ -21,7 +21,7 @@ export default function Nav() {
             className="h-9"
           />
           <span className="hidden sm:block h-6 w-px bg-faint" />
-          <span className="hidden sm:block font-serif text-2xl italic text-ink">
+          <span className="hidden sm:block font-serif text-2xl text-ink">
             <span className="text-rust">C</span>ert<span className="text-rust">P</span>ath
           </span>
         </Link>
@@ -40,10 +40,16 @@ export default function Nav() {
             Opportunities
           </NavLink>
 
+          {isOnboarded && (
+            <span className="font-sans text-xs font-semibold text-rust border border-faint rounded-full px-3 py-1.5">
+              Lvl {level} · {xp} xp
+            </span>
+          )}
+
           {!isOnboarded && (
             <Link
               to="/onboarding"
-              className="ml-2 rounded border border-faint bg-card px-5 py-2 font-mono text-sm uppercase tracking-wider text-graphite transition-all duration-200 hover:-translate-y-px hover:border-rust hover:text-rust hover:shadow-sm"
+              className="ml-2 bg-rust text-white rounded-xl px-6 py-2.5 font-sans text-sm font-semibold hover:bg-rust/90 transition-all duration-200"
             >
               Get Started
             </Link>

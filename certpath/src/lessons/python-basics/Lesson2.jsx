@@ -16,7 +16,7 @@ function CodeSnippet({ children, filename = "python", className = "" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
+        <span className="ml-2 font-mono text-xs" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
       <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>

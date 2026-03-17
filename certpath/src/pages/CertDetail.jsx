@@ -33,12 +33,12 @@ export default function CertDetail() {
   if (!field || !cert) {
     return (
       <div className="py-24 text-center">
-        <h1 className="font-serif text-3xl italic text-ink">
+        <h1 className="font-sans text-3xl font-medium text-ink">
           Certification not found
         </h1>
         <Link
           to="/explore"
-          className="mt-4 inline-block font-mono text-xs uppercase tracking-wider text-rust hover:underline"
+          className="mt-4 inline-block font-sans text-sm font-semibold text-rust hover:underline"
         >
           Back to fields
         </Link>
@@ -81,7 +81,7 @@ export default function CertDetail() {
         className="mb-6 animate-fade-in-up"
         style={{ animationDelay: "0ms" }}
       >
-        <ol className="flex flex-wrap items-center gap-2 font-mono text-xs tracking-wider text-pencil">
+        <ol className="flex flex-wrap items-center gap-2 font-sans text-sm text-pencil">
           <li>
             <Link to="/" className="transition-colors hover:text-rust">
               Home
@@ -113,13 +113,13 @@ export default function CertDetail() {
         style={{ animationDelay: "80ms" }}
       >
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <span className="font-mono text-xs uppercase tracking-widest text-pencil">
+          <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
             {cert.provider}
           </span>
           {cert.difficulty && (
             <span
               className={[
-                "rounded-full border px-2.5 py-0.5 font-mono text-xs tracking-wider",
+                "rounded-full border px-2.5 py-0.5 font-sans text-sm font-medium",
                 difficultyStyles[cert.difficulty] || "bg-faint text-pencil border-faint",
               ].join(" ")}
             >
@@ -127,10 +127,10 @@ export default function CertDetail() {
             </span>
           )}
         </div>
-        <h1 className="mt-2 font-serif text-3xl italic text-ink sm:text-4xl">
+        <h1 className="mt-2 font-sans text-4xl font-bold text-ink sm:text-5xl">
           {cert.name}
         </h1>
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-graphite">
+        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-graphite">
           {cert.description}
         </p>
       </div>
@@ -157,17 +157,17 @@ export default function CertDetail() {
           {/* Salary after this certification */}
           {jobSalaryMin !== null && jobSalaryMax !== null && (
             <div
-              className="rounded-lg border border-success/20 bg-success/5 px-6 py-5 animate-fade-in-up"
+              className="rounded-xl border-[1.5px] border-success/20 bg-success/5 px-6 py-5 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] animate-fade-in-up"
               style={{ animationDelay: "200ms" }}
             >
-              <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
-                Salary after this certification
+              <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+                What this cert is worth
               </span>
-              <span className="mt-1 block font-serif text-xl italic text-ink">
+              <span className="mt-1 block font-sans text-2xl font-bold text-ink">
                 {jobSalaryMin.toLocaleString("pl-PL")} - {jobSalaryMax.toLocaleString("pl-PL")} PLN/month
               </span>
-              <span className="mt-1 block text-sm text-graphite">
-                Based on {matchingJobs.length} current {matchingJobs.length === 1 ? "position" : "positions"} requiring this certification
+              <span className="mt-1 block text-base text-graphite">
+                From {matchingJobs.length} real {matchingJobs.length === 1 ? "position" : "positions"} requiring this certification
               </span>
             </div>
           )}
@@ -178,14 +178,14 @@ export default function CertDetail() {
               className="animate-fade-in-up"
               style={{ animationDelay: "240ms" }}
             >
-              <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-                What you will learn
+              <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+                Skills you'll gain
               </h2>
               <div className="flex flex-wrap gap-2">
                 {(certKeywords[certId] || []).map((keyword) => (
                   <span
                     key={keyword}
-                    className="rounded-full border border-faint bg-warm/50 px-4 py-1.5 font-mono text-xs tracking-wider text-graphite"
+                    className="rounded-full border-[1.5px] border-ink/12 bg-warm/50 px-4 py-1.5 font-sans text-sm font-medium text-graphite"
                   >
                     {keyword}
                   </span>
@@ -199,7 +199,7 @@ export default function CertDetail() {
             className="animate-fade-in-up"
             style={{ animationDelay: "320ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
               Prerequisites
             </h2>
             {prereqs.length > 0 ? (
@@ -208,24 +208,24 @@ export default function CertDetail() {
                   <Link
                     key={p.id}
                     to={`/fields/${slug}/certs/${p.id}`}
-                    className="rounded-md border border-faint bg-card px-5 py-3 transition-all duration-200 hover:border-rust hover:text-rust"
+                    className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card px-5 py-3 transition-all duration-200 hover:border-rust hover:text-rust"
                   >
-                    <span className="block font-serif text-sm italic text-ink">
+                    <span className="block font-sans text-base font-medium text-ink">
                       {p.name}
                     </span>
-                    <span className="mt-1 block font-mono text-xs tracking-wider text-pencil">
+                    <span className="mt-1 block font-mono text-sm text-pencil">
                       {p.provider} &middot; ~{Math.round(p.durationWeeks / 4)} months
                     </span>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="rounded-md border border-success/20 bg-success/5 px-5 py-4">
-                <span className="text-sm text-success">
-                  No formal prerequisites required
+              <div className="rounded-xl border-[1.5px] border-success/20 bg-success/5 px-5 py-4">
+                <span className="text-base text-success">
+                  No prerequisites
                 </span>
-                <span className="mt-1 block text-xs text-graphite">
-                  This certification is open to anyone. You can start studying right away.
+                <span className="mt-1 block text-sm text-graphite">
+                  Open to everyone — no prior certifications required.
                 </span>
               </div>
             )}
@@ -236,8 +236,8 @@ export default function CertDetail() {
             className="animate-fade-in-up"
             style={{ animationDelay: "400ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-              Learning resources
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+              Study resources
             </h2>
             {resources.length > 0 ? (
               <div className="flex flex-col gap-3">
@@ -252,9 +252,8 @@ export default function CertDetail() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-pencil">
-                No curated resources yet. Check the vendor site for official
-                training materials.
+              <p className="text-base text-pencil">
+                No study resources added yet — check the vendor's official site.
               </p>
             )}
           </div>
@@ -264,11 +263,11 @@ export default function CertDetail() {
         <div className="space-y-8">
           {/* Matching jobs panel */}
           <div
-            className="rounded-lg border border-faint bg-card p-6 animate-fade-in-up"
+            className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6 animate-fade-in-up"
             style={{ animationDelay: "240ms" }}
           >
-            <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-              Matching jobs ({matchingJobs.length})
+            <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+              Matching opportunities ({matchingJobs.length})
             </h2>
             {matchingJobs.length > 0 ? (
               <div className="flex flex-col gap-3">
@@ -283,8 +282,8 @@ export default function CertDetail() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-pencil">
-                No current listings require this certification specifically.
+              <p className="text-base text-pencil">
+                No matching positions right now — new listings are added regularly.
               </p>
             )}
           </div>
@@ -292,11 +291,11 @@ export default function CertDetail() {
           {/* Next cert suggestion */}
           {nextStageCerts.length > 0 && (
             <div
-              className="rounded-lg border border-faint bg-warm/40 p-6 animate-fade-in-up"
+              className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-warm/40 p-6 animate-fade-in-up"
               style={{ animationDelay: "400ms" }}
             >
-              <h2 className="mb-4 font-mono text-xs uppercase tracking-widest text-pencil">
-                Next step
+              <h2 className="mb-4 font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
+                What's next
               </h2>
               {nextStageCerts.map((nc) => (
                 <Link
@@ -304,19 +303,19 @@ export default function CertDetail() {
                   to={`/fields/${slug}/certs/${nc.id}`}
                   className="group block"
                 >
-                  <span className="font-serif text-xl italic text-ink transition-colors duration-200 group-hover:text-rust">
+                  <span className="font-sans text-2xl font-semibold text-ink transition-colors duration-200 group-hover:text-rust">
                     {nc.name}
                   </span>
                   {nc.description && (
-                    <span className="mt-2 block text-sm leading-relaxed text-graphite line-clamp-2">
+                    <span className="mt-2 block text-base leading-relaxed text-graphite line-clamp-2">
                       {nc.description}
                     </span>
                   )}
-                  <span className="mt-2 block font-mono text-xs tracking-wider text-pencil">
+                  <span className="mt-2 block font-mono text-sm text-pencil">
                     Stage {nc.stage} &middot; ~{Math.round(nc.durationWeeks / 4)} months
                     &middot; {nc.costPln.toLocaleString("pl-PL")} PLN
                   </span>
-                  <span className="mt-3 inline-block font-mono text-xs uppercase tracking-wider text-rust transition-colors duration-200 group-hover:underline">
+                  <span className="mt-3 inline-block font-sans text-sm font-semibold text-rust transition-colors duration-200 group-hover:underline">
                     View certification &rarr;
                   </span>
                 </Link>
@@ -331,12 +330,12 @@ export default function CertDetail() {
 
 function StatBlock({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-md border border-faint bg-card p-6">
+    <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6">
       {Icon && <Icon className="mb-2 h-5 w-5 text-pencil" />}
-      <span className="block font-mono text-xs uppercase tracking-widest text-pencil">
+      <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
         {label}
       </span>
-      <span className="mt-1.5 block font-serif text-2xl italic text-ink">
+      <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
         {value}
       </span>
     </div>

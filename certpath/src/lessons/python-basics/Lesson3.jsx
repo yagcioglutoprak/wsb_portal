@@ -18,7 +18,7 @@ function CodeSnippet({ children, filename = "python", className = "" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
+        <span className="ml-2 font-mono text-xs" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
       <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>
@@ -94,7 +94,7 @@ function WhatIsList({ onComplete }) {
 
                   {/* Index */}
                   <div
-                    className="py-1 text-center font-mono text-[10px] font-bold"
+                    className="py-1 text-center font-mono text-xs font-bold"
                     style={{ background: SURFACE, color: SUBTEXT }}
                   >
                     [{i}]
@@ -113,7 +113,7 @@ function WhatIsList({ onComplete }) {
 
         {/* Label */}
         <div className="mt-4 flex items-center justify-center gap-2">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-widest" style={{ color: SUBTEXT }}>
+          <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: SUBTEXT }}>
             fruits
           </span>
           <span className="font-mono text-xs" style={{ color: "#89b4fa" }}>= [</span>
@@ -201,7 +201,7 @@ function AccessingElements({ onComplete }) {
               >
                 "{item}"
               </div>
-              <div className="mt-1 font-mono text-[10px]" style={{ color: SUBTEXT }}>
+              <div className="mt-1 font-mono text-xs" style={{ color: SUBTEXT }}>
                 [{i}]
               </div>
             </div>
@@ -323,7 +323,7 @@ function RangeAndOps({ onComplete }) {
 
       {/* range() visual */}
       <div className="rounded-xl p-4" style={{ background: DARK, border: `1px solid ${GUTTER}` }}>
-        <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: SUBTEXT }}>
+        <p className="font-sans text-xs font-bold uppercase tracking-widest mb-3" style={{ color: SUBTEXT }}>
           range(5) produces:
         </p>
         <div className="flex gap-2">
@@ -365,7 +365,7 @@ function RangeAndOps({ onComplete }) {
             </code>
             <span className="text-sm text-graphite flex-1">{op.desc}</span>
             <div className="rounded px-2 py-0.5" style={{ background: DARK }}>
-              <code className="font-mono text-[10px]" style={{ color: SUBTEXT }}>{op.example}</code>
+              <code className="font-mono text-xs" style={{ color: SUBTEXT }}>{op.example}</code>
             </div>
           </div>
         ))}

@@ -92,7 +92,7 @@ function ScalingTypes({ onComplete }) {
             </div>
             <div>
               <p className="text-sm font-bold text-indigo-900">Vertical Scaling</p>
-              <p className="font-mono text-[10px] text-amber-500">Scale UP</p>
+              <p className="font-mono text-xs text-amber-500">Scale UP</p>
             </div>
           </div>
 
@@ -145,7 +145,7 @@ function ScalingTypes({ onComplete }) {
             </div>
             <div>
               <p className="text-sm font-bold text-indigo-900">Horizontal Scaling</p>
-              <p className="font-mono text-[10px] text-indigo-500">Scale OUT</p>
+              <p className="font-mono text-xs text-indigo-500">Scale OUT</p>
             </div>
           </div>
 
@@ -232,7 +232,7 @@ function AutoScaling({ onComplete }) {
       {/* Traffic + server simulation */}
       <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
         <div className="flex items-center justify-between mb-4">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70">24-hour simulation</span>
+          <span className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70">24-hour simulation</span>
           {!autoRunning && simStep === 0 && (
             <button
               onClick={() => setAutoRunning(true)}
@@ -243,7 +243,7 @@ function AutoScaling({ onComplete }) {
             </button>
           )}
           {(autoRunning || simStep > 0) && (
-            <span className="font-mono text-[11px] font-bold text-indigo-700">{current.time}</span>
+            <span className="font-sans text-xs font-semibold text-indigo-700">{current.time}</span>
           )}
         </div>
 
@@ -265,7 +265,7 @@ function AutoScaling({ onComplete }) {
 
         {/* Server count visual */}
         <div className="flex items-center gap-3 rounded-xl border border-indigo-100/60 bg-white/80 px-4 py-3">
-          <span className="font-mono text-[10px] text-indigo-400 shrink-0">Servers:</span>
+          <span className="font-mono text-xs text-indigo-400 shrink-0">Servers:</span>
           <div className="flex gap-1">
             {Array.from({ length: 8 }, (_, i) => (
               <div
@@ -287,7 +287,7 @@ function AutoScaling({ onComplete }) {
 
         {/* Current state label */}
         <div className="mt-3 text-center">
-          <span className="inline-block rounded-lg bg-white px-3 py-1.5 font-mono text-[11px] text-indigo-600 border border-indigo-100/60 shadow-sm">
+          <span className="inline-block rounded-lg bg-white px-3 py-1.5 font-sans text-xs text-indigo-600 border border-indigo-100/60 shadow-sm">
             {current.label}
           </span>
         </div>
@@ -308,7 +308,7 @@ function AutoScaling({ onComplete }) {
 
       {/* Scaling rules */}
       <div className="rounded-2xl border border-indigo-200/50 bg-white p-5 shadow-sm">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-3">Auto-scaling rules</p>
+        <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-3">Auto-scaling rules</p>
         <div className="space-y-2.5">
           {[
             { condition: "CPU > 70% for 5 min", action: "+1 server", icon: "emerald", dir: "up" },
@@ -492,7 +492,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
         <div className="space-y-6 animate-fade-in-up">
           <h2 className="text-xl font-bold text-indigo-900">Design for 10,000 Users</h2>
           <div className="rounded-2xl border border-indigo-200/50 p-5 shadow-sm" style={blueprintBg}>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400/70 mb-2">Requirements</p>
+            <p className="font-sans text-xs font-bold uppercase tracking-wide text-indigo-400/70 mb-2">Requirements</p>
             <p className="text-base text-slate-600 leading-relaxed">
               Design an architecture that can handle 10,000 concurrent users. You need: global content delivery, load balancing, auto-scaled compute, fast caching, and reliable database storage.
             </p>

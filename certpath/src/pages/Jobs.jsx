@@ -2,6 +2,7 @@ import { useState } from "react";
 import { fields, jobs } from "../data/mock";
 import JobRow from "../components/JobRow";
 import useProgress from "../hooks/useProgress";
+import useScrollReveal from "../hooks/useScrollReveal";
 
 const experienceLevels = [
   { value: "all", label: "All levels" },
@@ -9,6 +10,23 @@ const experienceLevels = [
   { value: "mid", label: "Mid" },
   { value: "senior", label: "Senior" },
 ];
+
+function RevealOnScroll({ children, delay = 0 }) {
+  const { ref, isVisible } = useScrollReveal();
+  return (
+    <div
+      ref={ref}
+      className="transition-all duration-700 ease-out"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(16px)",
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function Jobs() {
   const { profile, isOnboarded } = useProgress();
@@ -33,7 +51,7 @@ export default function Jobs() {
         className="mb-8 animate-fade-in-up"
         style={{ animationDelay: "0ms" }}
       >
-        <span className="font-mono text-sm uppercase tracking-widest text-pencil">
+        <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
           Opportunities
         </span>
         <h1 className="mt-2 font-sans text-4xl font-bold text-ink sm:text-5xl">
@@ -92,7 +110,7 @@ export default function Jobs() {
         <span className="font-sans text-3xl font-bold text-ink">
           {filtered.length}
         </span>
-        <span className="font-mono text-base tracking-wider text-pencil">
+        <span className="font-sans text-base text-pencil">
           of {jobs.length} positions
         </span>
       </div>
@@ -101,16 +119,12 @@ export default function Jobs() {
       <div className="flex flex-col gap-3">
         {filtered.length > 0 ? (
           filtered.map((job, i) => (
-            <div
-              key={job.id}
-              className="animate-fade-in-up"
-              style={{ animationDelay: `${(i + 3) * 60}ms` }}
-            >
+            <RevealOnScroll key={job.id} delay={i * 60}>
               <JobRow job={job} />
-            </div>
+            </RevealOnScroll>
           ))
         ) : (
-          <div className="rounded-lg border border-faint bg-card p-12 text-center">
+          <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-12 text-center">
             <p className="font-sans text-xl font-medium text-pencil">
               No jobs match the current filters.
             </p>
@@ -120,7 +134,7 @@ export default function Jobs() {
                 setActiveField("all");
                 setActiveLevel("all");
               }}
-              className="mt-3 font-mono text-sm uppercase tracking-wider text-rust hover:underline"
+              className="mt-3 font-sans text-sm font-semibold text-rust hover:underline"
             >
               Clear filters
             </button>
@@ -137,7 +151,7 @@ function FilterTab({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={[
-        "rounded-full border px-4 py-1.5 font-mono text-sm tracking-wider transition-all duration-200",
+        "rounded-full border px-4 py-1.5 font-sans text-sm font-medium transition-all duration-200",
         active
           ? "border-rust bg-rust text-white"
           : "border-faint bg-card text-graphite hover:border-pencil/30 hover:text-ink",

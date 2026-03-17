@@ -49,7 +49,7 @@ function ThreatBox({ children }) {
       className="rounded-xl p-3.5"
       style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)" }}
     >
-      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#ef444470" }}>
+      <p className="mb-1 font-sans text-[9px] font-bold uppercase tracking-wide" style={{ color: "#ef444470" }}>
         How it works
       </p>
       <p className="text-sm leading-relaxed text-red-700">
@@ -65,7 +65,7 @@ function DefenseBox({ children }) {
       className="rounded-xl p-3.5"
       style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)" }}
     >
-      <p className="mb-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#16a34a70" }}>
+      <p className="mb-1 font-sans text-[9px] font-bold uppercase tracking-wide" style={{ color: "#16a34a70" }}>
         Defense strategy
       </p>
       <p className="text-sm leading-relaxed text-green-700">
@@ -200,7 +200,7 @@ function DDoSStep({ onComplete }) {
 
           {/* ── Traffic Bar Chart ─────────────────────────────────── */}
           <div className="rounded-xl p-4" style={{ background: "#fdfcfa", border: "1px solid #334155" }}>
-            <p className="mb-3 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
+            <p className="mb-3 font-sans text-[9px] font-bold uppercase tracking-wide" style={{ color: "#334155" }}>
               Traffic volume
             </p>
             <div className="flex items-end gap-1" style={{ height: 80 }}>
@@ -445,7 +445,7 @@ function PhishingStep({ onComplete }) {
                 <span className="font-mono text-[9px] font-bold" style={{ color: "#16a34a" }}>LEGITIMATE</span>
               </div>
               <div className="p-3 space-y-2">
-                <p className="font-mono text-[10px]" style={{ color: "#16a34a" }}>
+                <p className="font-mono text-xs" style={{ color: "#16a34a" }}>
                   From: support@mybank.com
                 </p>
                 <p className="font-mono text-xs font-bold" style={{ color: "#cbd5e1" }}>
@@ -476,7 +476,7 @@ function PhishingStep({ onComplete }) {
                 <span className="font-mono text-[9px] font-bold" style={{ color: "#ef4444" }}>PHISHING</span>
               </div>
               <div className="p-3 space-y-2">
-                <p className="font-mono text-[10px]" style={{ color: "#ef4444" }}>
+                <p className="font-mono text-xs" style={{ color: "#ef4444" }}>
                   From: support@myb<span style={{ color: "#fbbf24", textDecoration: "underline" }}>a</span>nk-secure.com
                   <span className="ml-1 rounded px-1 text-[8px]" style={{ background: "rgba(239,68,68,0.15)", color: "#f87171" }}>FAKE</span>
                 </p>
@@ -685,7 +685,7 @@ function RansomwareStep({ onComplete }) {
               <p className="font-mono text-xs" style={{ color: "#f87171" }}>
                 Your files have been encrypted. Pay 2 BTC to unlock. You have 48 hours.
               </p>
-              <p className="mt-1 font-mono text-[10px] text-pencil">
+              <p className="mt-1 font-mono text-xs text-pencil">
                 {"// Do NOT pay -- there is no guarantee you will get your files back."}
               </p>
             </div>
@@ -813,7 +813,7 @@ export default function Lesson3({ currentPhase, currentStep, onComplete }) {
                 className="mb-5 rounded-xl p-4"
                 style={{ background: "#fdfcfa", border: "1px solid #334155" }}
               >
-                <p className="mb-2 font-mono text-[9px] font-bold uppercase tracking-[0.15em]" style={{ color: "#334155" }}>
+                <p className="mb-2 font-sans text-[9px] font-bold uppercase tracking-wide" style={{ color: "#334155" }}>
                   Incident report
                 </p>
                 <p className="text-base leading-relaxed text-graphite">

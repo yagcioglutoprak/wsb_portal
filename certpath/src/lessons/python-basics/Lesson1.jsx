@@ -18,7 +18,7 @@ function CodeSnippet({ children, filename = "python", className = "" }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-        <span className="ml-2 font-mono text-[10px]" style={{ color: SUBTEXT }}>{filename}</span>
+        <span className="ml-2 font-mono text-xs" style={{ color: SUBTEXT }}>{filename}</span>
       </div>
       <div className="p-4 font-mono text-sm leading-relaxed" style={{ background: DARK, color: "#cdd6f4" }}>{children}</div>
     </div>
@@ -232,7 +232,7 @@ function DataTypes({ onComplete }) {
               <div>
                 <span className="text-sm font-bold" style={{ color: t.color }}>{t.label}</span>
                 <span
-                  className="ml-2 rounded-full px-2 py-0.5 font-mono text-[10px] font-bold"
+                  className="ml-2 rounded-full px-2 py-0.5 font-mono text-xs font-bold"
                   style={{ background: `${t.color}22`, color: t.color }}
                 >
                   {t.name}
@@ -315,7 +315,7 @@ function TypeErrors({ onComplete }) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-          <span className="ml-2 font-mono text-[10px] text-[#f38ba8]">error_example.py</span>
+          <span className="ml-2 font-mono text-xs text-[#f38ba8]">error_example.py</span>
         </div>
         <div className="p-4" style={{ background: DARK }}>
           <div className="space-y-1">
@@ -336,7 +336,7 @@ function TypeErrors({ onComplete }) {
           <span className="h-2.5 w-2.5 rounded-full bg-[#f38ba8]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#f9e2af]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#a6e3a1]" />
-          <span className="ml-2 font-mono text-[10px] text-[#a6e3a1]">fix: convert the type</span>
+          <span className="ml-2 font-mono text-xs text-[#a6e3a1]">fix: convert the type</span>
         </div>
         <div className="p-4" style={{ background: DARK }}>
           <div className="space-y-1">

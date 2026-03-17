@@ -56,7 +56,7 @@ function DataTable({ tableName, columns, rows, highlightCol, highlightPK, dimRow
               return (
                 <th
                   key={col.name}
-                  className={`px-4 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                  className={`px-4 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-500 ${
                     isPK
                       ? "bg-amber-50 text-amber-700"
                       : isHL
@@ -128,7 +128,7 @@ function SQLBlock({ filename, children }) {
           <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
           <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
         </div>
-        <span className="ml-2 font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+        <span className="ml-2 font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
           {filename}
         </span>
       </div>
@@ -233,7 +233,7 @@ function WhatIsTable({ onComplete }) {
               {COLUMNS.map((col, i) => (
                 <th
                   key={col.name}
-                  className={`px-3 py-2.5 text-left font-mono text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
+                  className={`px-3 py-2.5 text-left font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
                     i < colsVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
                   } ${col.name === "id" ? "text-amber-600" : "text-slate-500"}`}
                   style={{ transitionDelay: `${i * 40}ms` }}
@@ -267,7 +267,7 @@ function WhatIsTable({ onComplete }) {
       {showLabels && (
         <div className="grid grid-cols-3 gap-3 animate-lesson-enter">
           <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-600">
+            <p className="font-sans text-xs font-bold uppercase tracking-wider text-blue-600">
               Column / Field
             </p>
             <p className="mt-1 text-xs text-blue-700">
@@ -275,7 +275,7 @@ function WhatIsTable({ onComplete }) {
             </p>
           </div>
           <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+            <p className="font-sans text-xs font-bold uppercase tracking-wider text-emerald-600">
               Row / Record
             </p>
             <p className="mt-1 text-xs text-emerald-700">
@@ -283,7 +283,7 @@ function WhatIsTable({ onComplete }) {
             </p>
           </div>
           <div className="rounded-lg border border-purple-200 bg-purple-50/50 p-3">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-purple-600">
+            <p className="font-sans text-xs font-bold uppercase tracking-wider text-purple-600">
               Cell / Value
             </p>
             <p className="mt-1 text-xs text-purple-700">
@@ -352,7 +352,7 @@ function ColumnsAndTypes({ onComplete }) {
                     }`}
                   >
                     <div className="flex flex-col gap-1">
-                      <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                      <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-slate-600">
                         {col.name}
                       </span>
                       <span
@@ -490,13 +490,13 @@ function PrimaryKeys({ onComplete }) {
 
       {/* Duplicate attempt animation */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">
+        <p className="font-sans text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
           What happens when you try to insert a duplicate ID?
         </p>
         <div className="space-y-2">
           {/* Existing row */}
           <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-            <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700">id=1</span>
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-xs font-bold text-amber-700">id=1</span>
             <span className="text-xs text-slate-700">Anna Kowalska -- already exists</span>
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="ml-auto text-emerald-500">
               <path d="M3 8.5L6.5 12L13 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -512,7 +512,7 @@ function PrimaryKeys({ onComplete }) {
                   : "border-blue-300 bg-blue-50/50"
               }`}
             >
-              <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+              <span className={`rounded px-1.5 py-0.5 font-mono text-xs font-bold ${
                 dupBounced ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
               }`}>
                 id=1
@@ -533,7 +533,7 @@ function PrimaryKeys({ onComplete }) {
       {/* Without vs With PK comparison */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border-2 border-red-200 bg-red-50/30 p-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-red-500 mb-2">
+          <p className="font-sans text-xs font-bold uppercase tracking-wider text-red-500 mb-2">
             Without PK
           </p>
           <div className="space-y-1.5">
@@ -545,13 +545,13 @@ function PrimaryKeys({ onComplete }) {
           </div>
         </div>
         <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50/30 p-4">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-2">
+          <p className="font-sans text-xs font-bold uppercase tracking-wider text-emerald-500 mb-2">
             With PK
           </p>
           <div className="space-y-1.5">
             {[1, 2, 3].map((id) => (
               <div key={id} className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-1.5">
-                <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700">
+                <span className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-xs font-bold text-amber-700">
                   #{id}
                 </span>
                 <span className="font-mono text-xs text-emerald-700">Jan Nowak</span>
@@ -630,7 +630,7 @@ function Relationships({ onComplete }) {
               <span className="font-mono text-[11px] font-bold text-white">employees</span>
             </div>
             <div className="divide-y divide-slate-100 text-[11px]">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-sans font-bold text-slate-500 uppercase text-xs">
                 <span className="w-6">id</span>
                 <span className="flex-1">name</span>
                 <span id="emp-dept-id" className={`transition-all duration-500 ${highlightFK ? "text-blue-600 font-bold" : ""}`}>
@@ -679,7 +679,7 @@ function Relationships({ onComplete }) {
               <span className="font-mono text-[11px] font-bold text-white">departments</span>
             </div>
             <div className="divide-y divide-slate-100 text-[11px]">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-mono font-bold text-slate-500 uppercase text-[10px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 font-sans font-bold text-slate-500 uppercase text-xs">
                 <span id="dept-id" className={`transition-all duration-500 ${highlightFK ? "text-amber-600" : ""}`}>
                   id
                 </span>
