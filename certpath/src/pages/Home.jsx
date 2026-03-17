@@ -4,7 +4,7 @@ import { fields, certifications, jobs, lessons } from "../data/mock";
 import useProgress from "../hooks/useProgress";
 import useCountUp from "../hooks/useCountUp";
 import useScrollReveal from "../hooks/useScrollReveal";
-import HeroShowcase from "../components/HeroShowcase";
+import HomepageLesson from "../components/HomepageLesson";
 import {
   CybersecurityIcon, CloudIcon, DevOpsIcon, DataScienceIcon,
   BackendIcon, NetworkingIcon, ITSMIcon, FrontendIcon,
@@ -108,7 +108,7 @@ export default function Home() {
           </div>
 
           <div className="w-full relative animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-            <HeroShowcase />
+            <HomepageLesson />
           </div>
 
         </div>
