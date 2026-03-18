@@ -65,7 +65,7 @@ export default function FieldShowcase() {
                   onClick={() => setActiveSlug(field.slug)}
                   className={`shrink-0 rounded-full px-5 py-2.5 font-sans text-sm font-semibold transition-all duration-300 ${
                     isActive
-                      ? "bg-white text-[#0f172a] shadow-lg shadow-white/10"
+                      ? "bg-[#fdfcfa] text-[#0f172a] shadow-lg shadow-white/10"
                       : "border border-white/20 text-white/60 hover:border-white/40 hover:text-white/90"
                   }`}
                 >
@@ -128,7 +128,7 @@ export default function FieldShowcase() {
           </div>
 
           {/* Right column — white card */}
-          <div className="rounded-2xl bg-white p-8 shadow-2xl lg:p-10">
+          <div className="rounded-2xl bg-[#fdfcfa] p-8 shadow-2xl lg:p-10">
             {/* Icon */}
             <div
               className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl"

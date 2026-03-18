@@ -13,6 +13,7 @@ import SkillOverview from "./pages/SkillOverview";
 import LessonViewer from "./pages/LessonViewer";
 import NotFound from "./pages/NotFound";
 import DevLessons from "./pages/DevLessons";
+import Lessons from "./pages/Lessons";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="skills/:skillSlug" element={<SkillOverview />} />
+        <Route path="lessons" element={<Lessons />} />
         <Route path="explore" element={<Explore />} />
         <Route path="fields/:slug" element={<Roadmap />} />
         <Route path="fields/:slug/certs/:certId" element={<CertDetail />} />

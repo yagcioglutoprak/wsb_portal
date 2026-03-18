@@ -100,7 +100,7 @@ export default function StepThrough({
           {currentStep > 0 && (
             <button
               onClick={onBack}
-              className="group flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-graphite transition-all duration-200 hover:bg-stone-50 hover:border-stone-300 hover:shadow-sm active:scale-[0.98]"
+              className="group flex items-center gap-2 rounded-xl border border-stone-200 bg-[#fdfcfa] px-5 py-2.5 text-sm font-medium text-graphite transition-all duration-200 hover:bg-paper hover:border-stone-300 hover:shadow-sm active:scale-[0.98]"
             >
               <svg
                 width="14"

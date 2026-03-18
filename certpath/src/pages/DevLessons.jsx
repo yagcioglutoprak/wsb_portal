@@ -117,7 +117,7 @@ export default function DevLessons() {
                     return (
                       <div
                         key={lesson.id}
-                        className={`relative bg-white rounded-xl border-[1.5px] p-5 transition-all duration-200 ${
+                        className={`relative bg-[#fdfcfa] rounded-xl border-[1.5px] p-5 transition-all duration-200 ${
                           isBuilt
                             ? "border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]"
                             : "border-dashed border-ink/15 opacity-60"
@@ -125,11 +125,11 @@ export default function DevLessons() {
                       >
                         {/* Status badge */}
                         <div className="flex items-center justify-between mb-3">
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-pencil">
+                          <span className="font-mono text-xs font-bold uppercase tracking-widest text-pencil">
                             {lesson.id}
                           </span>
                           <span
-                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                            className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                               isBuilt
                                 ? "bg-success/10 text-success border border-success/20"
                                 : "bg-ink/5 text-pencil border border-ink/10"
@@ -147,7 +147,7 @@ export default function DevLessons() {
                         </p>
 
                         {/* Meta */}
-                        <div className="flex items-center gap-3 text-[10px] font-mono text-pencil uppercase tracking-wider mb-4">
+                        <div className="flex items-center gap-3 text-xs font-mono text-pencil uppercase tracking-wider mb-4">
                           <span>~{lesson.estimatedMinutes}m</span>
                           <span className="opacity-30">|</span>
                           <span>{totalSteps} steps</span>

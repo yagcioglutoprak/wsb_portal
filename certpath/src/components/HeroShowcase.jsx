@@ -153,16 +153,16 @@ export default function HeroShowcase() {
         .replace(/(total|i|length|charCodeAt|push)/g, '<span class="text-blue-300">$1</span>')
         .replace(/([0-9]+)/g, '<span class="text-orange-300">$1</span>')
         .replace(/(".*?")/g, '<span class="text-green-300">$1</span>')
-        .replace(/(\/\/.*)/g, '<span class="text-gray-500 italic">$1</span>');
+        .replace(/(\/\/.*)/g, '<span class="text-pencil italic">$1</span>');
 
       return (
         <div 
           key={i} 
           className={`flex transition-colors duration-300 ${isHighlighted ? 'bg-blue-500/20 border-l-2 border-blue-400' : 'border-l-2 border-transparent'}`}
         >
-          <div className="w-8 text-right pr-3 select-none text-gray-600 text-xs py-0.5">{i + 1}</div>
+          <div className="w-8 text-right pr-3 select-none text-ink text-xs py-0.5">{i + 1}</div>
           <div 
-            className={`pl-2 text-xs py-0.5 whitespace-pre ${isHighlighted ? 'text-gray-100' : 'text-gray-400'}`} 
+            className={`pl-2 text-xs py-0.5 whitespace-pre ${isHighlighted ? 'text-gray-100' : 'text-pencil'}`} 
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>
@@ -178,7 +178,7 @@ export default function HeroShowcase() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden video-container bg-[#0B0F19] text-gray-300 font-sans flex flex-col relative">
+    <div className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden video-container bg-[#0B0F19] text-ink/70 font-sans flex flex-col relative">
       
       {/* Top Bar (Browser/OS Window feel) */}
       <div className="h-10 bg-[#111827] flex items-center px-4 border-b border-white/5 z-10">
@@ -187,7 +187,7 @@ export default function HeroShowcase() {
           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
           <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
         </div>
-        <div className="mx-auto text-xs font-medium text-gray-500 flex items-center gap-2">
+        <div className="mx-auto text-xs font-medium text-pencil flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
           lesson-04-hash-tables.mp4
         </div>
@@ -207,8 +207,8 @@ export default function HeroShowcase() {
 
         {/* Editor Pane (Left) */}
         <div className="w-3/5 border-r border-white/5 flex flex-col relative z-0 code-font">
-          <div className="flex text-xs uppercase tracking-wider text-gray-500 border-b border-white/5 bg-[#0B0F19]">
-            <div className="px-4 py-2 border-t-2 border-blue-500 bg-white/5 text-gray-200">hash_table.js</div>
+          <div className="flex text-xs uppercase tracking-wider text-pencil border-b border-white/5 bg-[#0B0F19]">
+            <div className="px-4 py-2 border-t-2 border-blue-500 bg-white/5 text-ink/70">hash_table.js</div>
             <div className="px-4 py-2 opacity-50">data_structures.md</div>
           </div>
           <div className="p-2 overflow-hidden flex-1 relative">
@@ -232,18 +232,18 @@ export default function HeroShowcase() {
           <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
           
           <div className="relative h-full p-6 flex flex-col justify-center gap-4">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2 code-font">Memory Allocation</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-pencil mb-2 code-font">Memory Allocation</h3>
             
             {/* Memory Slots */}
             <div className="flex flex-col gap-3">
               {state.mem.map((slot, idx) => (
                 <div key={idx} className={`mem-slot flex items-stretch h-12 rounded-lg border border-white/10 bg-white/5 overflow-hidden ${state.focus === `mem-${idx}` ? 'active' : ''}`}>
-                  <div className="w-10 bg-black/40 border-r border-white/10 flex items-center justify-center text-xs code-font text-gray-500">
+                  <div className="w-10 bg-black/40 border-r border-white/10 flex items-center justify-center text-xs code-font text-pencil">
                     {idx}
                   </div>
                   <div className="flex-1 p-2 flex items-center gap-2">
                     {!slot ? (
-                      <span className="text-gray-600 text-xs italic">empty</span>
+                      <span className="text-ink text-xs italic">empty</span>
                     ) : (
                       slot.map((item, i) => (
                         <div key={i} className="bg-blue-500/20 border border-blue-500/30 rounded px-2 py-1 text-xs code-font text-blue-200 flex items-center gap-1">
@@ -258,7 +258,7 @@ export default function HeroShowcase() {
 
             {/* Floating calculation popup */}
             <div className={`absolute bottom-10 left-1/2 -translate-x-1/2 w-4/5 glass-panel rounded-xl p-4 transition-all duration-500 ${state.focus?.startsWith('hash') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8 pointer-events-none'}`}>
-               <div className="text-xs code-font mb-2 text-gray-400">hash(key) internal state:</div>
+               <div className="text-xs code-font mb-2 text-pencil">hash(key) internal state:</div>
                {state.focus === 'hash-calc-1' && <div className="text-sm code-font glow-text">total = 77 + 105 + 97 = <span className="text-white font-bold">279</span></div>}
                {state.focus === 'hash-mod-1' && <div className="text-sm code-font glow-text">index = 279 % 5 = <span className="text-white font-bold">4</span></div>}
                {state.focus === 'hash-calc-2' && <div className="text-sm code-font glow-text">total = 76 + 101 + 111 = <span className="text-white font-bold">288</span></div>}
@@ -275,7 +275,7 @@ export default function HeroShowcase() {
         {/* Caption */}
         <div className="absolute bottom-16 left-0 right-0 h-12 flex items-center justify-center pointer-events-none">
            <div className="glass-panel px-6 py-2 rounded-full border border-white/10 shadow-xl transform transition-all duration-300">
-             <span className="text-sm font-medium tracking-wide text-gray-200 glow-text">{state.caption}</span>
+             <span className="text-sm font-medium tracking-wide text-ink/70 glow-text">{state.caption}</span>
            </div>
         </div>
 
@@ -301,20 +301,20 @@ export default function HeroShowcase() {
 
         <div className="flex items-center justify-between px-4 h-full">
           <div className="flex items-center gap-4">
-            <button onClick={() => setIsPlaying(!isPlaying)} className="text-gray-400 hover:text-white transition-colors outline-none focus:outline-none">
+            <button onClick={() => setIsPlaying(!isPlaying)} className="text-pencil hover:text-white transition-colors outline-none focus:outline-none">
               {isPlaying ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
               ) : (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               )}
             </button>
-            <div className="text-xs code-font text-gray-500 w-24">
+            <div className="text-xs code-font text-pencil w-24">
               {formatTime(time)} / {formatTime(DURATION)}
             </div>
           </div>
           <div className="flex items-center gap-4">
-             <button className="text-gray-500 hover:text-white transition-colors text-xs font-semibold tracking-wider uppercase">Speed 1x</button>
-             <button className="text-gray-500 hover:text-white transition-colors">
+             <button className="text-pencil hover:text-white transition-colors text-xs font-semibold tracking-wider uppercase">Speed 1x</button>
+             <button className="text-pencil hover:text-white transition-colors">
                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
              </button>
           </div>

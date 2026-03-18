@@ -8,15 +8,15 @@ import { ArrowRightIcon, CheckIcon } from './Icons';
 const SceneContainer = ({ title, children, nextEnabled, onNext, isLast }) => (
   <div className="flex flex-col w-full h-full min-h-[600px] border border-stone-200/50 dark:border-white/10 rounded-2xl overflow-hidden bg-white/50 dark:bg-black/20 backdrop-blur-xl shadow-2xl transition-all duration-500">
     <div className="p-8 flex-1 flex flex-col relative">
-      <h2 className="text-2xl font-light text-stone-800 dark:text-stone-100 tracking-tight mb-8">
+      <h2 className="text-2xl font-light text-ink dark:text-stone-100 tracking-tight mb-8">
         {title}
       </h2>
       <div className="flex-1 flex flex-col justify-center items-center w-full max-w-4xl mx-auto">
         {children}
       </div>
     </div>
-    <div className="border-t border-stone-100/50 dark:border-white/5 p-4 flex justify-between items-center bg-stone-50/50 dark:bg-white/5">
-      <div className="text-sm text-stone-500 dark:text-stone-400 font-mono tracking-widest uppercase">
+    <div className="border-t border-stone-100/50 dark:border-white/5 p-4 flex justify-between items-center bg-paper/50 dark:bg-white/5">
+      <div className="text-sm text-pencil dark:text-pencil font-mono tracking-widest uppercase">
         Python 101
       </div>
       <button
@@ -24,8 +24,8 @@ const SceneContainer = ({ title, children, nextEnabled, onNext, isLast }) => (
         disabled={!nextEnabled}
         className={`group flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
           nextEnabled
-            ? 'bg-stone-900 text-white dark:bg-white dark:text-black hover:scale-105 active:scale-95 shadow-md'
-            : 'bg-stone-200 text-stone-400 dark:bg-white/5 dark:text-white/20 cursor-not-allowed'
+            ? 'bg-stone-900 text-white dark:bg-[#fdfcfa] dark:text-black hover:scale-105 active:scale-95 shadow-md'
+            : 'bg-paper text-pencil dark:bg-white/5 dark:text-white/20 cursor-not-allowed'
         }`}
       >
         {isLast ? 'Complete Lesson' : 'Next Scene'}
@@ -49,7 +49,7 @@ const DraggablePill = ({ id, label, type, onDragStart, dragging }) => (
     } ${
       type === 'name' 
         ? 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-300' 
-        : 'bg-stone-50 border-stone-200 text-stone-700 dark:bg-white/5 dark:border-white/10 dark:text-stone-300'
+        : 'bg-paper border-stone-200 text-ink dark:bg-white/5 dark:border-white/10 dark:text-ink/70'
     }`}
   >
     {label}
@@ -57,7 +57,7 @@ const DraggablePill = ({ id, label, type, onDragStart, dragging }) => (
 );
 
 const CodeSnippet = ({ children }) => (
-  <pre className="font-mono text-sm tracking-tight text-stone-800 dark:text-stone-300 bg-stone-50/80 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 p-6 rounded-xl shadow-inner w-full overflow-x-auto">
+  <pre className="font-mono text-sm tracking-tight text-ink dark:text-ink/70 bg-paper/80 dark:bg-black/40 border border-stone-200/50 dark:border-white/10 p-6 rounded-xl shadow-inner w-full overflow-x-auto">
     <code>{children}</code>
   </pre>
 );
@@ -133,24 +133,24 @@ const Scene1 = ({ onComplete }) => {
               key={box.id} 
               className={`flex flex-col items-center gap-4 transition-all duration-500 ease-out transform ${shakeBox === box.id ? 'animate-[shake_0.5s_ease-in-out]' : ''} ${isComplete ? 'scale-105' : ''}`}
             >
-              <div className={`relative w-40 h-40 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 ${isComplete ? 'border-amber-400 bg-amber-50/50 dark:border-amber-500/50 dark:bg-amber-900/20 shadow-lg shadow-amber-500/10' : 'border-dashed border-stone-300 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800/50'}`}>
+              <div className={`relative w-40 h-40 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 ${isComplete ? 'border-amber-400 bg-amber-50/50 dark:border-amber-500/50 dark:bg-amber-900/20 shadow-lg shadow-amber-500/10' : 'border-dashed border-stone-300 dark:border-zinc-700 bg-paper dark:bg-zinc-800/50'}`}>
                 
                 {/* Name Slot */}
                 <div 
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(box.id, 'name', e.dataTransfer.getData('label'))}
-                  className={`w-3/4 h-10 rounded shadow-inner flex items-center justify-center text-sm font-mono transition-colors ${box.name ? 'bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-100 border border-amber-300 dark:border-amber-600' : 'bg-stone-200/50 dark:bg-zinc-900/50 border border-stone-200 dark:border-zinc-700 text-stone-400 dark:text-zinc-500'}`}
+                  className={`w-3/4 h-10 rounded shadow-inner flex items-center justify-center text-sm font-mono transition-colors ${box.name ? 'bg-amber-100 text-amber-800 dark:bg-amber-800 dark:text-amber-100 border border-amber-300 dark:border-amber-600' : 'bg-paper/50 dark:bg-zinc-900/50 border border-stone-200 dark:border-zinc-700 text-pencil dark:text-zinc-500'}`}
                 >
                   {box.name || 'name'}
                 </div>
 
-                <div className="text-stone-400 dark:text-zinc-500 font-mono text-xl">=</div>
+                <div className="text-pencil dark:text-zinc-500 font-mono text-xl">=</div>
 
                 {/* Value Slot */}
                 <div 
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(box.id, 'value', e.dataTransfer.getData('label'))}
-                  className={`w-3/4 h-10 rounded shadow-inner flex items-center justify-center text-sm font-mono transition-colors ${box.value ? 'bg-white dark:bg-zinc-900 border border-stone-300 dark:border-zinc-600 text-stone-700 dark:text-zinc-300' : 'bg-stone-200/50 dark:bg-zinc-900/50 border border-stone-200 dark:border-zinc-700 text-stone-400 dark:text-zinc-500'}`}
+                  className={`w-3/4 h-10 rounded shadow-inner flex items-center justify-center text-sm font-mono transition-colors ${box.value ? 'bg-[#fdfcfa] dark:bg-zinc-900 border border-stone-300 dark:border-zinc-600 text-ink dark:text-zinc-300' : 'bg-paper/50 dark:bg-zinc-900/50 border border-stone-200 dark:border-zinc-700 text-pencil dark:text-zinc-500'}`}
                 >
                   {box.value || 'value'}
                 </div>
@@ -232,7 +232,7 @@ const Scene2 = ({ onComplete }) => {
             onDragStart={(e) => {
               e.dataTransfer.setData('itemId', item.id);
             }}
-            className={`px-4 py-2 font-mono text-lg rounded-lg shadow-sm border border-stone-200 dark:border-white/10 bg-white dark:bg-stone-800 cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform ${shakeItemId === item.id ? 'animate-[shake_0.5s_ease-in-out] bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200' : ''}`}
+            className={`px-4 py-2 font-mono text-lg rounded-lg shadow-sm border border-stone-200 dark:border-white/10 bg-[#fdfcfa] dark:bg-stone-800 cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform ${shakeItemId === item.id ? 'animate-[shake_0.5s_ease-in-out] bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200' : ''}`}
           >
             {item.value}
           </div>
@@ -249,13 +249,13 @@ const Scene2 = ({ onComplete }) => {
               onDragOver={e => e.preventDefault()}
               onDrop={e => handleDrop(t.id, e.dataTransfer.getData('itemId'))}
               className={`relative flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all duration-300 min-h-[220px] ${
-                isFull ? t.color.replace('bg-', 'border-').replace('border-', '') + ' bg-opacity-50 border-opacity-100 shadow-xl scale-105' : 'border-dashed border-stone-300 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-900/40'
+                isFull ? t.color.replace('bg-', 'border-').replace('border-', '') + ' bg-opacity-50 border-opacity-100 shadow-xl scale-105' : 'border-dashed border-stone-300 dark:border-zinc-700 bg-paper dark:bg-zinc-900/40'
               }`}
             >
               <div className={`text-xl font-bold font-mono px-3 py-1 rounded ${t.color}`}>
                 {t.label}
               </div>
-              <div className="text-xs text-stone-500 uppercase tracking-widest">{t.desc}</div>
+              <div className="text-xs text-pencil uppercase tracking-widest">{t.desc}</div>
               
               <div className="flex-1 w-full flex flex-col gap-2 mt-4 items-center justify-center">
                 {slotItems.map(item => (
@@ -275,7 +275,7 @@ const Scene2 = ({ onComplete }) => {
       </div>
 
       {allDone && (
-        <div className="fixed bottom-10 animate-fade-in bg-stone-900 dark:bg-white text-white dark:text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
+        <div className="fixed bottom-10 animate-fade-in bg-stone-900 dark:bg-[#fdfcfa] text-white dark:text-black px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
           <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
             <CheckIcon className="w-5 h-5 text-green-500" />
           </div>
@@ -319,18 +319,18 @@ const Scene3 = ({ onComplete }) => {
     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-start relative">
       {/* Code Editor Side */}
       <div className="flex flex-col gap-4 relative">
-        <div className="flex items-center justify-between px-4 py-2 bg-stone-100 dark:bg-stone-900 rounded-t-xl border border-b-0 border-stone-200 dark:border-white/10">
+        <div className="flex items-center justify-between px-4 py-2 bg-paper dark:bg-stone-900 rounded-t-xl border border-b-0 border-stone-200 dark:border-white/10">
           <div className="flex gap-2">
             <div className="w-3 h-3 rounded-full bg-red-400"></div>
             <div className="w-3 h-3 rounded-full bg-amber-400"></div>
             <div className="w-3 h-3 rounded-full bg-green-400"></div>
           </div>
-          <div className="text-xs font-mono text-stone-500">main.py</div>
+          <div className="text-xs font-mono text-pencil">main.py</div>
         </div>
-        <div className="bg-stone-900 border border-stone-800 rounded-b-xl p-6 font-mono text-sm leading-8 text-stone-300 shadow-2xl overflow-hidden relative">
+        <div className="bg-stone-900 border border-stone-800 rounded-b-xl p-6 font-mono text-sm leading-8 text-ink/70 shadow-2xl overflow-hidden relative">
           {lines.map((line, i) => (
-            <div key={line.id} className={`relative flex items-center px-4 -mx-4 transition-colors duration-300 ${step === i + 1 ? 'bg-amber-500/20 text-amber-100' : 'text-stone-400'}`}>
-              <span className="w-6 text-stone-600 select-none">{i + 1}</span>
+            <div key={line.id} className={`relative flex items-center px-4 -mx-4 transition-colors duration-300 ${step === i + 1 ? 'bg-amber-500/20 text-amber-100' : 'text-pencil'}`}>
+              <span className="w-6 text-ink select-none">{i + 1}</span>
               <span className={`transition-opacity duration-300`}>{line.text}</span>
               
               {step === i + 1 && (
@@ -347,7 +347,7 @@ const Scene3 = ({ onComplete }) => {
           disabled={step === lines.length}
           className={`self-start mt-4 flex items-center gap-2 px-6 py-3 rounded-xl font-medium shadow-md transition-all duration-300 ${
             step === lines.length 
-              ? 'bg-stone-200 text-stone-400 cursor-not-allowed hidden' 
+              ? 'bg-paper text-pencil cursor-not-allowed hidden' 
               : 'bg-amber-500 hover:bg-amber-400 text-amber-950 hover:shadow-lg hover:-translate-y-0.5'
           }`}
         >
@@ -358,7 +358,7 @@ const Scene3 = ({ onComplete }) => {
 
       {/* Memory Area Side */}
       <div className="flex flex-col gap-4">
-        <div className="text-sm font-mono text-stone-500 tracking-widest uppercase mb-2">Computer Memory</div>
+        <div className="text-sm font-mono text-pencil tracking-widest uppercase mb-2">Computer Memory</div>
         <div className="grid grid-cols-1 gap-4">
           {lines.map((line, i) => {
             const isVisible = step > i;
@@ -369,22 +369,22 @@ const Scene3 = ({ onComplete }) => {
                 key={line.id} 
                 className={`relative flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-700 transform ${
                   isVisible 
-                    ? 'opacity-100 translate-x-0 border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 shadow-sm' 
+                    ? 'opacity-100 translate-x-0 border-stone-300 dark:border-stone-700 bg-[#fdfcfa] dark:bg-stone-800 shadow-sm' 
                     : 'opacity-0 translate-x-10 border-transparent bg-transparent'
                 } ${isJustAdded ? 'ring-4 ring-amber-500/30' : ''}`}
               >
                 {isVisible && (
                   <>
                     <div className="flex flex-col">
-                      <span className="text-xs text-stone-400 font-mono mb-1">Variable Name</span>
-                      <span className="font-mono text-stone-800 dark:text-stone-200">{line.varName}</span>
+                      <span className="text-xs text-pencil font-mono mb-1">Variable Name</span>
+                      <span className="font-mono text-ink dark:text-ink/70">{line.varName}</span>
                     </div>
-                    <div className="text-stone-300 dark:text-stone-600 font-mono">=</div>
+                    <div className="text-ink/70 dark:text-ink font-mono">=</div>
                     <div className="flex flex-col items-end gap-1">
-                      <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${line.typeColor}`}>
+                      <span className={`text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${line.typeColor}`}>
                         {line.type}
                       </span>
-                      <span className="font-mono bg-stone-100 dark:bg-black/50 px-3 py-1 rounded text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-white/5">
+                      <span className="font-mono bg-paper dark:bg-black/50 px-3 py-1 rounded text-ink dark:text-ink/70 border border-stone-200 dark:border-white/5">
                         {line.varValue}
                       </span>
                     </div>
@@ -422,7 +422,7 @@ const Scene4 = ({ onComplete }) => {
   const codeDisplay = () => {
     if (runState === 'success') {
       return (
-        <span className="text-stone-300">
+        <span className="text-ink/70">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-amber-500 bg-amber-500/20 px-1 rounded">str(age)</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
@@ -430,15 +430,15 @@ const Scene4 = ({ onComplete }) => {
     
     if (selectedFix) {
       return (
-        <span className="text-stone-300">
+        <span className="text-ink/70">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-blue-300 bg-blue-500/20 px-1 rounded">{selectedFix}</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
     }
 
     return (
-      <span className="text-stone-300">
-        message = <span className="text-amber-300">"I am "</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-stone-400'}`}>+</span> <span className="text-blue-300">age</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-stone-400'}`}>+</span> <span className="text-amber-300">" years old"</span>
+      <span className="text-ink/70">
+        message = <span className="text-amber-300">"I am "</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-blue-300">age</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-amber-300">" years old"</span>
       </span>
     );
   };
@@ -452,7 +452,7 @@ const Scene4 = ({ onComplete }) => {
           <div className="w-3 h-3 rounded-full bg-green-400 opacity-50"></div>
         </div>
 
-        <div className="text-stone-300 flex flex-col">
+        <div className="text-ink/70 flex flex-col">
           <span>
             age = <span className="text-blue-300">25</span>
           </span>
@@ -480,9 +480,9 @@ const Scene4 = ({ onComplete }) => {
       )}
 
       {runState === 'error' && (
-        <div className="w-full animate-fade-in flex flex-col items-center gap-6 mt-4 p-6 bg-stone-50 dark:bg-white/5 rounded-2xl border border-stone-200 dark:border-white/10">
-          <div className="text-stone-600 dark:text-stone-300 text-sm">
-            Python doesn't know how to glue a word (<span className="font-mono bg-stone-200 dark:bg-white/10 px-1 rounded">str</span>) to a number (<span className="font-mono bg-stone-200 dark:bg-white/10 px-1 rounded">int</span>). Pick the best fix:
+        <div className="w-full animate-fade-in flex flex-col items-center gap-6 mt-4 p-6 bg-paper dark:bg-white/5 rounded-2xl border border-stone-200 dark:border-white/10">
+          <div className="text-ink dark:text-ink/70 text-sm">
+            Python doesn't know how to glue a word (<span className="font-mono bg-paper dark:bg-white/10 px-1 rounded">str</span>) to a number (<span className="font-mono bg-paper dark:bg-white/10 px-1 rounded">int</span>). Pick the best fix:
           </div>
           <div className="flex gap-4">
             {['str(age)', 'int(age)', 'float(age)'].map((opt) => (
@@ -492,7 +492,7 @@ const Scene4 = ({ onComplete }) => {
                 className={`px-6 py-2 rounded-lg font-mono text-sm border-2 transition-all ${
                   selectedFix === opt 
                     ? 'border-amber-500 bg-amber-100 text-amber-800 dark:bg-amber-900/30' 
-                    : 'border-stone-200 hover:border-amber-300 bg-white dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+                    : 'border-stone-200 hover:border-amber-300 bg-[#fdfcfa] dark:bg-stone-800 text-ink dark:text-ink/70'
                 }`}
               >
                 {opt}
@@ -581,14 +581,14 @@ const Scene5 = ({ onComplete }) => {
           {Object.entries(fields).map(([key, value]) => (
             <div key={key} className="flex items-center gap-3">
               <span className="text-blue-300 w-32">{key}</span>
-              <span className="text-stone-500">=</span>
+              <span className="text-pencil">=</span>
               <div 
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => handleDrop(key, e.dataTransfer.getData('valId'))}
                 className={`h-8 px-3 flex items-center rounded transition-all ${
                   value 
                     ? 'bg-amber-500/20 text-amber-200 border border-amber-500/50' 
-                    : 'bg-stone-800 border border-stone-700 border-dashed text-stone-600 min-w-[100px]'
+                    : 'bg-stone-800 border border-stone-700 border-dashed text-ink min-w-[100px]'
                 }`}
               >
                 {value ? value.val : '___'}
@@ -603,7 +603,7 @@ const Scene5 = ({ onComplete }) => {
               key={v.id}
               draggable
               onDragStart={(e) => e.dataTransfer.setData('valId', v.id)}
-              className="px-4 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg shadow-sm cursor-grab active:cursor-grabbing font-mono text-sm hover:-translate-y-1 transition-transform"
+              className="px-4 py-2 bg-[#fdfcfa] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg shadow-sm cursor-grab active:cursor-grabbing font-mono text-sm hover:-translate-y-1 transition-transform"
             >
               {v.val}
             </div>
@@ -613,7 +613,7 @@ const Scene5 = ({ onComplete }) => {
 
       {/* Visual ID Card Side */}
       <div className="flex justify-center perspective-[1000px]">
-        <div className={`w-80 h-[420px] bg-white rounded-2xl shadow-2xl overflow-hidden relative border border-stone-200 transition-all duration-1000 transform ${isComplete ? 'scale-105 rotate-y-[-5deg] shadow-[30px_20px_40px_rgba(0,0,0,0.1)]' : 'shadow-md'}`}>
+        <div className={`w-80 h-[420px] bg-[#fdfcfa] rounded-2xl shadow-2xl overflow-hidden relative border border-stone-200 transition-all duration-1000 transform ${isComplete ? 'scale-105 rotate-y-[-5deg] shadow-[30px_20px_40px_rgba(0,0,0,0.1)]' : 'shadow-md'}`}>
           {/* Card Header */}
           <div className="h-24 bg-gradient-to-br from-amber-500 to-red-500 p-6 flex items-end">
             <h3 className="text-white font-bold tracking-widest uppercase text-sm">WSB Merito University</h3>
@@ -621,18 +621,18 @@ const Scene5 = ({ onComplete }) => {
 
           <div className="p-6 flex flex-col gap-6">
             <div className="flex gap-4">
-              <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center border-2 border-stone-200 shrink-0 overflow-hidden">
+              <div className="w-16 h-16 rounded-full bg-paper flex items-center justify-center border-2 border-stone-200 shrink-0 overflow-hidden">
                 {fields.student_name ? (
-                   <svg className="w-10 h-10 text-stone-300 mt-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                   <svg className="w-10 h-10 text-ink/70 mt-2" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 ) : (
-                  <div className="w-8 h-8 rounded-full border-2 border-dashed border-stone-300 text-stone-300 flex items-center justify-center font-bold">?</div>
+                  <div className="w-8 h-8 rounded-full border-2 border-dashed border-stone-300 text-ink/70 flex items-center justify-center font-bold">?</div>
                 )}
               </div>
               <div className="flex flex-col justify-center w-full">
-                <div className={`font-bold text-lg transition-all ${fields.student_name ? 'text-stone-800' : 'text-stone-300 bg-stone-100 h-6 w-3/4 animate-pulse'}`}>
+                <div className={`font-bold text-lg transition-all ${fields.student_name ? 'text-ink' : 'text-ink/70 bg-paper h-6 w-3/4 animate-pulse'}`}>
                   {fields.student_name ? fields.student_name.val.replace(/"/g, '') : ''}
                 </div>
-                <div className={`text-xs uppercase tracking-wider transition-all mt-1 ${fields.department ? 'text-amber-600' : 'text-stone-300 bg-stone-100 h-4 w-1/2 animate-pulse'}`}>
+                <div className={`text-xs uppercase tracking-wider transition-all mt-1 ${fields.department ? 'text-amber-600' : 'text-ink/70 bg-paper h-4 w-1/2 animate-pulse'}`}>
                   {fields.department ? fields.department.val.replace(/"/g, '') : ''}
                 </div>
               </div>
@@ -640,18 +640,18 @@ const Scene5 = ({ onComplete }) => {
 
             <div className="grid grid-cols-2 gap-y-4 gap-x-2 w-full mt-2">
               <div className="flex flex-col">
-                <span className="text-[10px] text-stone-400 uppercase tracking-wider">ID Number</span>
-                <span className={`font-mono text-sm transition-all ${fields.student_id ? 'text-stone-700' : 'text-stone-200'}`}>{fields.student_id ? fields.student_id.val : '........'}</span>
+                <span className="text-xs text-pencil uppercase tracking-wider">ID Number</span>
+                <span className={`font-mono text-sm transition-all ${fields.student_id ? 'text-ink' : 'text-ink/70'}`}>{fields.student_id ? fields.student_id.val : '........'}</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] text-stone-400 uppercase tracking-wider">GPA</span>
-                <span className={`font-mono text-sm transition-all ${fields.gpa ? 'text-stone-700' : 'text-stone-200'}`}>{fields.gpa ? fields.gpa.val : '...'}</span>
+                <span className="text-xs text-pencil uppercase tracking-wider">GPA</span>
+                <span className={`font-mono text-sm transition-all ${fields.gpa ? 'text-ink' : 'text-ink/70'}`}>{fields.gpa ? fields.gpa.val : '...'}</span>
               </div>
               <div className="flex flex-col col-span-2">
-                <span className="text-[10px] text-stone-400 uppercase tracking-wider">Status</span>
+                <span className="text-xs text-pencil uppercase tracking-wider">Status</span>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className={`w-2 h-2 rounded-full transition-all ${fields.is_active ? 'bg-green-500' : 'bg-stone-200'}`}></div>
-                  <span className={`text-xs uppercase font-bold transition-all ${fields.is_active ? 'text-green-600' : 'text-stone-300'}`}>
+                  <div className={`w-2 h-2 rounded-full transition-all ${fields.is_active ? 'bg-green-500' : 'bg-paper'}`}></div>
+                  <span className={`text-xs uppercase font-bold transition-all ${fields.is_active ? 'text-green-600' : 'text-ink/70'}`}>
                     {fields.is_active ? 'Active' : 'Pending'}
                   </span>
                 </div>
@@ -719,10 +719,10 @@ const Scene6 = ({ onComplete }) => {
   return (
     <div className="w-full max-w-2xl flex flex-col gap-8 items-center">
       <div className="w-full bg-stone-900 border border-stone-800 rounded-xl p-8 font-mono text-sm leading-10 shadow-2xl relative">
-        <div className="text-stone-300 flex flex-col relative">
+        <div className="text-ink/70 flex flex-col relative">
           
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">first_name</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">first_name</span> <span className="text-pencil mx-2">=</span>
             {bugs.b1.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">"Tomek"</span>
             ) : (
@@ -731,10 +731,10 @@ const Scene6 = ({ onComplete }) => {
                   Tomek
                 </button>
                 {bugs.b1.active && (
-                  <div className="absolute top-10 left-0 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
-                    <div className="text-xs text-stone-500 dark:text-stone-400 font-sans mb-1">Pick the fix:</div>
-                    <button onClick={() => handleFix('b1', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-stone-700 dark:text-stone-200 rounded">"Tomek"</button>
-                    <button onClick={() => handleFix('b1', false)} className="text-left px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 rounded">str(Tomek)</button>
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                    <div className="text-xs text-pencil dark:text-pencil font-sans mb-1">Pick the fix:</div>
+                    <button onClick={() => handleFix('b1', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-ink dark:text-ink/70 rounded">"Tomek"</button>
+                    <button onClick={() => handleFix('b1', false)} className="text-left px-3 py-1.5 hover:bg-paper dark:hover:bg-stone-700 text-ink dark:text-ink/70 rounded">str(Tomek)</button>
                   </div>
                 )}
               </div>
@@ -743,12 +743,12 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">last_name</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">last_name</span> <span className="text-pencil mx-2">=</span>
             <span className="text-amber-300">"Kowalski"</span>
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">semester</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">semester</span> <span className="text-pencil mx-2">=</span>
             {bugs.b2.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">4</span>
             ) : (
@@ -757,10 +757,10 @@ const Scene6 = ({ onComplete }) => {
                   "4"
                 </button>
                 {bugs.b2.active && (
-                  <div className="absolute top-10 left-0 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
-                    <div className="text-xs text-stone-500 dark:text-stone-400 font-sans mb-1">Semester should be a number:</div>
-                    <button onClick={() => handleFix('b2', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-stone-700 dark:text-stone-200 rounded">4</button>
-                    <button onClick={() => handleFix('b2', false)} className="text-left px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 rounded">int("4")</button>
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                    <div className="text-xs text-pencil dark:text-pencil font-sans mb-1">Semester should be a number:</div>
+                    <button onClick={() => handleFix('b2', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-ink dark:text-ink/70 rounded">4</button>
+                    <button onClick={() => handleFix('b2', false)} className="text-left px-3 py-1.5 hover:bg-paper dark:hover:bg-stone-700 text-ink dark:text-ink/70 rounded">int("4")</button>
                   </div>
                 )}
               </div>
@@ -769,7 +769,7 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">tuition_paid</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">tuition_paid</span> <span className="text-pencil mx-2">=</span>
             {bugs.b3.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">True</span>
             ) : (
@@ -778,10 +778,10 @@ const Scene6 = ({ onComplete }) => {
                   yes
                 </button>
                 {bugs.b3.active && (
-                  <div className="absolute top-10 left-0 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
-                    <div className="text-xs text-stone-500 dark:text-stone-400 font-sans mb-1">Booleans in Python:</div>
-                    <button onClick={() => handleFix('b3', false)} className="text-left px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 rounded">true</button>
-                    <button onClick={() => handleFix('b3', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-stone-700 dark:text-stone-200 rounded">True</button>
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                    <div className="text-xs text-pencil dark:text-pencil font-sans mb-1">Booleans in Python:</div>
+                    <button onClick={() => handleFix('b3', false)} className="text-left px-3 py-1.5 hover:bg-paper dark:hover:bg-stone-700 text-ink dark:text-ink/70 rounded">true</button>
+                    <button onClick={() => handleFix('b3', true)} className="text-left px-3 py-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 text-ink dark:text-ink/70 rounded">True</button>
                   </div>
                 )}
               </div>
@@ -790,8 +790,8 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">email</span> <span className="text-stone-500 mx-2">=</span>
-            <span className="text-stone-300">first_name <span className="text-stone-500">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
+            <span className="w-32 text-blue-300">email</span> <span className="text-pencil mx-2">=</span>
+            <span className="text-ink/70">first_name <span className="text-pencil">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
           </div>
 
         </div>
@@ -817,7 +817,7 @@ const Scene6 = ({ onComplete }) => {
             </div>
           </div>
         ) : (
-          <div className="text-stone-400 dark:text-stone-500 italic text-sm animate-pulse">Find and click the 3 bugs to fix them...</div>
+          <div className="text-pencil dark:text-pencil italic text-sm animate-pulse">Find and click the 3 bugs to fix them...</div>
         )}
       </div>
 
@@ -857,7 +857,7 @@ export default function VariablesDataTypesLesson() {
       case 1:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               In Python, a variable is just a name you stick on a box to remember what's inside. Try making some pairs.
             </p>
             <Scene1 onComplete={setSceneComplete} />
@@ -866,7 +866,7 @@ export default function VariablesDataTypesLesson() {
       case 2:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               Not all values are the same. Python sees a difference between a number, a word, and a true/false answer. These are called data types.
             </p>
             <Scene2 onComplete={setSceneComplete} />
@@ -875,7 +875,7 @@ export default function VariablesDataTypesLesson() {
       case 3:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               Watch what happens in the computer's memory when we create variables. Step through the code.
             </p>
             <Scene3 onComplete={setSceneComplete} />
@@ -884,7 +884,7 @@ export default function VariablesDataTypesLesson() {
       case 4:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               Python cares about types. You can't just mash them together and hope for the best.
             </p>
             <Scene4 onComplete={setSceneComplete} />
@@ -893,7 +893,7 @@ export default function VariablesDataTypesLesson() {
       case 5:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               You're building a student ID card system for a university. Fill in the variables to generate the card.
             </p>
             <Scene5 onComplete={setSceneComplete} />
@@ -902,14 +902,14 @@ export default function VariablesDataTypesLesson() {
       case 6:
         return (
           <>
-            <p className="text-stone-500 dark:text-stone-400 text-center max-w-lg mb-12 text-lg">
+            <p className="text-pencil dark:text-pencil text-center max-w-lg mb-12 text-lg">
               Final Challenge: Find and fix the 3 bugs in this registration form code.
             </p>
             <Scene6 onComplete={setSceneComplete} />
           </>
         );
       default:
-        return <div className="text-stone-400">Loading scene...</div>;
+        return <div className="text-pencil">Loading scene...</div>;
     }
   };
 
@@ -921,12 +921,12 @@ export default function VariablesDataTypesLesson() {
             <div 
               key={i} 
               className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === activeScene ? 'w-8 bg-amber-500' : i < activeScene ? 'w-4 bg-stone-300 dark:bg-stone-600' : 'w-4 bg-stone-200 dark:bg-stone-800'
+                i === activeScene ? 'w-8 bg-amber-500' : i < activeScene ? 'w-4 bg-stone-300 dark:bg-stone-600' : 'w-4 bg-paper dark:bg-stone-800'
               }`} 
             />
           ))}
         </div>
-        <div className="text-sm font-mono text-stone-500">Variables & Data Types</div>
+        <div className="text-sm font-mono text-pencil">Variables & Data Types</div>
       </div>
       
       <SceneContainer 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { fields, certifications, jobs, skills, lessons } from "../data/mock";
-import { getFieldColor, experienceLevelColors } from "../data/fieldColors";
+import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
 import useScrollReveal from "../hooks/useScrollReveal";
 import HomepageLesson from "../components/HomepageLesson";
@@ -153,7 +153,7 @@ export default function Home() {
                     style={isActive ? { borderColor: color.accent, color: color.accent } : { color: 'inherit' }}
                   >
                     <div className="flex items-center gap-4 relative z-10">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${isActive ? 'bg-white' : 'bg-ink/[0.03] text-pencil group-hover:bg-ink/[0.05]'
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${isActive ? 'bg-[#fdfcfa]' : 'bg-ink/[0.03] text-pencil group-hover:bg-ink/[0.05]'
                         }`} style={isActive ? { backgroundColor: `${color.accent}15`, color: color.accent } : {}}>
                         {Icon && <Icon className="w-5 h-5" />}
                       </div>
@@ -163,7 +163,7 @@ export default function Home() {
                       </span>
                     </div>
                     {isActive && (
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white border-[1.5px] shadow-sm animate-fade-in" style={{ borderColor: color.accent }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-[#fdfcfa] border-[1.5px] shadow-sm animate-fade-in" style={{ borderColor: color.accent }}>
                         <ArrowRightIcon className="w-3 h-3" />
                       </div>
                     )}
@@ -194,7 +194,7 @@ export default function Home() {
                         <ArrowRightIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
-                    <div className="text-right shrink-0 bg-white border-[1.5px] border-ink/10 shadow-sm rounded-xl p-4">
+                    <div className="text-right shrink-0 bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl p-4">
                       <span className="block font-sans text-xs font-bold uppercase tracking-wider text-pencil mb-1">Market Value</span>
                       <span className="font-mono text-xl font-bold text-ink">
                         {salaryMax > 0 ? `${(salaryMin / 1000).toFixed(0)}k–${(salaryMax / 1000).toFixed(0)}k` : 'Var'}
@@ -242,7 +242,7 @@ export default function Home() {
                             {/* Insert a lesson after the stage */}
                             {stageIdx < 2 && fieldLessons[stageIdx] && (
                               <div className="mt-6 -ml-3 pl-3 border-l-[2px] border-transparent">
-                                <Link to={`/skills/${fieldLessons[stageIdx].skillId}/${fieldLessons[stageIdx].id}`} className="group block bg-[#fdfcfa] border-[1.5px] border-ink/5 rounded-xl p-3 hover:bg-white hover:border-ink/15 hover:shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-all duration-200">
+                                <Link to={`/skills/${fieldLessons[stageIdx].skillId}/${fieldLessons[stageIdx].id}`} className="group block bg-[#fdfcfa] border-[1.5px] border-ink/5 rounded-xl p-3 hover:bg-[#fdfcfa] hover:border-ink/15 hover:shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-all duration-200">
                                   <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200" style={{ backgroundColor: `${activeColor.accent}15`, color: activeColor.accent }}>
                                       <svg className="w-3.5 h-3.5 ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
@@ -310,7 +310,6 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {activeJobs.slice(0, 6).map((job, i) => {
-                const lvl = experienceLevelColors[job.experienceLevel] || experienceLevelColors.junior;
                 return (
                   <Link
                     key={job.id}
@@ -323,8 +322,8 @@ export default function Home() {
                     }}
                   >
                     <div className="flex items-start justify-between gap-3 mb-4">
-                      <span className={`inline-block rounded border px-2.5 py-1 font-sans text-xs font-bold uppercase tracking-wider ${lvl.bg} ${lvl.text} ${lvl.border}`}>
-                        {lvl.label}
+                      <span className={`inline-block rounded border px-2.5 py-1 font-sans text-xs font-bold uppercase tracking-wider ${job.type === "Internship" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-sky-50 text-sky-700 border-sky-200"}`}>
+                        {job.type}
                       </span>
                       <span className="font-mono text-sm font-bold text-ink shrink-0">
                         {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-xs text-pencil uppercase tracking-wider ml-0.5">PLN</span>

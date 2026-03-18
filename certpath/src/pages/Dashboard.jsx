@@ -1,7 +1,7 @@
 import { Navigate, Link } from "react-router-dom";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { fields, certifications, skills, lessons, jobs, skillJobMap } from "../data/mock";
-import { getFieldColor, experienceLevelColors } from "../data/fieldColors";
+import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
 import useCountUp from "../hooks/useCountUp";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -585,14 +585,13 @@ export default function Dashboard() {
         {matchingJobs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {matchingJobs.slice(0, 6).map((job, i) => {
-              const lvl = experienceLevelColors[job.experienceLevel] || experienceLevelColors.junior;
               return (
                 <Link key={job.id} to={`/jobs/${job.id}`}
                   className="group bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,.06)] rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2.5">
-                    <span className={`inline-block rounded-full border px-2 py-0.5 font-sans text-xs font-semibold ${lvl.bg} ${lvl.text} ${lvl.border}`}>
-                      {lvl.label}
+                    <span className={`inline-block rounded-full border px-2 py-0.5 font-sans text-xs font-semibold ${job.type === "Internship" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-sky-50 text-sky-700 border-sky-200"}`}>
+                      {job.type}
                     </span>
                     <span className="font-mono text-base font-bold shrink-0" style={{ color: accent }}>
                       {(job.salaryMin / 1000).toFixed(0)}–{(job.salaryMax / 1000).toFixed(0)}k

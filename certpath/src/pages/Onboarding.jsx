@@ -447,11 +447,11 @@ function IllustratedCard({ label, selected, onClick, ...props }) {
       className={`group relative w-full rounded-2xl p-6 text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] border-[1.5px] flex flex-col items-center justify-center min-h-[180px] ${
         selected
           ? "border-rust bg-[#fdfcfa] shadow-[0_8px_0_0_rgba(240,86,46,0.15)] -translate-y-1"
-          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-white"
+          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-[#fdfcfa]"
       }`}
     >
       <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-[1.5px] ${
-        selected ? "bg-rust border-rust text-white scale-100 opacity-100" : "bg-white border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
+        selected ? "bg-rust border-rust text-white scale-100 opacity-100" : "bg-[#fdfcfa] border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
       }`}>
         <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4.5 12.5l5 5L19.5 7" />
@@ -494,12 +494,12 @@ function FieldSelectCard({ label, selected, onClick, ...props }) {
       className={`group relative w-full h-full rounded-2xl border-[1.5px] p-6 text-left transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex flex-col ${
         selected
           ? "bg-[#fdfcfa] -translate-y-1 shadow-[0_8px_0_0_rgba(0,0,0,0.06)] z-10"
-          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-white z-0"
+          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-[#fdfcfa] z-0"
       }`}
       style={selected ? { borderColor: accent, boxShadow: `0 8px 0 0 ${accent}25` } : undefined}
     >
       <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-[1.5px] ${
-        selected ? "text-white scale-100 opacity-100" : "bg-white border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
+        selected ? "text-white scale-100 opacity-100" : "bg-[#fdfcfa] border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
       }`}
         style={selected ? { backgroundColor: accent, borderColor: accent } : undefined}
       >
@@ -510,7 +510,7 @@ function FieldSelectCard({ label, selected, onClick, ...props }) {
 
       {Icon && (
         <div className={`mb-5 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-400 ${
-          selected ? "bg-white shadow-sm border border-ink/10" : "bg-ink/[0.03] text-pencil group-hover:text-ink group-hover:bg-ink/[0.05]"
+          selected ? "bg-[#fdfcfa] shadow-sm border border-ink/10" : "bg-ink/[0.03] text-pencil group-hover:text-ink group-hover:bg-ink/[0.05]"
         }`}
           style={selected ? { color: accent } : undefined}
         >
@@ -627,7 +627,7 @@ export default function Onboarding() {
             onClick={goBack}
             className="group flex w-[120px] items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-pencil hover:text-ink transition-colors duration-200"
           >
-            <div className="w-8 h-8 rounded-full bg-white border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
+            <div className="w-8 h-8 rounded-full bg-[#fdfcfa] border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
               <svg className="w-4 h-4 text-ink transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
@@ -639,7 +639,7 @@ export default function Onboarding() {
             to="/"
             className="group flex w-[120px] items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-pencil hover:text-ink transition-colors duration-200"
           >
-            <div className="w-8 h-8 rounded-full bg-white border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
+            <div className="w-8 h-8 rounded-full bg-[#fdfcfa] border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
               <svg className="w-4 h-4 text-ink transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>

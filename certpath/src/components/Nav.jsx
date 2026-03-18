@@ -33,6 +33,9 @@ export default function Nav() {
               Dashboard
             </NavLink>
           )}
+          <NavLink to="/lessons" className={linkClass}>
+            Lessons
+          </NavLink>
           <NavLink to="/explore" className={linkClass}>
             Explore
           </NavLink>
@@ -60,7 +63,7 @@ export default function Nav() {
             <button
               type="button"
               onClick={() => { localStorage.clear(); window.location.reload(); }}
-              className="ml-2 text-[10px] text-pencil/50 hover:text-red-500 transition-colors"
+              className="ml-2 text-xs text-pencil/50 hover:text-red-500 transition-colors"
               title="Clear localStorage (dev only)"
             >
               Reset

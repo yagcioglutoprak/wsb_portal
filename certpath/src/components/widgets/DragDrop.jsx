@@ -135,7 +135,7 @@ export default function DragDrop({
                     ? "border-rust/60 bg-rust/8 shadow-lg shadow-rust/10"
                     : isDragging
                       ? "border-rust/30 bg-rust/3"
-                      : "border-stone-300 bg-stone-50/60"
+                      : "border-stone-300 bg-paper/60"
                   : "",
                 isWrong ? "animate-shake" : "",
                 isOver && !placedItem ? "scale-[1.02]" : "",
@@ -201,7 +201,7 @@ export default function DragDrop({
                       {!feedback && (
                         <button
                           onClick={() => handleRemove(zone.id)}
-                          className="flex h-6 w-6 items-center justify-center rounded-full bg-stone-200/80 text-xs text-graphite transition-all duration-200 hover:bg-red-100 hover:text-red-500 hover:scale-110"
+                          className="flex h-6 w-6 items-center justify-center rounded-full bg-paper/80 text-xs text-graphite transition-all duration-200 hover:bg-red-100 hover:text-red-500 hover:scale-110"
                         >
                           &times;
                         </button>

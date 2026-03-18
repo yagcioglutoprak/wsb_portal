@@ -1,7 +1,7 @@
 import { Navigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fields, certifications, skills, lessons, jobs, skillJobMap } from "../data/mock";
-import { getFieldColor, experienceLevelColors } from "../data/fieldColors";
+import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
 import useCountUp from "../hooks/useCountUp";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -177,7 +177,7 @@ function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, ac
               <div
                 className={`w-12 h-12 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-300 ${
                   done ? "text-white shadow-sm" :
-                  active ? "border-[2px] bg-white shadow-sm" :
+                  active ? "border-[2px] bg-[#fdfcfa] shadow-sm" :
                   "border-[1.5px] border-dashed border-ink/20 text-pencil bg-transparent"
                 }`}
                 style={{
@@ -535,15 +535,14 @@ export default function DashboardGemini() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {matchingJobs.slice(0, 6).map((job) => {
-                const lvl = experienceLevelColors[job.experienceLevel] || experienceLevelColors.junior;
                 return (
                   <Link key={job.id} to={`/jobs/${job.id}`}
                     className="group bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-3 mb-4">
-                        <span className={`inline-block border px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${lvl.bg} ${lvl.text} ${lvl.border}`}>
-                          {lvl.label}
+                        <span className={`inline-block border px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${job.type === "Internship" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-sky-50 text-sky-700 border-sky-200"}`}>
+                          {job.type}
                         </span>
                         <span className="font-mono text-sm font-bold shrink-0" style={{ color: accent }}>
                           {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-xs text-pencil uppercase tracking-wider ml-0.5">PLN</span>

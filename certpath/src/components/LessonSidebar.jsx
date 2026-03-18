@@ -108,7 +108,7 @@ export default function LessonSidebar({
                 "mb-3 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider transition-all duration-300",
                 unlocked
                   ? `${meta.badge} shadow-sm`
-                  : "border-stone-200 bg-stone-100/80 text-pencil/40",
+                  : "border-stone-200 bg-paper/80 text-pencil/40",
               ].join(" ")}
             >
               <span className="text-xs">{meta.icon}</span>
@@ -118,7 +118,7 @@ export default function LessonSidebar({
             <div className="relative ml-1 space-y-0.5">
               {/* Connector line */}
               <div
-                className="absolute left-[9px] top-2 bottom-2 w-px bg-stone-200/60"
+                className="absolute left-[9px] top-2 bottom-2 w-px bg-paper/60"
                 style={{ zIndex: 0 }}
               />
 
@@ -161,7 +161,7 @@ export default function LessonSidebar({
                           <CheckIcon />
                         </div>
                       ) : !unlocked && !isCompleted ? (
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-stone-100/60" style={{ filter: "blur(0.5px)" }}>
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-paper/60" style={{ filter: "blur(0.5px)" }}>
                           <LockIcon />
                         </div>
                       ) : isCurrent ? (
@@ -174,7 +174,7 @@ export default function LessonSidebar({
                           {i + 1}
                         </span>
                       ) : (
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-graphite shadow-sm border border-stone-200/60 transition-colors duration-200 group-hover:border-stone-300 group-hover:bg-stone-50">
+                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#fdfcfa] text-xs font-bold text-graphite shadow-sm border border-stone-200/60 transition-colors duration-200 group-hover:border-stone-300 group-hover:bg-paper">
                           {i + 1}
                         </span>
                       )}

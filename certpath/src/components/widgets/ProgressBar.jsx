@@ -41,7 +41,7 @@ export default function ProgressBar({ phases, completedSteps, lessonId }) {
   return (
     <div className="space-y-3">
       {/* Bar */}
-      <div className="relative flex h-3 overflow-hidden rounded-full bg-stone-100/80">
+      <div className="relative flex h-3 overflow-hidden rounded-full bg-paper/80">
         {segments.map(({ phase, total, completed }, idx) => {
           const widthPercent = (total / totalSteps) * 100;
           const fillPercent = (completed / total) * 100;
@@ -104,7 +104,7 @@ export default function ProgressBar({ phases, completedSteps, lessonId }) {
                 "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-all duration-300",
                 isDone || isActive
                   ? colors.badge
-                  : "border-stone-200 bg-stone-50 text-pencil",
+                  : "border-stone-200 bg-paper text-pencil",
                 isDone ? "shadow-sm" : "",
               ].join(" ")}
             >

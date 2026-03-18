@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { lessons, skills } from "../data/mock";
 import { lessonRegistry } from "../lessons/registry";
 import useProgress from "../hooks/useProgress";
-import LessonSidebar from "../components/LessonSidebar";
 
 const PHASE_ORDER = ["learn", "apply", "challenge"];
 
@@ -115,16 +114,35 @@ export default function LessonViewer() {
     navigate,
   ]);
 
-  const handleStepClick = useCallback((phase, stepIndex) => {
-    setCurrentPhase(phase);
-    setCurrentStepIndex(stepIndex);
-    setContentKey((k) => k + 1);
-  }, []);
 
-  if (!lesson || !skill || !LessonComponent) {
+
+  if (!lesson || !skill) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-graphite">Lesson not found.</p>
+      </div>
+    );
+  }
+
+  if (!LessonComponent) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-paper px-6 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-ink/5">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink/30">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-ink">Coming Soon</h2>
+        <p className="mt-2 max-w-sm text-graphite">
+          We're building <span className="font-semibold text-ink">{lesson.title}</span> right now. Check back soon!
+        </p>
+        <Link
+          to={`/lessons`}
+          className="mt-8 rounded-xl bg-rust px-6 py-3 text-sm font-semibold text-white hover:bg-rust/90 transition-colors"
+        >
+          Back to Lessons
+        </Link>
       </div>
     );
   }
@@ -214,162 +232,136 @@ export default function LessonViewer() {
     );
   }
 
+  // Calculate total progress
+  const trackSteps = (lesson.phases.learn?.steps || 0) + (lesson.phases.apply?.steps || 0);
+  const challengeSteps = lesson.phases.challenge?.steps || 0;
+
+  let absoluteStepIndex = 0;
+  for (const phase of PHASE_ORDER) {
+    if (phase === currentPhase) {
+      absoluteStepIndex += currentStepIndex;
+      break;
+    }
+    absoluteStepIndex += lesson.phases[phase]?.steps || 0;
+  }
+
+  const trackProgress =
+    absoluteStepIndex >= trackSteps
+      ? 100
+      : (absoluteStepIndex / Math.max(1, trackSteps)) * 100;
+
   return (
-    <div className="flex h-[calc(100vh-64px)]">
-      <LessonSidebar
-        lesson={lesson}
-        completedSteps={progress.completedSteps}
-        currentPhase={currentPhase}
-        currentStepIndex={currentStepIndex}
-        onStepClick={handleStepClick}
-      />
-      <div className="flex flex-1 flex-col overflow-y-auto">
-        {/* Top bar with gradient bottom border */}
-        <div
-          className="relative flex items-center justify-between px-6 py-3"
-          style={{
-            background: "linear-gradient(to bottom, rgba(253, 252, 250, 0.95), rgba(253, 252, 250, 0.8))",
-            backdropFilter: "blur(8px)",
-          }}
+    <div className="flex h-screen flex-col bg-paper">
+      {/* Top menu bar (Brilliant style) */}
+      <div className="flex h-16 shrink-0 items-center justify-between px-6 bg-[#fdfcfa] border-b-[1.5px] border-ink/5">
+        <Link
+          to={`/skills/${skillSlug}`}
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-ink/40 transition-colors hover:bg-ink/5 hover:text-ink/80"
+          title="Exit lesson"
         >
-          {/* Gradient bottom border */}
-          <div
-            className="absolute bottom-0 left-0 right-0 h-px"
-            style={{
-              background: "linear-gradient(90deg, transparent 0%, rgba(40, 86, 166, 0.15) 30%, rgba(40, 86, 166, 0.15) 70%, transparent 100%)",
-            }}
-          />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </Link>
 
-          <Link
-            to={`/skills/${skillSlug}`}
-            className="group flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-rust"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 16 16"
-              fill="none"
-              className="transition-transform duration-200 group-hover:-translate-x-0.5"
-            >
-              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {skill.name}
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <span className="font-mono text-xs text-pencil tracking-wide">
-              Lesson {lesson.number} of{" "}
-              {lessons.filter((l) => l.skillId === skill.id).length}
-            </span>
-            <div className="relative">
-              <span
-                className={[
-                  "inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-bold text-rust transition-transform duration-300",
-                  xpBouncing ? "animate-xp-bounce" : "",
-                ].join(" ")}
-                style={{
-                  background: "linear-gradient(135deg, rgba(40, 86, 166, 0.08) 0%, rgba(59, 130, 246, 0.06) 100%)",
-                  boxShadow: "0 1px 3px rgba(40, 86, 166, 0.1)",
-                }}
-              >
-                {xp} XP
-              </span>
-              {/* XP delta animation */}
-              {xpDelta !== null && (
-                <span
-                  className="pointer-events-none absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-emerald-500"
-                  style={{
-                    animation: "counter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
-                  }}
-                >
-                  +{xpDelta}
-                </span>
-              )}
-            </div>
+        {/* Center Progress Container */}
+        <div className="flex flex-1 items-center justify-center gap-2 px-8 max-w-2xl">
+          {/* Main track */}
+          <div className="relative h-2.5 flex-1 rounded-full bg-paper overflow-hidden">
+            <div
+              className="absolute left-0 top-0 bottom-0 rounded-full bg-emerald-500 transition-all duration-500 ease-out"
+              style={{ width: `${trackProgress}%` }}
+            />
           </div>
+
+          {/* Challenge dots */}
+          {Array.from({ length: challengeSteps }).map((_, i) => {
+            const isFilled = absoluteStepIndex >= trackSteps + i;
+            return (
+              <div
+                key={i}
+                className={`h-2.5 w-2.5 rounded-full transition-colors duration-500 ${
+                  isFilled ? "bg-emerald-500" : "bg-paper"
+                }`}
+              />
+            );
+          })}
         </div>
 
-        {/* Content */}
-        <div className="flex-1 px-6 py-4">
-          <div className="mx-auto max-w-4xl">
-            <p className="mb-1 font-sans text-xs font-semibold uppercase tracking-wide text-rust/70">
-              {currentPhase} &middot; Step {currentStepIndex + 1}
-            </p>
-
-            <div
-              key={contentKey}
+        {/* Right side XP/streak */}
+        <div className="relative flex items-center gap-1.5 font-bold text-ink">
+          <span className={`text-lg transition-transform duration-300 ${xpBouncing ? 'animate-xp-bounce text-emerald-500' : ''}`}>
+            {xp}
+          </span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-yellow-400">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor" />
+          </svg>
+          {/* XP delta animation */}
+          {xpDelta !== null && (
+            <span
+              className="pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-bold text-emerald-500"
               style={{
-                animation: "slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+                animation: "counter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
               }}
             >
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center py-12">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-stone-200 border-t-rust" />
-                  </div>
-                }
-              >
-                <LessonComponent
-                  currentPhase={currentPhase}
-                  currentStep={currentStepIndex}
-                  onComplete={handleComplete}
-                />
-              </Suspense>
-            </div>
+              +{xpDelta}
+            </span>
+          )}
+        </div>
+      </div>
 
-            {/* Next button */}
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={handleNext}
-                disabled={!isStepDone}
-                className={[
-                  "group relative flex items-center gap-2 rounded-xl px-8 py-3 text-sm font-bold text-white transition-all duration-300",
-                  isStepDone
-                    ? isLastStep
-                      ? "bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 shadow-md shadow-emerald-200 hover:shadow-lg hover:shadow-emerald-300 hover:brightness-110 active:scale-[0.98]"
-                      : "bg-gradient-to-r from-rust to-blue-700 shadow-md shadow-rust/20 hover:shadow-lg hover:shadow-rust/30 hover:brightness-110 active:scale-[0.98]"
-                    : "cursor-not-allowed bg-stone-300 opacity-50",
-                ].join(" ")}
-              >
-                {/* Shimmer on complete */}
-                {isLastStep && isStepDone && (
-                  <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
-                    <div className="shimmer-btn absolute inset-0" />
-                  </div>
-                )}
-                <span className="relative">
-                  {isLastStep ? "Complete Lesson" : "Next"}
-                </span>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  className={[
-                    "relative transition-transform duration-200",
-                    isStepDone ? "group-hover:translate-x-0.5" : "",
-                  ].join(" ")}
-                >
-                  {isLastStep ? (
-                    <path
-                      d="M3 8.5L6.5 12L13 4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  ) : (
-                    <path
-                      d="M6 3L11 8L6 13"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </svg>
-              </button>
-            </div>
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
+        <div className="mx-auto w-full max-w-4xl flex-1 flex flex-col justify-center pt-8 pb-12">
+          <div className="mb-8">
+            <p className="mb-2 text-center font-sans text-sm font-bold uppercase tracking-wider text-ink/40">
+              {currentPhase} &middot; Step {currentStepIndex + 1}
+            </p>
+          </div>
+
+          <div
+            key={contentKey}
+            className="flex-1 flex flex-col justify-center items-center"
+            style={{
+              animation: "slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+            }}
+          >
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-12">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-stone-200 border-t-rust" />
+                </div>
+              }
+            >
+              <LessonComponent
+                currentPhase={currentPhase}
+                currentStep={currentStepIndex}
+                onComplete={handleComplete}
+              />
+            </Suspense>
+          </div>
+
+          {/* Next button */}
+          <div className="mt-16 flex justify-center">
+            <button
+              onClick={handleNext}
+              disabled={!isStepDone}
+              className={[
+                "group relative flex min-w-[200px] items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-bold text-white transition-all duration-300",
+                isStepDone
+                  ? "bg-emerald-500 shadow-[0_4px_0_0_#059669] hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_#059669] active:translate-y-1 active:shadow-[0_0_0_0_#059669]"
+                  : "cursor-not-allowed bg-rust/40 shadow-[0_4px_0_0_rgba(191,78,50,0.4)] opacity-70",
+              ].join(" ")}
+            >
+              {isLastStep && isStepDone && (
+                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
+                  <div className="shimmer-btn absolute inset-0" />
+                </div>
+              )}
+              <span className="relative">
+                {isLastStep ? "Complete Lesson" : "Continue"}
+              </span>
+            </button>
           </div>
         </div>
       </div>

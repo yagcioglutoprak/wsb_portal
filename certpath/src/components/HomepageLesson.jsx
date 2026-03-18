@@ -86,7 +86,7 @@ function Scene1({ onComplete }) {
 
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
-      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
+      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-[#fdfcfa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
          <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-[#e8ded1] p-2 bg-[#fdf8f5]">
              {items.map(id => (
                  <div key={id} className={`w-16 min-h-[32px] ${ITEM_COLORS[id]} text-white font-bold flex items-center justify-center rounded-lg ${exitingItem === id ? 'translate-y-16 opacity-0 transition-all duration-300 ease-in' : 'animate-pop'}`}>
@@ -127,7 +127,7 @@ function Scene2({ onComplete }) {
 
   return (
     <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
-      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
+      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-[#fdfcfa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
          <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-b-2 border-[#e8ded1] rounded-b-xl p-2 bg-[#fdf8f5]">
              {items.map(id => (
                  <div key={id} className={`w-16 min-h-[32px] ${ITEM_COLORS[id]} text-white font-bold flex items-center justify-center rounded-lg ${exitingItem === id ? '-translate-y-16 opacity-0 transition-all duration-300 ease-in' : 'animate-pop'}`}>
@@ -317,7 +317,7 @@ function Scene3({ runMode, onComplete }) {
             }`} 
           >
             {!["idle", "anim_pill_1", "reset"].includes(phase) && (
-              <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+              <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
                 set
               </div>
             )}
@@ -336,7 +336,7 @@ function Scene3({ runMode, onComplete }) {
             }`} 
           >
             {!["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) && (
-              <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+              <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
                 {runMode === 'bfs' ? '.pop(0)' : '.pop()'}
               </div>
             )}
@@ -358,7 +358,7 @@ function Scene3({ runMode, onComplete }) {
               }`} 
             >
               {!["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) && (
-                <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+                <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
                   visited
                 </div>
               )}
@@ -376,19 +376,19 @@ function Scene3({ runMode, onComplete }) {
       {/* Moving Pill Overlay */}
       <div ref={movingPillContainerRef} className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
         <div 
-          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[32px] ${phase === 'anim_pill_1' ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute top-0 left-0 bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[32px] ${phase === 'anim_pill_1' ? 'opacity-100' : 'opacity-0'}`}
           style={pill1Style}
         >
           set
         </div>
         <div 
-          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_2' ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute top-0 left-0 bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_2' ? 'opacity-100' : 'opacity-0'}`}
           style={pill2Style}
         >
           {runMode === 'bfs' ? '.pop(0)' : '.pop()'}
         </div>
         <div 
-          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_3' ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute top-0 left-0 bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_3' ? 'opacity-100' : 'opacity-0'}`}
           style={pill3Style}
         >
           visited
@@ -397,7 +397,7 @@ function Scene3({ runMode, onComplete }) {
 
       {/* Left: Maze */}
       <div className="w-full lg:w-5/12 flex flex-col items-center justify-between gap-6">
-        <div className="grid grid-cols-7 gap-1 w-full max-w-[240px] p-2 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1]">
+        <div className="grid grid-cols-7 gap-1 w-full max-w-[240px] p-2 bg-[#fdfcfa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1]">
           {MAZE.map((row, r) => row.map((cell, c) => {
             const isWall = cell === 1;
             const isStart = r === 0 && c === 0;
@@ -406,7 +406,7 @@ function Scene3({ runMode, onComplete }) {
             const isVisited = visitedSet.has(`${r},${c}`);
             
             return (
-              <div key={`${r}-${c}`} className={`aspect-square rounded relative flex items-center justify-center overflow-hidden ${isWall ? 'bg-[#2b2d42] shadow-inner' : 'bg-white border border-[#edf2f4]'}`}>
+              <div key={`${r}-${c}`} className={`aspect-square rounded relative flex items-center justify-center overflow-hidden ${isWall ? 'bg-[#2b2d42] shadow-inner' : 'bg-[#fdfcfa] border border-[#edf2f4]'}`}>
                 {!isWall && isVisited && !isPath && (
                   <div className={`absolute inset-0 ${runMode === 'bfs' ? 'bg-[#f4a261]/40' : 'bg-[#4ea8de]/40'} animate-pop`} style={{ boxShadow: runMode === 'bfs' ? '0 0 12px rgba(244,162,97,0.5)' : '0 0 12px rgba(78,168,222,0.5)' }} />
                 )}
@@ -415,16 +415,16 @@ function Scene3({ runMode, onComplete }) {
                 )}
                 {isStart && !isPath && (
                   <div className="absolute inset-0 bg-[#e9c46a] animate-pop flex items-center justify-center z-10 shadow-[0_0_10px_rgba(233,196,106,0.6)]">
-                    <span className="font-bold text-[10px] text-[#855a00]">S</span>
+                    <span className="font-bold text-xs text-[#855a00]">S</span>
                   </div>
                 )}
                 {isGoal && !isPath && (
                   <div className="absolute inset-0 bg-[#e76f51] animate-pop flex items-center justify-center z-10 shadow-[0_0_10px_rgba(231,111,81,0.6)]">
-                    <span className="font-bold text-[10px] text-white">G</span>
+                    <span className="font-bold text-xs text-white">G</span>
                   </div>
                 )}
                 {isPath && (isStart || isGoal) && (
-                  <span className="relative z-20 font-bold text-[10px] text-white">{isStart ? 'S' : 'G'}</span>
+                  <span className="relative z-20 font-bold text-xs text-white">{isStart ? 'S' : 'G'}</span>
                 )}
               </div>
             );
@@ -432,7 +432,7 @@ function Scene3({ runMode, onComplete }) {
         </div>
         
         {/* Status Line */}
-        <div className="h-8 flex items-center justify-center w-full bg-white rounded-lg border border-[#e8ded1] shadow-sm">
+        <div className="h-8 flex items-center justify-center w-full bg-[#fdfcfa] rounded-lg border border-[#e8ded1] shadow-sm">
           {["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) ? (
             <span className="text-xs text-pencil font-medium animate-pulse">Waiting for algorithm...</span>
           ) : phase === "done" || phase === "path" ? (
@@ -464,40 +464,40 @@ function Scene3({ runMode, onComplete }) {
           <div className="flex flex-wrap gap-2">
             <div 
               ref={pillSetRef} 
-              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
+              className={`bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
             >
               set
             </div>
             
             <div 
               ref={pillPopBfsRef} 
-              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'bfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
+              className={`bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'bfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
             >
               .pop(0)
             </div>
 
             <div 
               ref={pillPopDfsRef} 
-              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'dfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
+              className={`bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'dfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
             >
               .pop()
             </div>
 
             <div 
               ref={pillVisitedRef} 
-              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
+              className={`bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
             >
               visited
             </div>
 
-            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">list</div>
-            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">frontier</div>
-            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">current</div>
+            <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">list</div>
+            <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">frontier</div>
+            <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-xs text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">current</div>
           </div>
           
           <div className="flex justify-end">
             <button className={`bg-rust text-white rounded-xl px-5 py-2 font-sans text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${phase === 'running' && visitedIndex < 2 ? 'scale-95 bg-rust/90' : 'scale-100'} ${phase === 'idle' ? 'animate-pulse' : ''}`}>
-              <span className="text-[10px]">▶</span> Run
+              <span className="text-xs">▶</span> Run
             </button>
           </div>
         </div>
@@ -523,13 +523,13 @@ function Scene4({ onComplete }) {
             
             <div className="flex flex-col gap-3">
                 {/* Option A */}
-                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#e8ded1] bg-white opacity-40' : 'border-[#e8ded1] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
+                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#e8ded1] bg-[#fdfcfa] opacity-40' : 'border-[#e8ded1] bg-[#fdfcfa] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
                     <span className="font-medium text-ink">A. Stack (DFS)</span>
                     <div className="w-5 h-5 rounded-full border border-ink/20" />
                 </div>
                 
                 {/* Option B */}
-                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#10b981] bg-[#10b981]/10 shadow-[0_4px_20px_rgba(16,185,129,0.15)] scale-[1.02]' : 'border-[#e8ded1] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
+                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#10b981] bg-[#10b981]/10 shadow-[0_4px_20px_rgba(16,185,129,0.15)] scale-[1.02]' : 'border-[#e8ded1] bg-[#fdfcfa] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
                     <span className={`font-medium transition-colors duration-300 ${answered ? 'text-[#10b981] font-bold' : 'text-ink'}`}>B. Queue (BFS)</span>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${answered ? 'bg-[#10b981] border-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'border border-ink/20'}`}>
                         {answered && <svg className="w-3 h-3 text-white scale-in-center" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>}
@@ -650,7 +650,7 @@ export default function HomepageLesson() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border-[1.5px] border-ink/12 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col w-full relative">
+    <div className="bg-[#fdfcfa] rounded-2xl border-[1.5px] border-ink/12 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col w-full relative">
       <style>{`
         @keyframes popIn {
           0% { transform: scale(0.5); opacity: 0; }

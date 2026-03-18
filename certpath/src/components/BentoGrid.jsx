@@ -294,7 +294,7 @@ function LessonsCard({ revealed }) {
                  <div className="text-white"><IconBug /></div>
                )}
                {commitStatus === 'idle' && (
-                 <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
+                 <div className="w-2 h-2 bg-[#fdfcfa] rounded-full opacity-50"></div>
                )}
             </div>
           </div>
@@ -318,7 +318,7 @@ function LessonsCard({ revealed }) {
       </div>
 
       {/* Right Panel - Block Editor */}
-      <div className="w-full md:w-7/12 lg:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-white relative">
+      <div className="w-full md:w-7/12 lg:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-[#fdfcfa] relative">
         {/* Fake Cursor */}
         <div
           className="absolute z-50 pointer-events-none flex items-start justify-start"
@@ -338,7 +338,7 @@ function LessonsCard({ revealed }) {
           
           {draggedItem && (
             <div className="absolute top-4 left-4 w-40 opacity-90 rotate-3 transition-transform animate-[fadeIn_0.2s_ease-out]">
-               <div className="bg-white border-[1.5px] border-ink/20 shadow-lg p-2 rounded-xl flex items-center gap-2">
+               <div className="bg-[#fdfcfa] border-[1.5px] border-ink/20 shadow-lg p-2 rounded-xl flex items-center gap-2">
                  <div className="w-6 h-6 rounded-md bg-ink/5 text-ink flex items-center justify-center shrink-0">
                    {blocksMap[draggedItem].icon}
                  </div>
@@ -364,7 +364,7 @@ function LessonsCard({ revealed }) {
           )}
 
           {placed.includes('build') && (
-             <div className="bg-white border-[1.5px] border-orange/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
+             <div className="bg-[#fdfcfa] border-[1.5px] border-orange/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
                 {commitPos === 0 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
                 <div className="w-9 h-9 rounded-lg bg-orange/10 text-orange flex items-center justify-center shrink-0"><IconBuild /></div>
                 <div className="flex-1 min-w-0">
@@ -376,7 +376,7 @@ function LessonsCard({ revealed }) {
 
 
           {placed.includes('test') && !isBroken && (
-             <div className="bg-white border-[1.5px] border-[#2a9d8f]/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
+             <div className="bg-[#fdfcfa] border-[1.5px] border-[#2a9d8f]/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
                 {commitPos === 1 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
                 <div className="w-9 h-9 rounded-lg bg-[#2a9d8f]/10 text-[#2a9d8f] flex items-center justify-center shrink-0"><IconTest /></div>
                 <div className="flex-1 min-w-0">
@@ -387,7 +387,7 @@ function LessonsCard({ revealed }) {
           )}
 
           {placed.includes('lint') && (
-             <div className="bg-white border-[1.5px] border-violet/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
+             <div className="bg-[#fdfcfa] border-[1.5px] border-violet/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
                 {commitPos === 2 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
                 <div className="w-9 h-9 rounded-lg bg-violet/10 text-violet flex items-center justify-center shrink-0"><IconLint /></div>
                 <div className="flex-1 min-w-0">
@@ -398,7 +398,7 @@ function LessonsCard({ revealed }) {
           )}
 
           {placed.includes('deploy') && (
-             <div className="bg-white border-[1.5px] border-rust/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
+             <div className="bg-[#fdfcfa] border-[1.5px] border-rust/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
                 {commitPos === 3 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
                 <div className="w-9 h-9 rounded-lg bg-rust/10 text-rust flex items-center justify-center shrink-0"><IconDeploy /></div>
                 <div className="flex-1 min-w-0">

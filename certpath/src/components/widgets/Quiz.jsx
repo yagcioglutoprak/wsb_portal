@@ -150,7 +150,7 @@ export default function Quiz({ data, onComplete }) {
                     ? "bg-gradient-to-r from-emerald-50/80 to-teal-50/60"
                     : isWrongSelected
                       ? "bg-red-50/60"
-                      : "bg-white",
+                      : "bg-[#fdfcfa]",
                   // Shadow
                   isRevealedCorrect
                     ? "shadow-lg shadow-emerald-200/50 ring-2 ring-emerald-400/20"
@@ -196,7 +196,7 @@ export default function Quiz({ data, onComplete }) {
                         ? "bg-emerald-500 text-white shadow-md shadow-emerald-200"
                         : isWrongSelected
                           ? "bg-red-400 text-white"
-                          : "bg-stone-100 text-graphite",
+                          : "bg-paper text-graphite",
                       !showResult
                         ? "group-hover:bg-rust group-hover:text-white group-hover:shadow-md group-hover:shadow-rust/20"
                         : "",

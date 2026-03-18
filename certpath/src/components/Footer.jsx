@@ -17,44 +17,41 @@ export default function Footer() {
 
           {/* Links Section */}
           <div className="lg:col-span-6 grid grid-cols-2 md:grid-cols-3 gap-8">
-            
+
             {/* Column 1 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                Product
+                Platform
               </h4>
               <ul className="space-y-4">
-                <li><Link to="/explore" className="text-[15px] text-white hover:text-white/80 transition-colors">Courses</Link></li>
-                <li><Link to="/jobs" className="text-[15px] text-white hover:text-white/80 transition-colors">Pricing</Link></li>
-                <li><Link to="/dashboard" className="text-[15px] text-white hover:text-white/80 transition-colors">Gift CertPath</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Help</Link></li>
+                <li><Link to="/lessons" className="text-[15px] text-white hover:text-white/80 transition-colors">Lessons</Link></li>
+                <li><Link to="/explore" className="text-[15px] text-white hover:text-white/80 transition-colors">Certifications</Link></li>
+                <li><Link to="/jobs" className="text-[15px] text-white hover:text-white/80 transition-colors">Jobs & Internships</Link></li>
+                <li><Link to="/dashboard" className="text-[15px] text-white hover:text-white/80 transition-colors">Dashboard</Link></li>
               </ul>
             </div>
 
             {/* Column 2 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                Company
+                University
               </h4>
               <ul className="space-y-4">
-                <li><a href="https://www.merito.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">About us</a></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Careers</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Educators</Link></li>
+                <li><a href="https://www.merito.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">WSB Merito</a></li>
+                <li><a href="https://www.merito.pl/warszawa" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">Campus Warsaw</a></li>
+                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">For Educators</Link></li>
               </ul>
             </div>
 
             {/* Column 3 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                Behind the scenes
+                Resources
               </h4>
               <ul className="space-y-4">
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">AI at CertPath</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors leading-snug block">AI Evals for Learning Games</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Solving Equations</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Thinking in Code</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Visual Algebra</Link></li>
-                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors leading-snug block">Decomposition and Abstraction</Link></li>
+                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Help Center</Link></li>
+                <li><Link to="/" className="text-[15px] text-white hover:text-white/80 transition-colors">Contact Us</Link></li>
+                <li><a href="mailto:centruminnowacji@warszawa.merito.pl" className="text-[15px] text-white hover:text-white/80 transition-colors">Feedback</a></li>
               </ul>
             </div>
 
@@ -83,11 +80,9 @@ export default function Footer() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link to="/" className="text-[13px] text-white/50 hover:text-white transition-colors">Terms of service</Link>
             <Link to="/" className="text-[13px] text-white/50 hover:text-white transition-colors">Privacy policy</Link>
-            <Link to="/" className="text-[13px] text-white/50 hover:text-white transition-colors">Do not sell my personal information</Link>
-            <Link to="/" className="text-[13px] text-white/50 hover:text-white transition-colors">California privacy policy</Link>
           </div>
           <div className="text-[13px] text-white/50">
-            © 2026 CertPath Worldwide, Inc., CertPath and the CertPath Logo are trademarks of CertPath Worldwide, Inc.
+            © 2026 CertPath — Built for WSB Merito University students
           </div>
         </div>
       </div>

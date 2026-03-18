@@ -1,30 +1,20 @@
 import { useParams, Link } from "react-router-dom";
 import { fields, certifications, jobs } from "../data/mock";
 
-const levelLabel = {
-  junior: "Junior",
-  mid: "Mid-level",
-  senior: "Senior",
-};
-
-const levelStyle = {
-  junior: "bg-success/10 text-success border-success/20",
-  mid: "bg-merito/10 text-merito border-merito/20",
-  senior: "bg-rust/10 text-rust border-rust/20",
+const typeStyle = {
+  Internship: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  "Working Student": "bg-sky-50 text-sky-700 border-sky-200",
 };
 
 function generateJobDescription(job, field) {
   const fieldName = field ? field.name : "technology";
   const skillList = job.requiredSkills.slice(0, 3).join(", ");
-  const levelText = levelLabel[job.experienceLevel] || job.experienceLevel;
 
-  const descriptions = {
-    junior: `This is an entry-level ${fieldName} position at ${job.company} in ${job.location}. The role is designed for professionals starting their career, with a focus on building hands-on experience in ${skillList}. You will work alongside senior team members, contributing to day-to-day operations while developing your technical skills through structured mentoring and real-world projects. Strong motivation to learn and relevant certifications are valued over extensive work experience.`,
-    mid: `${job.company} is looking for a ${levelText} ${fieldName} professional to join their team in ${job.location}. The ideal candidate has a solid foundation in ${skillList} and is ready to take on increasing responsibility. You will be expected to work independently on assigned tasks, contribute to technical decisions, and mentor junior colleagues. This role offers opportunities for growth into a senior position as you deepen your expertise and expand your impact across the organization.`,
-    senior: `This senior ${fieldName} role at ${job.company} in ${job.location} requires deep expertise in ${skillList} and the ability to drive technical strategy. You will lead key initiatives, architect solutions for complex challenges, and serve as a technical authority within the team. The position demands strong communication skills for cross-functional collaboration, as well as experience guiding and mentoring less experienced engineers. The ideal candidate brings a proven track record of delivering results in a demanding, fast-paced environment.`,
-  };
+  if (job.type === "Working Student") {
+    return `${job.company} is looking for a working student to join their ${fieldName} team in ${job.location}. This part-time role is designed for university students who want to gain real-world experience while continuing their studies. You'll work on practical tasks involving ${skillList}, learning directly from experienced professionals. Flexible hours and a supportive environment make this a great way to build your career alongside your degree.`;
+  }
 
-  return descriptions[job.experienceLevel] || descriptions.mid;
+  return `This is an internship at ${job.company} in ${job.location}, focused on ${fieldName}. You'll gain hands-on experience with ${skillList} while working alongside experienced professionals. The role is designed for students and recent graduates who are eager to learn, contribute to real projects, and develop their skills in a professional environment. No prior work experience is required — motivation, curiosity, and relevant coursework or personal projects are what matter most.`;
 }
 
 function generateSkillDescription(skill) {
@@ -111,10 +101,10 @@ export default function JobDetail() {
           <span
             className={[
               "rounded-full border px-4 py-1.5 font-sans text-sm font-medium",
-              levelStyle[job.experienceLevel] || "bg-warm/50 text-graphite border-faint",
+              typeStyle[job.type] || "bg-emerald-50 text-emerald-700 border-emerald-200",
             ].join(" ")}
           >
-            {levelLabel[job.experienceLevel] || job.experienceLevel}
+            {job.type}
           </span>
           {field && (
             <Link
@@ -161,10 +151,10 @@ export default function JobDetail() {
             </div>
             <div className="rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6">
               <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                Experience level
+                Position type
               </span>
               <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
-                {levelLabel[job.experienceLevel] || job.experienceLevel}
+                {job.type}
               </span>
               <span className="mt-1 block text-sm text-graphite">
                 Posted {job.postedAt}
@@ -254,10 +244,10 @@ export default function JobDetail() {
                       <span
                         className={[
                           "rounded-full border px-2.5 py-0.5 font-sans text-sm font-medium",
-                          levelStyle[sj.experienceLevel] || "bg-warm/50 text-graphite border-faint",
+                          typeStyle[sj.type] || "bg-emerald-50 text-emerald-700 border-emerald-200",
                         ].join(" ")}
                       >
-                        {levelLabel[sj.experienceLevel] || sj.experienceLevel}
+                        {sj.type}
                       </span>
                       <span className="font-mono text-sm text-graphite">
                         {sj.salaryMin.toLocaleString("pl-PL")} - {sj.salaryMax.toLocaleString("pl-PL")} PLN

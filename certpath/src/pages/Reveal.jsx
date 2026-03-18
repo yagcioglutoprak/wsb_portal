@@ -194,7 +194,7 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
       {/* Cert list */}
       <div className="space-y-3 relative z-10 font-sans">
         {certs.map((cert) => (
-          <div key={cert.id} className="flex items-start gap-3 p-3 rounded-lg border border-ink/5 bg-white/50 group-hover:bg-white transition-colors">
+          <div key={cert.id} className="flex items-start gap-3 p-3 rounded-lg border border-ink/5 bg-white/50 group-hover:bg-[#fdfcfa] transition-colors">
             <div className="mt-1 h-2 w-2 rounded-full shrink-0" style={{ background: accent }} />
             <div className="min-w-0">
               <span className="block text-sm font-bold text-ink">{cert.name}</span>
@@ -223,11 +223,6 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
 /*  Job card — clickable, visual                                        */
 /* ──────────────────────────────────────────────────────────────────── */
 function JobCard({ job, delay, show }) {
-  const levelColors = {
-    junior: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    mid: "bg-amber-50 text-amber-700 border-amber-200",
-    senior: "bg-violet-50 text-violet-700 border-violet-200",
-  };
   return (
     <Link
       to={`/jobs/${job.id}`}
@@ -239,11 +234,11 @@ function JobCard({ job, delay, show }) {
       }}
     >
       <div className="flex items-start justify-between gap-3 mb-4">
-        <span className={`inline-block rounded border px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${levelColors[job.experienceLevel] || "bg-gray-50 text-gray-600 border-gray-200"}`}>
-          {job.experienceLevel}
+        <span className={`inline-block rounded border px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${job.type === "Internship" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-sky-50 text-sky-700 border-sky-200"}`}>
+          {job.type}
         </span>
         <span className="block font-mono text-base font-bold text-rust shrink-0">
-          {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-[10px] text-pencil uppercase tracking-wider ml-0.5">PLN</span>
+          {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-xs text-pencil uppercase tracking-wider ml-0.5">PLN</span>
         </span>
       </div>
       <h3 className="font-sans text-lg font-bold text-ink leading-tight mb-2 group-hover:text-rust transition-colors truncate">
@@ -518,7 +513,7 @@ export default function Reveal() {
               </Link>
               <Link
                 to="/dashboard"
-                className="w-full sm:w-auto bg-white border border-ink/10 rounded-xl px-10 py-4 font-sans text-base font-bold text-ink hover:bg-ink/[0.02] transition-colors"
+                className="w-full sm:w-auto bg-[#fdfcfa] border border-ink/10 rounded-xl px-10 py-4 font-sans text-base font-bold text-ink hover:bg-ink/[0.02] transition-colors"
               >
                 Skip to dashboard
               </Link>

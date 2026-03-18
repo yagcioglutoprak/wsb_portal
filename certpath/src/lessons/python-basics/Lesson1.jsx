@@ -14,12 +14,12 @@ const DraggablePill = ({ id, label, type, onDragStart, dragging }) => (
       e.dataTransfer.setData('label', label);
       onDragStart?.();
     }}
-    className={`px-4 py-2 rounded-lg cursor-grab active:cursor-grabbing border text-sm font-mono shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
+    className={`px-5 py-3 rounded-xl cursor-grab active:cursor-grabbing border-2 text-base shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md ${
       dragging ? 'opacity-50 scale-95' : 'opacity-100'
     } ${
       type === 'name'
-        ? 'bg-rust/8 border-rust/25 text-rust font-semibold'
-        : 'bg-white border-ink/12 text-ink'
+        ? 'bg-rust/5 border-rust/20 text-rust font-bold font-sans'
+        : 'bg-[#fdfcfa] border-ink/10 text-ink font-mono'
     }`}
   >
     {label}
@@ -40,11 +40,14 @@ const Scene1 = ({ onComplete }) => {
   ]);
 
   const [shakeBox, setShakeBox] = useState(null);
+  const shakeTimerRef = useRef(null);
   const allNames = ['city', 'age', 'name'];
   const allValues = ['"Kasia"', '22', '"Warsaw"'];
 
   const usedNames = boxes.map(b => b.name).filter(Boolean);
   const usedValues = boxes.map(b => b.value).filter(Boolean);
+
+  useEffect(() => () => clearTimeout(shakeTimerRef.current), []);
 
   useEffect(() => {
     const allFilled = boxes.every(b => b.name && b.value && PAIRS[b.name] === b.value);
@@ -53,7 +56,7 @@ const Scene1 = ({ onComplete }) => {
 
   const triggerShake = (id) => {
     setShakeBox(id);
-    setTimeout(() => setShakeBox(null), 500);
+    shakeTimerRef.current = setTimeout(() => setShakeBox(null), 500);
   };
 
   const handleDrop = (boxId, e) => {
@@ -61,31 +64,35 @@ const Scene1 = ({ onComplete }) => {
     const itemType = e.dataTransfer.getData('type');
     const itemContent = e.dataTransfer.getData('label');
 
-    setBoxes(prev => prev.map(box => {
-      if (box.id !== boxId) return box;
+    setBoxes(prev => {
+      const currentUsedNames = prev.map(b => b.name).filter(Boolean);
 
-      if (itemType === 'name' && !box.name) {
-        if (usedNames.includes(itemContent)) return box;
-        return { ...box, name: itemContent };
-      }
+      return prev.map(box => {
+        if (box.id !== boxId) return box;
 
-      if (itemType === 'value' && !box.value) {
-        if (!box.name) { triggerShake(boxId); return box; }
-        if (PAIRS[box.name] !== itemContent) { triggerShake(boxId); return box; }
-        return { ...box, value: itemContent };
-      }
+        if (itemType === 'name' && !box.name) {
+          if (currentUsedNames.includes(itemContent)) return box;
+          return { ...box, name: itemContent };
+        }
 
-      return box;
-    }));
+        if (itemType === 'value' && !box.value) {
+          if (!box.name) { triggerShake(boxId); return box; }
+          if (PAIRS[box.name] !== itemContent) { triggerShake(boxId); return box; }
+          return { ...box, value: itemContent };
+        }
+
+        return box;
+      });
+    });
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-12">
-      <p className="text-pencil text-center max-w-lg text-base leading-relaxed">
+    <div className="w-full flex flex-col items-center gap-14">
+      <p className="text-ink/80 text-center max-w-2xl text-xl leading-relaxed font-medium">
         In Python, a variable is just a name you stick on a box to remember what's inside. Drag the names and values to make pairs.
       </p>
 
-      <div className="flex gap-4 mb-4 flex-wrap justify-center">
+      <div className="flex gap-5 mb-2 flex-wrap justify-center">
         {allNames.filter(n => !usedNames.includes(n)).map(name => (
           <DraggablePill key={name} id={name} label={name} type="name" />
         ))}
@@ -94,46 +101,39 @@ const Scene1 = ({ onComplete }) => {
         ))}
       </div>
 
-      <div className="flex gap-8 w-full justify-center flex-wrap">
+      <div className="flex gap-10 w-full justify-center flex-wrap">
         {boxes.map((box) => {
           const isComplete = box.name && box.value;
           return (
             <div
               key={box.id}
-              className={`flex flex-col items-center gap-4 transition-all duration-500 ease-out transform ${shakeBox === box.id ? 'animate-[shake_0.5s_ease-in-out]' : ''} ${isComplete ? 'scale-105' : ''}`}
+              className={`flex flex-col items-center gap-5 transition-all duration-500 ease-out transform ${shakeBox === box.id ? 'animate-[shake_0.5s_ease-in-out]' : ''} ${isComplete ? 'scale-105' : ''}`}
             >
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => handleDrop(box.id, e)}
-                className={`relative w-44 h-44 rounded-2xl border-[1.5px] flex flex-col items-center justify-center gap-3 transition-all duration-500 cursor-default ${isComplete ? 'border-success bg-success/5 shadow-lg shadow-success/10' : 'border-dashed border-ink/20 bg-white hover:border-ink/30 hover:bg-ink/[0.02]'}`}
+                className={`relative w-52 h-52 rounded-[2rem] border-2 flex flex-col items-center justify-center gap-4 transition-all duration-500 cursor-default ${isComplete ? 'border-success bg-success/5 shadow-xl shadow-success/10' : 'border-dashed border-ink/20 bg-[#fdfcfa] hover:border-ink/30 hover:bg-ink/[0.02]'}`}
               >
                 {/* Name display */}
-                <div className={`w-3/4 h-10 rounded-lg flex items-center justify-center text-sm font-mono transition-all ${box.name ? 'bg-rust/10 text-rust border border-rust/25 font-semibold' : 'bg-ink/[0.03] border border-dashed border-ink/15 text-pencil/50'}`}>
+                <div className={`w-4/5 h-12 rounded-xl flex items-center justify-center text-base font-mono transition-all ${box.name ? 'bg-rust/10 text-rust border-2 border-rust/20 font-bold' : 'bg-ink/[0.03] border-2 border-dashed border-ink/15 text-ink/30 font-medium'}`}>
                   {box.name || 'name'}
                 </div>
 
-                <div className="text-pencil font-mono text-xl">=</div>
+                <div className="text-ink/40 font-mono text-2xl font-bold">=</div>
 
                 {/* Value display */}
-                <div className={`w-3/4 h-10 rounded-lg flex items-center justify-center text-sm font-mono transition-all ${box.value ? 'bg-white border border-ink/15 text-ink font-semibold' : 'bg-ink/[0.03] border border-dashed border-ink/15 text-pencil/50'}`}>
+                <div className={`w-4/5 h-12 rounded-xl flex items-center justify-center text-base font-mono transition-all ${box.value ? 'bg-[#fdfcfa] border-2 border-ink/10 text-ink font-semibold shadow-sm' : 'bg-ink/[0.03] border-2 border-dashed border-ink/15 text-ink/30 font-medium'}`}>
                   {box.value || 'value'}
                 </div>
               </div>
 
-              <div className={`font-mono text-sm transition-opacity duration-300 ${isComplete ? 'opacity-100 text-success' : 'opacity-0'}`}>
+              <div className={`font-mono text-base font-bold transition-opacity duration-300 ${isComplete ? 'opacity-100 text-success' : 'opacity-0'}`}>
                 {box.name} = {box.value}
               </div>
             </div>
           )
         })}
       </div>
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px) rotate(-2deg); }
-          75% { transform: translateX(5px) rotate(2deg); }
-        }
-      `}</style>
     </div>
   );
 };
@@ -145,6 +145,9 @@ const Scene1 = ({ onComplete }) => {
 const Scene2 = ({ onComplete }) => {
   const [placedItems, setPlacedItems] = useState([]);
   const [shakeItemId, setShakeItemId] = useState(null);
+  const shakeTimerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(shakeTimerRef.current), []);
 
   const items = [
     { id: 'i1', value: '42', type: 'int' },
@@ -174,7 +177,7 @@ const Scene2 = ({ onComplete }) => {
       }
     } else {
       setShakeItemId(itemId);
-      setTimeout(() => setShakeItemId(null), 500);
+      shakeTimerRef.current = setTimeout(() => setShakeItemId(null), 500);
     }
   };
 
@@ -185,12 +188,12 @@ const Scene2 = ({ onComplete }) => {
   }, [placedItems, items.length, onComplete]);
 
   return (
-    <div className="w-full flex justify-center items-center flex-col gap-10">
-      <p className="text-pencil text-center max-w-lg text-base leading-relaxed">
+    <div className="w-full flex justify-center items-center flex-col gap-12">
+      <p className="text-ink/80 text-center max-w-2xl text-xl leading-relaxed font-medium">
         Not all values are the same. Python sees a difference between a number, a word, and a true/false answer. Drag each value into the correct type.
       </p>
 
-      <div className="flex flex-wrap gap-4 justify-center max-w-2xl min-h-[50px]">
+      <div className="flex flex-wrap gap-4 justify-center max-w-2xl min-h-[60px]">
         {items.filter(i => !placedItems.includes(i.id)).map(item => (
           <div
             key={item.id}
@@ -198,7 +201,7 @@ const Scene2 = ({ onComplete }) => {
             onDragStart={(e) => {
               e.dataTransfer.setData('itemId', item.id);
             }}
-            className={`px-4 py-2 font-mono text-lg rounded-lg shadow-sm border border-ink/12 bg-white cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform ${shakeItemId === item.id ? 'animate-[shake_0.5s_ease-in-out] bg-red-50 text-red-600 border-red-200' : ''}`}
+            className={`px-5 py-3 font-mono text-lg rounded-xl shadow-sm border-2 border-ink/10 bg-[#fdfcfa] cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform ${shakeItemId === item.id ? 'animate-[shake_0.5s_ease-in-out] bg-red-50 text-red-600 border-red-200' : ''}`}
           >
             {item.value}
           </div>
@@ -215,7 +218,7 @@ const Scene2 = ({ onComplete }) => {
               onDragOver={e => e.preventDefault()}
               onDrop={e => handleDrop(t.id, e.dataTransfer.getData('itemId'))}
               className={`relative flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all duration-300 min-h-[220px] ${
-                isFull ? 'border-ink/20 bg-white shadow-xl scale-105' : 'border-dashed border-ink/15 bg-paper'
+                isFull ? 'border-ink/20 bg-[#fdfcfa] shadow-xl scale-105' : 'border-dashed border-ink/15 bg-paper'
               }`}
             >
               <div className={`text-xl font-bold font-mono px-3 py-1 rounded ${t.color}`}>
@@ -239,13 +242,6 @@ const Scene2 = ({ onComplete }) => {
           );
         })}
       </div>
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px) rotate(-2deg); }
-          75% { transform: translateX(5px) rotate(2deg); }
-        }
-      `}</style>
     </div>
   );
 };
@@ -272,13 +268,14 @@ const Scene3 = ({ onComplete }) => {
 
   useEffect(() => {
     if (step === lines.length) {
-      setTimeout(() => onComplete(), 1000);
+      const t = setTimeout(() => onComplete(), 1000);
+      return () => clearTimeout(t);
     }
   }, [step, lines.length, onComplete]);
 
   return (
-    <div className="w-full flex flex-col gap-6">
-      <p className="text-pencil text-center max-w-lg mx-auto text-base leading-relaxed">
+    <div className="w-full flex flex-col gap-10">
+      <p className="text-ink/80 text-center max-w-2xl mx-auto text-xl leading-relaxed font-medium">
         Watch what happens in the computer's memory when we create variables. Step through the code.
       </p>
 
@@ -293,10 +290,10 @@ const Scene3 = ({ onComplete }) => {
             </div>
             <div className="text-xs font-mono text-pencil">main.py</div>
           </div>
-          <div className="bg-[#1e1e1e] border border-[#333] rounded-b-xl p-6 font-mono text-sm leading-8 text-stone-300 shadow-2xl overflow-hidden relative">
+          <div className="bg-[#1e1e1e] border border-[#333] rounded-b-xl p-6 font-mono text-sm leading-8 text-ink/70 shadow-2xl overflow-hidden relative">
             {lines.map((line, i) => (
-              <div key={line.id} className={`relative flex items-center px-4 -mx-4 transition-colors duration-300 ${step === i + 1 ? 'bg-blue-500/15 text-blue-100' : 'text-stone-400'}`}>
-                <span className="w-6 text-stone-600 select-none">{i + 1}</span>
+              <div key={line.id} className={`relative flex items-center px-4 -mx-4 transition-colors duration-300 ${step === i + 1 ? 'bg-blue-500/15 text-blue-100' : 'text-pencil'}`}>
+                <span className="w-6 text-ink select-none">{i + 1}</span>
                 <span>{line.text}</span>
 
                 {step === i + 1 && (
@@ -335,7 +332,7 @@ const Scene3 = ({ onComplete }) => {
                   key={line.id}
                   className={`relative flex items-center justify-between p-4 rounded-xl border-[1.5px] transition-all duration-700 transform ${
                     isVisible
-                      ? 'opacity-100 translate-x-0 border-ink/12 bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.06)]'
+                      ? 'opacity-100 translate-x-0 border-ink/12 bg-[#fdfcfa] shadow-[0_2px_0_0_rgba(0,0,0,0.06)]'
                       : 'opacity-0 translate-x-10 border-transparent bg-transparent'
                   } ${isJustAdded ? 'ring-4 ring-rust/30' : ''}`}
                 >
@@ -347,7 +344,7 @@ const Scene3 = ({ onComplete }) => {
                       </div>
                       <div className="text-pencil font-mono">=</div>
                       <div className="flex flex-col items-end gap-1">
-                        <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${line.typeColor}`}>
+                        <span className={`text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border ${line.typeColor}`}>
                           {line.type}
                         </span>
                         <span className="font-mono bg-paper px-3 py-1 rounded text-ink border border-ink/10">
@@ -373,14 +370,17 @@ const Scene3 = ({ onComplete }) => {
 const Scene4 = ({ onComplete }) => {
   const [runState, setRunState] = useState('idle');
   const [selectedFix, setSelectedFix] = useState(null);
+  const [shakeKey, setShakeKey] = useState(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const handleRun = () => {
     if (selectedFix === 'str(age)') {
       setRunState('success');
-      setTimeout(() => onComplete(), 1500);
+      timerRef.current = setTimeout(() => onComplete(), 1500);
     } else if (selectedFix !== null) {
-      setRunState('error_again');
-      setTimeout(() => setRunState('error'), 1000);
+      setShakeKey(k => k + 1);
     } else {
       setRunState('error');
     }
@@ -389,7 +389,7 @@ const Scene4 = ({ onComplete }) => {
   const codeDisplay = () => {
     if (runState === 'success') {
       return (
-        <span className="text-stone-300">
+        <span className="text-ink/70">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-amber-500 bg-amber-500/20 px-1 rounded">str(age)</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
@@ -397,22 +397,22 @@ const Scene4 = ({ onComplete }) => {
 
     if (selectedFix) {
       return (
-        <span className="text-stone-300">
+        <span className="text-ink/70">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-blue-300 bg-blue-500/20 px-1 rounded">{selectedFix}</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
     }
 
     return (
-      <span className="text-stone-300">
-        message = <span className="text-amber-300">"I am "</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-stone-400'}`}>+</span> <span className="text-blue-300">age</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-stone-400'}`}>+</span> <span className="text-amber-300">" years old"</span>
+      <span className="text-ink/70">
+        message = <span className="text-amber-300">"I am "</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-blue-300">age</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-amber-300">" years old"</span>
       </span>
     );
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-8 items-center">
-      <p className="text-pencil text-center max-w-lg text-base leading-relaxed">
+      <p className="text-ink/80 text-center max-w-2xl text-xl leading-relaxed font-medium">
         Python cares about types. You can't just mash them together and hope for the best.
       </p>
 
@@ -423,7 +423,7 @@ const Scene4 = ({ onComplete }) => {
           <div className="w-3 h-3 rounded-full bg-green-400 opacity-50"></div>
         </div>
 
-        <div className="text-stone-300 flex flex-col">
+        <div className="text-ink/70 flex flex-col">
           <span>
             age = <span className="text-blue-300">25</span>
           </span>
@@ -431,7 +431,7 @@ const Scene4 = ({ onComplete }) => {
             {codeDisplay()}
 
             {runState === 'error' && (
-               <div className="absolute top-10 transform scale-0 animate-[pop_0.3s_forwards] left-10 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-xl text-xs flex items-center gap-3 z-10 w-96">
+               <div className="absolute top-10 transform scale-0 animate-[pop_0.3s_forwards] left-0 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-xl text-xs flex items-center gap-3 z-10 max-w-[90vw] w-96">
                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0"></div>
                  TypeError: can only concatenate str (not "int") to str
                  <div className="absolute -top-2 left-12 w-4 h-4 bg-red-100 border-l border-t border-red-300 rotate-45"></div>
@@ -463,7 +463,7 @@ const Scene4 = ({ onComplete }) => {
                 className={`px-6 py-2 rounded-lg font-mono text-sm border-2 transition-all ${
                   selectedFix === opt
                     ? 'border-rust bg-rust/10 text-rust'
-                    : 'border-ink/12 hover:border-rust/40 bg-white text-ink'
+                    : 'border-ink/12 hover:border-rust/40 bg-[#fdfcfa] text-ink'
                 }`}
               >
                 {opt}
@@ -471,12 +471,14 @@ const Scene4 = ({ onComplete }) => {
             ))}
           </div>
           {selectedFix && (
-            <button
-              onClick={handleRun}
-              className="bg-rust hover:bg-rust/90 text-white font-medium px-8 py-2 rounded-full shadow-md transition-all animate-fade-in"
-            >
-              Test Fix
-            </button>
+            <div key={shakeKey} className={shakeKey > 0 ? 'animate-[shake_0.5s_ease-in-out]' : ''}>
+              <button
+                onClick={handleRun}
+                className="bg-rust hover:bg-rust/90 text-white font-medium px-8 py-2 rounded-full shadow-md transition-all animate-fade-in"
+              >
+                Test Fix
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -494,19 +496,6 @@ const Scene4 = ({ onComplete }) => {
         </div>
       )}
 
-      <style>{`
-        @keyframes pop {
-          0% { transform: scale(0.8); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
     </div>
   );
 };
@@ -523,6 +512,8 @@ const Scene5 = ({ onComplete }) => {
     gpa: null,
     is_active: null
   });
+
+  const [overlayVisible, setOverlayVisible] = useState(false);
 
   const [availableValues, setAvailableValues] = useState([
     { id: 'v1', val: '"Kasia Nowak"', type: 'str', prop: 'student_name' },
@@ -546,13 +537,14 @@ const Scene5 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
-      setTimeout(() => onComplete(), 1500);
+      const t = setTimeout(() => onComplete(), 1500);
+      return () => clearTimeout(t);
     }
   }, [isComplete, onComplete]);
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <p className="text-pencil text-center max-w-lg mx-auto text-base leading-relaxed">
+      <p className="text-ink/80 text-center max-w-2xl mx-auto text-xl leading-relaxed font-medium">
         You're building a student ID card system for a university. Drag the values into the correct variable slots to generate the card.
       </p>
 
@@ -563,14 +555,14 @@ const Scene5 = ({ onComplete }) => {
             {Object.entries(fields).map(([key, value]) => (
               <div key={key} className="flex items-center gap-3">
                 <span className="text-blue-300 w-32">{key}</span>
-                <span className="text-stone-500">=</span>
+                <span className="text-pencil">=</span>
                 <div
                   onDragOver={e => e.preventDefault()}
                   onDrop={e => handleDrop(key, e.dataTransfer.getData('valId'))}
                   className={`h-8 px-3 flex items-center rounded transition-all ${
                     value
                       ? 'bg-rust/20 text-orange-200 border border-rust/50'
-                      : 'bg-[#2d2d2d] border border-[#444] border-dashed text-stone-600 min-w-[100px]'
+                      : 'bg-[#2d2d2d] border border-[#444] border-dashed text-ink min-w-[100px]'
                   }`}
                 >
                   {value ? value.val : '___'}
@@ -585,7 +577,7 @@ const Scene5 = ({ onComplete }) => {
                 key={v.id}
                 draggable
                 onDragStart={(e) => e.dataTransfer.setData('valId', v.id)}
-                className="px-4 py-2 bg-white border-[1.5px] border-ink/12 rounded-lg shadow-[0_2px_0_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing font-mono text-sm hover:-translate-y-1 transition-transform"
+                className="px-4 py-2 bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-lg shadow-[0_2px_0_0_rgba(0,0,0,0.06)] cursor-grab active:cursor-grabbing font-mono text-sm hover:-translate-y-1 transition-transform"
               >
                 {v.val}
               </div>
@@ -595,7 +587,7 @@ const Scene5 = ({ onComplete }) => {
 
         {/* Visual ID Card Side */}
         <div className="flex justify-center">
-          <div className={`w-80 h-[420px] bg-white rounded-2xl shadow-2xl overflow-hidden relative border-[1.5px] border-ink/12 transition-all duration-1000 transform ${isComplete ? 'scale-105 shadow-[0_20px_60px_rgba(0,0,0,0.12)]' : 'shadow-md'}`}>
+          <div className={`w-80 h-[420px] bg-[#fdfcfa] rounded-2xl shadow-2xl overflow-hidden relative border-[1.5px] border-ink/12 transition-all duration-1000 transform ${isComplete ? 'scale-105 shadow-[0_20px_60px_rgba(0,0,0,0.12)]' : 'shadow-md'}`}>
             {/* Card Header */}
             <div className="h-24 bg-gradient-to-br from-rust to-red-600 p-6 flex items-end">
               <h3 className="text-white font-bold tracking-widest uppercase text-sm">WSB Merito University</h3>
@@ -622,15 +614,15 @@ const Scene5 = ({ onComplete }) => {
 
               <div className="grid grid-cols-2 gap-y-4 gap-x-2 w-full mt-2">
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-pencil uppercase tracking-wider">ID Number</span>
+                  <span className="text-xs text-pencil uppercase tracking-wider">ID Number</span>
                   <span className={`font-mono text-sm transition-all ${fields.student_id ? 'text-ink' : 'text-ink/15'}`}>{fields.student_id ? fields.student_id.val : '........'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-pencil uppercase tracking-wider">GPA</span>
+                  <span className="text-xs text-pencil uppercase tracking-wider">GPA</span>
                   <span className={`font-mono text-sm transition-all ${fields.gpa ? 'text-ink' : 'text-ink/15'}`}>{fields.gpa ? fields.gpa.val : '...'}</span>
                 </div>
                 <div className="flex flex-col col-span-2">
-                  <span className="text-[10px] text-pencil uppercase tracking-wider">Status</span>
+                  <span className="text-xs text-pencil uppercase tracking-wider">Status</span>
                   <div className="flex items-center gap-2 mt-1">
                     <div className={`w-2 h-2 rounded-full transition-all ${fields.is_active ? 'bg-success' : 'bg-ink/10'}`}></div>
                     <span className={`text-xs uppercase font-bold transition-all ${fields.is_active ? 'text-success' : 'text-ink/20'}`}>
@@ -641,7 +633,10 @@ const Scene5 = ({ onComplete }) => {
               </div>
 
               {isComplete && (
-                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 text-white p-6 font-mono text-xs z-10">
+                 <div
+                   onClick={() => setOverlayVisible(v => !v)}
+                   className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity flex flex-col items-center justify-center gap-2 text-white p-6 font-mono text-xs z-10 cursor-pointer ${overlayVisible ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
+                 >
                    <div className="bg-rust/80 px-2 py-1 rounded">student_name : str</div>
                    <div className="bg-blue-500/80 px-2 py-1 rounded">student_id : int</div>
                    <div className="bg-rust/80 px-2 py-1 rounded">department : str</div>
@@ -669,6 +664,9 @@ const Scene6 = ({ onComplete }) => {
   });
 
   const [runState, setRunState] = useState('idle');
+  const timerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
   const allFixed = Object.values(bugs).every(b => b.fixed);
 
@@ -683,7 +681,7 @@ const Scene6 = ({ onComplete }) => {
   const handleRun = () => {
     if (allFixed) {
       setRunState('success');
-      setTimeout(() => onComplete(), 2000);
+      timerRef.current = setTimeout(() => onComplete(), 2000);
     }
   };
 
@@ -699,15 +697,15 @@ const Scene6 = ({ onComplete }) => {
 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-8 items-center">
-      <p className="text-pencil text-center max-w-lg text-base leading-relaxed">
+      <p className="text-ink/80 text-center max-w-2xl text-xl leading-relaxed font-medium">
         Final challenge: this registration form has 3 bugs. Click on the highlighted parts to fix them.
       </p>
 
       <div className="w-full bg-[#1e1e1e] border border-[#333] rounded-xl p-8 font-mono text-sm leading-10 shadow-2xl relative">
-        <div className="text-stone-300 flex flex-col relative">
+        <div className="text-ink/70 flex flex-col relative">
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">first_name</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">first_name</span> <span className="text-pencil mx-2">=</span>
             {bugs.b1.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">"Tomek"</span>
             ) : (
@@ -716,7 +714,7 @@ const Scene6 = ({ onComplete }) => {
                   Tomek
                 </button>
                 {bugs.b1.active && (
-                  <div className="absolute top-10 left-0 bg-white border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
                     <div className="text-xs text-pencil font-sans mb-1">Pick the fix:</div>
                     <button onClick={() => handleFix('b1', true)} className="text-left px-3 py-1.5 hover:bg-success/10 text-ink rounded">"Tomek"</button>
                     <button onClick={() => handleFix('b1', false)} className="text-left px-3 py-1.5 hover:bg-ink/5 text-ink rounded">str(Tomek)</button>
@@ -728,12 +726,12 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">last_name</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">last_name</span> <span className="text-pencil mx-2">=</span>
             <span className="text-amber-300">"Kowalski"</span>
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">semester</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">semester</span> <span className="text-pencil mx-2">=</span>
             {bugs.b2.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">4</span>
             ) : (
@@ -742,7 +740,7 @@ const Scene6 = ({ onComplete }) => {
                   "4"
                 </button>
                 {bugs.b2.active && (
-                  <div className="absolute top-10 left-0 bg-white border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
                     <div className="text-xs text-pencil font-sans mb-1">Semester should be a number:</div>
                     <button onClick={() => handleFix('b2', true)} className="text-left px-3 py-1.5 hover:bg-success/10 text-ink rounded">4</button>
                     <button onClick={() => handleFix('b2', false)} className="text-left px-3 py-1.5 hover:bg-ink/5 text-ink rounded">int("4")</button>
@@ -754,7 +752,7 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">tuition_paid</span> <span className="text-stone-500 mx-2">=</span>
+            <span className="w-32 text-blue-300">tuition_paid</span> <span className="text-pencil mx-2">=</span>
             {bugs.b3.fixed ? (
               <span className="text-green-400 bg-green-900/30 px-2 rounded">True</span>
             ) : (
@@ -763,7 +761,7 @@ const Scene6 = ({ onComplete }) => {
                   yes
                 </button>
                 {bugs.b3.active && (
-                  <div className="absolute top-10 left-0 bg-white border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
+                  <div className="absolute top-10 left-0 bg-[#fdfcfa] border border-ink/12 p-3 rounded-lg shadow-xl z-20 flex flex-col gap-2 min-w-[200px] animate-fade-in">
                     <div className="text-xs text-pencil font-sans mb-1">Booleans in Python:</div>
                     <button onClick={() => handleFix('b3', false)} className="text-left px-3 py-1.5 hover:bg-ink/5 text-ink rounded">true</button>
                     <button onClick={() => handleFix('b3', true)} className="text-left px-3 py-1.5 hover:bg-success/10 text-ink rounded">True</button>
@@ -775,8 +773,8 @@ const Scene6 = ({ onComplete }) => {
           </div>
 
           <div className="flex items-center">
-            <span className="w-32 text-blue-300">email</span> <span className="text-stone-500 mx-2">=</span>
-            <span className="text-stone-300">first_name <span className="text-stone-500">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
+            <span className="w-32 text-blue-300">email</span> <span className="text-pencil mx-2">=</span>
+            <span className="text-ink/70">first_name <span className="text-pencil">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
           </div>
 
         </div>
@@ -806,15 +804,6 @@ const Scene6 = ({ onComplete }) => {
         )}
       </div>
 
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
     </div>
   );
 };

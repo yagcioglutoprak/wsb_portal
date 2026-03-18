@@ -75,7 +75,7 @@ export default function ActionPlan({ profile, progress }) {
                       ? "bg-gradient-to-r from-rust/5 to-transparent hover:from-rust/8 hover:shadow-sm"
                       : step.status === "completed"
                         ? "hover:bg-emerald-50/50 hover:shadow-sm"
-                        : "hover:bg-stone-50/80 hover:shadow-sm",
+                        : "hover:bg-paper/80 hover:shadow-sm",
                   ].join(" ")}
                   style={{
                     animation: `countUp 0.4s ease-out ${idx * 0.06}s both`,
@@ -94,7 +94,7 @@ export default function ActionPlan({ profile, progress }) {
                       </div>
                     ) : step.status === "in-progress" ? (
                       <div
-                        className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white shadow-md animate-timeline-pulse"
+                        className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#fdfcfa] shadow-md animate-timeline-pulse"
                         style={{
                           border: "3px solid #2856a6",
                         }}
@@ -102,7 +102,7 @@ export default function ActionPlan({ profile, progress }) {
                         <div className="h-2.5 w-2.5 rounded-full bg-rust" />
                       </div>
                     ) : (
-                      <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-stone-300 bg-white">
+                      <div className="flex h-[30px] w-[30px] items-center justify-center rounded-full border-2 border-stone-300 bg-[#fdfcfa]">
                         <div className="h-2 w-2 rounded-full bg-stone-300" />
                       </div>
                     )}
@@ -126,7 +126,7 @@ export default function ActionPlan({ profile, progress }) {
 
                     {/* Progress bar for in-progress */}
                     {step.status === "in-progress" && (
-                      <div className="mt-2.5 h-1.5 w-32 overflow-hidden rounded-full bg-stone-200/80">
+                      <div className="mt-2.5 h-1.5 w-32 overflow-hidden rounded-full bg-paper/80">
                         <div
                           className="h-full rounded-full transition-all duration-700 ease-out"
                           style={{
