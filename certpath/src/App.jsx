@@ -2,15 +2,17 @@ import { Routes, Route } from "react-router-dom";
 import Layout, { HomeLayout, OnboardingLayout, LessonLayout } from "./components/Layout";
 import Home from "./pages/Home";
 import Onboarding from "./pages/Onboarding";
+import Reveal from "./pages/Reveal";
 import Explore from "./pages/Explore";
 import Roadmap from "./pages/Roadmap";
 import CertDetail from "./pages/CertDetail";
 import Jobs from "./pages/Jobs";
 import JobDetail from "./pages/JobDetail";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard_gemini";
 import SkillOverview from "./pages/SkillOverview";
 import LessonViewer from "./pages/LessonViewer";
 import NotFound from "./pages/NotFound";
+import DevLessons from "./pages/DevLessons";
 
 export default function App() {
   return (
@@ -20,6 +22,7 @@ export default function App() {
       </Route>
       <Route element={<OnboardingLayout />}>
         <Route path="onboarding" element={<Onboarding />} />
+        <Route path="reveal" element={<Reveal />} />
       </Route>
       <Route element={<LessonLayout />}>
         <Route path="skills/:skillSlug/:lessonId" element={<LessonViewer />} />
@@ -32,6 +35,7 @@ export default function App() {
         <Route path="fields/:slug/certs/:certId" element={<CertDetail />} />
         <Route path="jobs" element={<Jobs />} />
         <Route path="jobs/:jobId" element={<JobDetail />} />
+        <Route path="dev/lessons" element={<DevLessons />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

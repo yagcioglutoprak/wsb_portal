@@ -1,581 +1,547 @@
 import { Navigate, Link } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { fields, certifications, skills, lessons, jobs, skillJobMap } from "../data/mock";
+import { getFieldColor, experienceLevelColors } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
+import useCountUp from "../hooks/useCountUp";
 import useScrollReveal from "../hooks/useScrollReveal";
 
-/* ── Animated firewall SVG for continue-learning card ─────────────────── */
-function FirewallIllustration() {
+/* ═══════════════════════════════════════════════════════════════════════
+   STREAK TRACKING
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const STREAK_KEY = "certpath:streak-visits";
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function readStreak() {
+  try { const r = localStorage.getItem(STREAK_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+}
+function recordVisit() {
+  const v = readStreak(); const t = todayStr();
+  if (!v.includes(t)) {
+    v.push(t);
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90);
+    localStorage.setItem(STREAK_KEY, JSON.stringify(v.filter(d => new Date(d) >= cutoff)));
+  }
+}
+function computeStreak() {
+  const v = readStreak().sort().reverse();
+  if (!v.length) return 0;
+  let s = 0, d = new Date(todayStr());
+  for (let i = 0; i < 365; i++) {
+    if (v.includes(d.toISOString().slice(0, 10))) { s++; d = new Date(d); d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return s;
+}
+function getWeekVisits() {
+  const v = readStreak(), today = new Date(todayStr());
+  const dow = today.getDay(), mon = new Date(today);
+  mon.setDate(today.getDate() - ((dow + 6) % 7));
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
+    const ds = d.toISOString().slice(0, 10);
+    return { label: "MTWTFSS"[i], date: ds, visited: v.includes(ds), isToday: ds === todayStr() };
+  });
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STREAK FLAME (animated SVG)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function StreakFlame({ streak }) {
+  const t = Math.min(streak / 7, 1);
   return (
-    <svg viewBox="0 0 140 140" className="h-full w-full" aria-hidden="true">
-      <defs>
-        <style>{`
-          @keyframes brickAppear {
-            from { opacity: 0; transform: scaleY(0); }
-            to { opacity: 1; transform: scaleY(1); }
-          }
-          @keyframes shieldDraw {
-            to { stroke-dashoffset: 0; }
-          }
-          @keyframes packetFlyRight {
-            0% { opacity: 0; cx: 10; }
-            15% { opacity: 1; }
-            50% { opacity: 1; cx: 55; }
-            55% { opacity: 1; cx: 55; }
-            70% { opacity: 1; cx: 55; }
-            100% { opacity: 1; cx: 120; }
-          }
-          @keyframes packetBounce {
-            0% { opacity: 0; cx: 10; }
-            15% { opacity: 1; }
-            50% { opacity: 1; cx: 50; }
-            55% { opacity: 0.8; cx: 46; }
-            100% { opacity: 0; cx: 10; }
-          }
-          @keyframes dashedPulse {
-            0%, 100% { opacity: 0.15; }
-            50% { opacity: 0.35; }
-          }
-        `}</style>
-      </defs>
+    <div className="relative" style={{ width: 32, height: 40 }}>
+      <svg viewBox="0 0 32 40" className="w-full h-full" aria-hidden="true">
+        <ellipse cx="16" cy="30" rx={7 + t * 2} ry="14" fill="#f97316" opacity={0.3 + t * 0.15}
+          style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
+        <ellipse cx="16" cy="31" rx={5 + t} ry="11" fill="#fb923c" opacity={0.55 + t * 0.2}
+          style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
+        <ellipse cx="16" cy="32" rx={3 + t * 0.5} ry="8" fill="#fbbf24" opacity={0.8 + t * 0.2}
+          style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center font-sans text-xs font-black text-white pt-2"
+        style={{ textShadow: "0 1px 2px rgba(0,0,0,.3)" }}>{streak}</span>
+    </div>
+  );
+}
 
-      {/* Dashed network lines */}
-      <line x1="10" y1="70" x2="55" y2="70" stroke="#2856a6" strokeWidth="1" strokeDasharray="4 3"
-        style={{ animation: "dashedPulse 2.5s ease-in-out infinite" }} />
-      <line x1="85" y1="70" x2="130" y2="70" stroke="#2856a6" strokeWidth="1" strokeDasharray="4 3"
-        style={{ animation: "dashedPulse 2.5s ease-in-out infinite 0.5s" }} />
 
-      {/* Wall base */}
-      <rect x="55" y="35" width="30" height="70" rx="3" fill="#e8e4de" opacity="0.5" />
+/* ═══════════════════════════════════════════════════════════════════════
+   SKILL ILLUSTRATIONS (per-topic animated SVGs)
+   ═══════════════════════════════════════════════════════════════════════ */
 
-      {/* Bricks - staggered appearance */}
-      {[
-        { x: 57, y: 38, w: 12, h: 8, d: "0.3s" },
-        { x: 71, y: 38, w: 12, h: 8, d: "0.5s" },
-        { x: 57, y: 49, w: 12, h: 8, d: "0.7s" },
-        { x: 71, y: 49, w: 12, h: 8, d: "0.9s" },
-        { x: 57, y: 60, w: 12, h: 8, d: "1.1s" },
-        { x: 71, y: 60, w: 12, h: 8, d: "1.3s" },
-        { x: 57, y: 71, w: 12, h: 8, d: "1.5s" },
-        { x: 71, y: 71, w: 12, h: 8, d: "1.7s" },
-        { x: 57, y: 82, w: 12, h: 8, d: "1.9s" },
-        { x: 71, y: 82, w: 12, h: 8, d: "2.1s" },
-        { x: 57, y: 93, w: 12, h: 8, d: "2.3s" },
-        { x: 71, y: 93, w: 12, h: 8, d: "2.5s" },
-      ].map((b, i) => (
-        <rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} rx="1.5"
-          fill="#2856a6" opacity="0.75"
-          style={{
-            transformOrigin: `${b.x + b.w / 2}px ${b.y + b.h}px`,
-            animation: `brickAppear 0.4s ease-out ${b.d} both`,
-          }}
-        />
-      ))}
-
-      {/* Shield outline drawn with stroke animation */}
-      <path
-        d="M70 20 L82 28 L82 48 Q82 58 70 64 Q58 58 58 48 L58 28 Z"
-        fill="none" stroke="#2856a6" strokeWidth="1.5"
-        strokeDasharray="120" strokeDashoffset="120"
-        style={{ animation: "shieldDraw 1.5s ease-out 1s forwards" }}
-      />
-
-      {/* Packets - some pass through, some bounce */}
-      <circle r="3" cy="60" fill="#2856a6" opacity="0"
-        style={{ animation: "packetFlyRight 3s ease-in-out 2s infinite" }} />
-      <circle r="3" cy="80" fill="#2856a6" opacity="0"
-        style={{ animation: "packetFlyRight 3s ease-in-out 3.2s infinite" }} />
-      <circle r="3" cy="70" fill="#dc2626" opacity="0"
-        style={{ animation: "packetBounce 2.5s ease-in-out 2.6s infinite" }} />
-      <circle r="2.5" cy="50" fill="#dc2626" opacity="0"
-        style={{ animation: "packetBounce 2.5s ease-in-out 3.8s infinite" }} />
-
-      {/* Source & destination nodes */}
-      <circle cx="10" cy="70" r="4" fill="none" stroke="#2856a6" strokeWidth="1" opacity="0.4" />
-      <circle cx="130" cy="70" r="4" fill="none" stroke="#2856a6" strokeWidth="1" opacity="0.4" />
+function NetworkIllust() {
+  return (
+    <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
+      <defs><style>{`@keyframes np{0%,100%{r:2.5;opacity:.4}50%{r:4;opacity:.8}}@keyframes ns{0%,100%{opacity:.25}50%{opacity:.6}}`}</style></defs>
+      {[[30,25],[60,15],[90,25],[20,60],[50,55],[80,60],[100,55],[40,90],[70,95],[90,85]].map(([x,y],i)=>
+        <circle key={i} cx={x} cy={y} r="1" fill="#0d9488" opacity=".12" />)}
+      <line x1="30" y1="40" x2="60" y2="30" stroke="#0d9488" strokeWidth="1" opacity=".2" strokeDasharray="3 2"/>
+      <line x1="60" y1="30" x2="90" y2="40" stroke="#0d9488" strokeWidth="1" opacity=".2" strokeDasharray="3 2"/>
+      <line x1="30" y1="40" x2="45" y2="75" stroke="#0d9488" strokeWidth="1" opacity=".2" strokeDasharray="3 2"/>
+      <line x1="90" y1="40" x2="75" y2="75" stroke="#0d9488" strokeWidth="1" opacity=".2" strokeDasharray="3 2"/>
+      <line x1="45" y1="75" x2="75" y2="75" stroke="#0d9488" strokeWidth="1" opacity=".2" strokeDasharray="3 2"/>
+      <circle cx="30" cy="40" r="6" fill="none" stroke="#0d9488" strokeWidth="1.2" opacity=".5"/>
+      <circle cx="60" cy="30" r="6" fill="none" stroke="#0d9488" strokeWidth="1.2" opacity=".5"/>
+      <circle cx="90" cy="40" r="6" fill="none" stroke="#0d9488" strokeWidth="1.2" opacity=".5"/>
+      <circle cx="45" cy="75" r="6" fill="none" stroke="#0d9488" strokeWidth="1.2" opacity=".5"/>
+      <circle cx="75" cy="75" r="6" fill="none" stroke="#0d9488" strokeWidth="1.2" opacity=".5"/>
+      <circle cx="60" cy="30" r="2.5" fill="#0d9488" style={{animation:"np 2s ease-in-out infinite"}}/>
+      <circle cx="45" cy="75" r="2.5" fill="#0d9488" style={{animation:"np 2s ease-in-out infinite .7s"}}/>
+      <path d="M60 55 L68 61 L68 75 Q68 82 60 86 Q52 82 52 75 L52 61Z" fill="none" stroke="#0d9488" strokeWidth="1.2"
+        style={{animation:"ns 3s ease-in-out infinite"}}/>
     </svg>
   );
 }
 
-/* ── Animated progress ring SVG ───────────────────────────────────────── */
-function ProgressRing({ progress }) {
-  const radius = 50;
-  const circumference = 2 * Math.PI * radius;
-  const targetOffset = circumference * (1 - progress);
-
+function PythonIllust() {
   return (
-    <div className="relative h-[110px] w-[110px] shrink-0">
-      <svg
-        viewBox="0 0 110 110"
-        className="h-full w-full"
-        style={{ transform: "rotate(-90deg)" }}
-      >
-        <circle
-          cx="55" cy="55" r={radius}
-          stroke="#e8e4de" strokeWidth="5" fill="none"
-        />
-        <circle
-          cx="55" cy="55" r={radius}
-          stroke="#2856a6" strokeWidth="5" fill="none"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference}
-          style={{
-            animation: `ringFill 1.4s ease-out 0.5s forwards`,
-            "--target-offset": targetOffset,
-          }}
-        />
-      </svg>
-      {/* Center text */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ transform: "none" }}>
-        <span className="font-sans text-xl font-bold text-ink">
-          {Math.round(progress * 100)}%
-        </span>
-        <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-          Complete
-        </span>
-      </div>
-    </div>
+    <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
+      <defs><style>{`@keyframes tc{0%,100%{opacity:1}50%{opacity:0}}`}</style></defs>
+      <rect x="15" y="15" width="90" height="90" rx="6" fill="#1c1917" stroke="#44403c" strokeWidth=".8"/>
+      <circle cx="26" cy="24" r="2.5" fill="#ef4444" opacity=".6"/><circle cx="34" cy="24" r="2.5" fill="#f59e0b" opacity=".6"/><circle cx="42" cy="24" r="2.5" fill="#22c55e" opacity=".6"/>
+      <rect x="24" y="38" width="42" height="2.5" rx="1" fill="#f59e0b" opacity=".7"/>
+      <rect x="24" y="46" width="60" height="2.5" rx="1" fill="#a8a29e" opacity=".35"/>
+      <rect x="30" y="54" width="48" height="2.5" rx="1" fill="#22c55e" opacity=".5"/>
+      <rect x="30" y="62" width="36" height="2.5" rx="1" fill="#a8a29e" opacity=".35"/>
+      <rect x="24" y="74" width="24" height="2.5" rx="1" fill="#8b5cf6" opacity=".5"/>
+      <rect x="30" y="82" width="54" height="2.5" rx="1" fill="#f59e0b" opacity=".45"/>
+      <rect x="24" y="92" width="2" height="8" rx="1" fill="#f59e0b" style={{animation:"tc 1.2s step-end infinite"}}/>
+    </svg>
   );
 }
 
-/* ── Stage icon SVGs ──────────────────────────────────────────────────── */
-function StageIcon({ stage }) {
-  const icons = {
-    1: ( // Shield - Foundation
-      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-        <path d="M12 2L20 6V12C20 17 16.5 20.5 12 22C7.5 20.5 4 17 4 12V6L12 2Z"
-          stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="1.5"
-          strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    2: ( // Wrench - Associate / Hands-On
-      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-        <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    3: ( // Star - Professional
-      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    4: ( // Crown - Expert
-      <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
-        <path d="M2 20H22L20 8L15 12L12 4L9 12L4 8L2 20Z"
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M5 20V22H19V20" stroke="currentColor" strokeWidth="1.5"
-          strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  };
-  return icons[stage] || icons[1];
-}
-
-/* ── Stat icon SVGs ───────────────────────────────────────────────────── */
-function StatIcon({ type }) {
-  if (type === "lessons") return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-      <svg viewBox="0 0 20 20" fill="none" className="h-4.5 w-4.5">
-        <path d="M4 3H16C16.5523 3 17 3.44772 17 4V16C17 16.5523 16.5523 17 16 17H4C3.44772 17 3 16.5523 3 16V4C3 3.44772 3.44772 3 4 3Z"
-          stroke="#2856a6" strokeWidth="1.3" />
-        <path d="M7 7H13M7 10H13M7 13H10" stroke="#2856a6" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    </div>
-  );
-  if (type === "skills") return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50">
-      <svg viewBox="0 0 20 20" fill="none" className="h-4.5 w-4.5">
-        <path d="M10 2L12.4 7.3L18 8L14 12L15 17.5L10 14.8L5 17.5L6 12L2 8L7.6 7.3L10 2Z"
-          stroke="#d97706" strokeWidth="1.3" strokeLinejoin="round" />
-      </svg>
-    </div>
-  );
-  if (type === "badges") return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-50">
-      <svg viewBox="0 0 20 20" fill="none" className="h-4.5 w-4.5">
-        <circle cx="10" cy="8" r="5" stroke="#7c3aed" strokeWidth="1.3" />
-        <path d="M7 13L6 18L10 16L14 18L13 13" stroke="#7c3aed" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </div>
-  );
+function SqlIllust() {
   return (
-    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
-      <svg viewBox="0 0 20 20" fill="none" className="h-4.5 w-4.5">
-        <rect x="2" y="7" width="4" height="10" rx="1" stroke="#059669" strokeWidth="1.3" />
-        <rect x="8" y="4" width="4" height="13" rx="1" stroke="#059669" strokeWidth="1.3" />
-        <rect x="14" y="2" width="4" height="15" rx="1" stroke="#059669" strokeWidth="1.3" />
-      </svg>
+    <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
+      <defs><style>{`@keyframes sc{from{stroke-dashoffset:30}to{stroke-dashoffset:0}}`}</style></defs>
+      <rect x="8" y="18" width="42" height="55" rx="3" fill="none" stroke="#6366f1" strokeWidth="1" opacity=".4"/>
+      <rect x="8" y="18" width="42" height="11" rx="3" fill="#6366f1" opacity=".1"/>
+      <text x="29" y="27" textAnchor="middle" fill="#6366f1" fontSize="6" fontWeight="600" fontFamily="Inter">users</text>
+      {[0,1,2].map(i=><g key={i}><rect x="12" y={34+i*12} width="16" height="2.5" rx="1" fill="#6366f1" opacity={.25+i*.05}/><rect x="32" y={34+i*12} width="12" height="2.5" rx="1" fill="#6366f1" opacity=".15"/></g>)}
+      <rect x="70" y="18" width="42" height="55" rx="3" fill="none" stroke="#6366f1" strokeWidth="1" opacity=".4"/>
+      <rect x="70" y="18" width="42" height="11" rx="3" fill="#6366f1" opacity=".1"/>
+      <text x="91" y="27" textAnchor="middle" fill="#6366f1" fontSize="6" fontWeight="600" fontFamily="Inter">orders</text>
+      {[0,1,2].map(i=><g key={i}><rect x="74" y={34+i*12} width="14" height="2.5" rx="1" fill="#6366f1" opacity={.25+i*.05}/><rect x="92" y={34+i*12} width="16" height="2.5" rx="1" fill="#6366f1" opacity=".15"/></g>)}
+      <path d="M50 40 Q60 40 70 40" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="3 2" opacity=".4"
+        style={{animation:"sc 2s ease-in-out infinite alternate"}}/>
+      <path d="M50 52 Q60 52 70 52" fill="none" stroke="#6366f1" strokeWidth="1" strokeDasharray="3 2" opacity=".3"
+        style={{animation:"sc 2s ease-in-out infinite alternate .5s"}}/>
+      <rect x="22" y="88" width="76" height="18" rx="4" fill="#6366f1" opacity=".06"/>
+      <rect x="28" y="94" width="30" height="2.5" rx="1" fill="#6366f1" opacity=".35"/>
+      <rect x="64" y="94" width="26" height="2.5" rx="1" fill="#22c55e" opacity=".35"/>
+    </svg>
+  );
+}
+
+function CloudIllust() {
+  return (
+    <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
+      <defs><style>{`@keyframes cf{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes sb{0%,100%{fill:#22c55e;opacity:.4}50%{opacity:.9}}`}</style></defs>
+      <g style={{animation:"cf 4s ease-in-out infinite"}}>
+        <path d="M32 42Q32 26 48 26Q56 14 72 20Q92 18 96 38Q110 38 110 52Q110 65 96 65L32 65Q18 65 18 52Q18 42 32 42Z"
+          fill="#0ea5e9" opacity=".07" stroke="#0ea5e9" strokeWidth=".8"/>
+      </g>
+      {[30,52,74].map((x,i)=><g key={i}>
+        <rect x={x} y="78" width="16" height="24" rx="2" fill="none" stroke="#0ea5e9" strokeWidth=".8" opacity=".35"/>
+        <rect x={x+2} y="81" width="12" height="1.5" rx=".75" fill="#0ea5e9" opacity=".25"/>
+        <rect x={x+2} y="85" width="12" height="1.5" rx=".75" fill="#0ea5e9" opacity=".25"/>
+        <circle cx={x+12} cy="97" r="1.5" style={{animation:`sb 2s ease-in-out infinite ${i*.4}s`}}/>
+      </g>)}
+    </svg>
+  );
+}
+
+function DataIllust() {
+  return (
+    <svg viewBox="0 0 120 120" className="w-full h-full" aria-hidden="true">
+      <defs><style>{`@keyframes bg{from{transform:scaleY(0)}to{transform:scaleY(1)}}@keyframes td{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}@keyframes da{from{r:0;opacity:0}to{r:3;opacity:1}}`}</style></defs>
+      <line x1="18" y1="98" x2="105" y2="98" stroke="#8b5cf6" strokeWidth=".8" opacity=".25"/>
+      <line x1="18" y1="98" x2="18" y2="18" stroke="#8b5cf6" strokeWidth=".8" opacity=".25"/>
+      {[{x:26,h:30},{x:42,h:50},{x:58,h:38},{x:74,h:62},{x:90,h:44}].map((b,i)=>
+        <rect key={i} x={b.x} y={98-b.h} width="10" height={b.h} rx="1.5" fill="#8b5cf6" opacity=".18"
+          style={{transformOrigin:`${b.x+5}px 98px`,animation:`bg .8s cubic-bezier(.34,1.56,.64,1) ${i*.1}s both`}}/>)}
+      <polyline points="31,72 47,54 63,65 79,40 95,58" fill="none" stroke="#8b5cf6" strokeWidth="1.5"
+        strokeLinecap="round" strokeLinejoin="round" strokeDasharray="160" strokeDashoffset="160"
+        style={{animation:"td 2s ease-out .4s forwards"}}/>
+      {[[31,72],[47,54],[63,65],[79,40],[95,58]].map(([cx,cy],i)=>
+        <circle key={i} cx={cx} cy={cy} r="0" fill="#8b5cf6" style={{animation:`da .3s cubic-bezier(.34,1.56,.64,1) ${.7+i*.12}s both`}}/>)}
+    </svg>
+  );
+}
+
+const SKILL_ILLUSTS = {
+  "network-security": NetworkIllust, "python-basics": PythonIllust,
+  "sql-databases": SqlIllust, "cloud-architecture": CloudIllust, "data-analysis": DataIllust,
+};
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SKILL PATH — compact horizontal node chain
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, accent }) {
+  return (
+    <div className="flex items-center gap-3 overflow-x-auto py-2">
+      {relevantSkills.map((skill, i) => {
+        const sp = getSkillProgress(skill.id);
+        const done = progress.completedSkills.includes(skill.id);
+        const active = activeSkill?.id === skill.id;
+        const locked = !done && !active;
+
+        return (
+          <div key={skill.id} className="flex items-center gap-3 shrink-0">
+            <Link to={`/skills/${skill.slug}`}
+              className={`group flex flex-col items-center gap-1.5 transition-all duration-200 ${locked ? "opacity-35" : ""}`}>
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                  done ? "text-white" :
+                  active ? "border-2" :
+                  "border border-dashed border-ink/20 text-pencil"
+                }`}
+                style={{
+                  backgroundColor: done ? accent : undefined,
+                  borderColor: active ? accent : undefined,
+                  color: active ? accent : undefined,
+                  ...(active ? { boxShadow: `0 0 0 3px ${accent}15` } : {}),
+                }}
+              >
+                {done ? (
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 8L7 11L12 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ) : locked ? (
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" opacity=".4">
+                    <rect x="3" y="8" width="10" height="7" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M5 8V5.5C5 3.5 6.5 2 8 2S11 3.5 11 5.5V8" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                ) : (
+                  `${sp.completed}/${sp.total}`
+                )}
+              </div>
+              <span className={`text-xs font-semibold text-center leading-tight max-w-[80px] ${
+                active ? "text-ink" : done ? "text-ink/60" : "text-pencil/30"
+              }`}>
+                {skill.name}
+              </span>
+              {active && (
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: accent }}>Active</span>
+              )}
+            </Link>
+            {i < relevantSkills.length - 1 && (
+              <div className={`w-8 h-[2px] shrink-0 ${done ? "" : "border-t border-dashed border-ink/12"}`}
+                style={done ? { backgroundColor: accent, opacity: 0.3 } : undefined} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-/* ── Main Dashboard ───────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAIN DASHBOARD — Career Document Layout
+   ═══════════════════════════════════════════════════════════════════════ */
+
 export default function Dashboard() {
   const {
     profile, isOnboarded, progress, xp, level,
     getCurrentLesson, getSkillProgress, getLessonProgress,
   } = useProgress();
 
-  const roadmapReveal = useScrollReveal();
-  const skillsReveal = useScrollReveal();
-  const jobsReveal = useScrollReveal();
+  const [streak, setStreak] = useState(0);
+  const [weekDays, setWeekDays] = useState([]);
+  useEffect(() => { recordVisit(); setStreak(computeStreak()); setWeekDays(getWeekVisits()); }, []);
+
+  const { count: xpCount } = useCountUp(xp, 1000);
+  const jobsReveal = useScrollReveal({ threshold: 0.1 });
 
   if (!isOnboarded) return <Navigate to="/onboarding" replace />;
 
-  // Field info
-  const field = fields.find((f) => f.id === profile.field);
-  const fieldName = field?.name?.toUpperCase() || profile.field.toUpperCase();
+  const field = fields.find(f => f.id === profile.field);
+  const fieldName = field?.name || profile.field;
+  const fc = getFieldColor(profile.field);
+  const accent = fc.accent;
 
-  // Relevant skills for this field
-  const relevantSkills = skills.filter((s) => s.fieldIds.includes(profile.field));
-
-  // Active skill = first not completed
-  const activeSkill =
-    relevantSkills.find((s) => !progress.completedSkills.includes(s.id)) ||
-    relevantSkills[0];
-
-  // Current lesson
+  const relevantSkills = skills.filter(s => s.fieldIds.includes(profile.field));
+  const activeSkill = relevantSkills.find(s => !progress.completedSkills.includes(s.id)) || relevantSkills[0];
   const currentLesson = activeSkill ? getCurrentLesson(activeSkill.id) : null;
-  const currentLessonProgress = currentLesson
-    ? getLessonProgress(currentLesson.id)
-    : { completed: 0, total: 0 };
-  const activeSkillProgress = activeSkill
-    ? getSkillProgress(activeSkill.id)
-    : { completed: 0, total: 0 };
-  const activeSkillLessons = activeSkill
-    ? lessons.filter((l) => l.skillId === activeSkill.id)
-    : [];
+  const lessonProg = currentLesson ? getLessonProgress(currentLesson.id) : { completed: 0, total: 0 };
+  const skillLessons = activeSkill ? lessons.filter(l => l.skillId === activeSkill.id) : [];
 
-  // Matching jobs
-  const matchingJobIds = [
-    ...new Set(relevantSkills.flatMap((s) => skillJobMap[s.id] || [])),
-  ];
-  const matchingJobs = jobs.filter((j) => matchingJobIds.includes(j.id));
-  const displayJobs = matchingJobs.slice(0, 5);
+  const currentPhase = currentLesson
+    ? (() => { const l = currentLesson.phases.learn.steps, a = currentLesson.phases.apply.steps;
+        if (lessonProg.completed < l) return "learn"; if (lessonProg.completed < l + a) return "apply"; return "challenge"; })()
+    : "learn";
 
-  // Lesson progress
+  const matchingJobIds = [...new Set(relevantSkills.flatMap(s => skillJobMap[s.id] || []))];
+  const matchingJobs = jobs.filter(j => matchingJobIds.includes(j.id));
   const totalLessons = lessons.length;
   const completedLessons = progress.completedLessons.length;
-  const completedSkillsCount = progress.completedSkills.length;
-  const progressRatio = totalLessons > 0 ? completedLessons / totalLessons : 0;
 
-  // Certifications by stage for roadmap
   const fieldCerts = certifications[profile.field] || [];
   const stageMap = {};
-  fieldCerts.forEach((cert) => {
-    if (!stageMap[cert.stage]) {
-      stageMap[cert.stage] = {
-        stage: cert.stage,
-        stageName: cert.stageName,
-        certs: [],
-        totalWeeks: 0,
-      };
-    }
-    stageMap[cert.stage].certs.push(cert);
-    stageMap[cert.stage].totalWeeks += cert.durationWeeks;
+  fieldCerts.forEach(c => {
+    if (!stageMap[c.stage]) stageMap[c.stage] = { stage: c.stage, stageName: c.stageName, certs: [], totalWeeks: 0 };
+    stageMap[c.stage].certs.push(c);
+    stageMap[c.stage].totalWeeks += c.durationWeeks;
   });
   const stages = Object.values(stageMap).sort((a, b) => a.stage - b.stage);
 
-  // Determine current phase for the current lesson
-  const currentPhase = currentLesson
-    ? (() => {
-        const learnSteps = currentLesson.phases.learn.steps;
-        const applySteps = currentLesson.phases.apply.steps;
-        if (currentLessonProgress.completed < learnSteps) return "Learn";
-        if (currentLessonProgress.completed < learnSteps + applySteps) return "Apply";
-        return "Challenge";
-      })()
-    : "Learn";
-
-  // Determine current step within phase
-  const currentStepInPhase = currentLesson
-    ? (() => {
-        const learnSteps = currentLesson.phases.learn.steps;
-        const applySteps = currentLesson.phases.apply.steps;
-        const c = currentLessonProgress.completed;
-        if (c < learnSteps) return c + 1;
-        if (c < learnSteps + applySteps) return c - learnSteps + 1;
-        return c - learnSteps - applySteps + 1;
-      })()
-    : 1;
-
-  const totalStepsInPhase = currentLesson
-    ? currentLesson.phases[currentPhase.toLowerCase()]?.steps || 1
-    : 1;
-
-  // Skill statuses for the skill list
-  const getSkillStatus = (skill) => {
-    if (progress.completedSkills.includes(skill.id)) return "completed";
-    if (activeSkill && skill.id === activeSkill.id) return "active";
-    const idx = relevantSkills.indexOf(skill);
-    const activeIdx = relevantSkills.indexOf(activeSkill);
-    if (idx === activeIdx + 1) return "next";
-    return "locked";
-  };
+  const Illust = activeSkill ? (SKILL_ILLUSTS[activeSkill.id] || NetworkIllust) : NetworkIllust;
+  const allDone = !currentLesson || progress.completedLessons.includes(currentLesson?.id);
+  const ys = profile.year === "1" ? "st" : profile.year === "2" ? "nd" : profile.year === "3" ? "rd" : "th";
 
   return (
-    <div className="space-y-10">
-      {/* Global keyframes */}
+    <div className="pb-16">
       <style>{`
-        @keyframes ringFill {
-          to { stroke-dashoffset: var(--target-offset); }
-        }
-        @keyframes breathe {
-          0%, 100% { opacity: 0.3; box-shadow: 0 0 0 0 rgba(40,86,166,0); }
-          50% { opacity: 1; box-shadow: 0 0 0 5px rgba(40,86,166,0.1); }
-        }
-        @keyframes fadeSlideIn {
-          from { opacity: 0; transform: translateX(10px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes stageAppear {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fillBar {
-          from { width: 0; }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes flameSway{0%,100%{transform:translateX(0) scaleY(1)}33%{transform:translateX(-1px) scaleY(1.04)}66%{transform:translateX(1px) scaleY(.97)}}
+        @keyframes sIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fillW{from{width:0}}
+        @keyframes breatheDot{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.3);opacity:1}}
+        @keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 var(--pc,rgba(40,86,166,.3))}50%{box-shadow:0 0 0 5px var(--pc,rgba(40,86,166,0))}}
+        @keyframes radarSweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
       `}</style>
 
-      {/* ═══ 1. WELCOME ROW ═══ */}
-      <div
-        className="flex items-center justify-between"
-        style={{ animation: "fadeInUp 0.6s ease-out both" }}
-      >
-        <div>
-          <p className="font-sans text-xs font-semibold uppercase tracking-wide text-merito">
-            Your Path &middot; {fieldName}
-          </p>
-          <h1 className="mt-1 font-sans text-3xl font-bold text-ink">
-            Welcome back.
-          </h1>
-          <p className="mt-2 text-sm text-pencil">
-            {profile.year} year &middot; {profile.program}
-          </p>
-        </div>
+      {/* ═══════════════════════════════════════════════════════════
+          HEADER: Career document title + stats + streak
+          ═══════════════════════════════════════════════════════════ */}
+      <header className="mb-8" style={{ animation: "sIn .6s ease-out both" }}>
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <p className="font-sans text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: accent }}>
+              Your Career Path
+            </p>
+            <h1 className="font-sans text-3xl lg:text-4xl font-bold text-ink leading-tight tracking-tight">
+              {fieldName}
+            </h1>
+            <p className="font-sans text-sm text-pencil mt-1.5">
+              {profile.year}{ys} Year &middot; {profile.program}
+            </p>
+          </div>
 
-        <ProgressRing progress={progressRatio} />
-      </div>
-
-      {/* ═══ 2. CONTINUE LEARNING + STATS ═══ */}
-      <div
-        className="grid gap-8"
-        style={{
-          gridTemplateColumns: "2fr 1fr",
-          animation: "fadeInUp 0.6s ease-out 0.15s both",
-        }}
-      >
-        {/* ── Continue Learning Card ── */}
-        {activeSkill && currentLesson ? (
-          <Link
-            to={`/skills/${activeSkill.slug}/${currentLesson.id}`}
-            className="group block bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
-          >
-            <div className="grid gap-6" style={{ gridTemplateColumns: "1fr 160px" }}>
-              <div className="flex flex-col justify-between">
-                {/* Overline with pulse dot */}
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <span
-                      className="inline-block h-1.5 w-1.5 rounded-full bg-rust"
-                      style={{ animation: "breathe 2s ease-in-out infinite" }}
-                    />
-                    <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                      Continue where you left off
-                    </span>
-                  </div>
-
-                  <h2 className="font-sans text-xl font-bold text-ink mb-1.5">
-                    {currentLesson.title}
-                  </h2>
-                  <p className="text-sm text-pencil">
-                    {activeSkill.name} &middot; Lesson {currentLesson.number} of{" "}
-                    {activeSkillLessons.length}
-                  </p>
-                </div>
-
-                {/* Progress bar */}
-                <div className="mt-6">
-                  <div className="h-[3px] w-full rounded-full bg-faint overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-rust"
-                      style={{
-                        width:
-                          currentLessonProgress.total > 0
-                            ? `${(currentLessonProgress.completed / currentLessonProgress.total) * 100}%`
-                            : "0%",
-                        animation: "fillBar 1s ease-out 0.6s both",
-                      }}
-                    />
-                  </div>
-                  <p className="mt-2 font-sans text-sm text-pencil">
-                    Phase: {currentPhase} &middot; Step {currentStepInPhase} of{" "}
-                    {totalStepsInPhase}
-                  </p>
-                </div>
-
-                {/* Button */}
-                <div className="mt-5">
-                  <span className="inline-flex items-center gap-1.5 bg-rust text-white rounded-lg px-6 py-3 font-semibold text-sm transition-all duration-200 group-hover:shadow-md">
-                    Continue lesson
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform duration-200 group-hover:translate-x-0.5">
-                      <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </div>
+          <div className="flex items-center gap-6 shrink-0">
+            {/* Quick stats */}
+            <div className="hidden md:flex items-center gap-5 text-center">
+              <div>
+                <span className="font-mono text-lg font-bold text-ink leading-none block">{xpCount}</span>
+                <span className="font-sans text-xs font-semibold uppercase tracking-wider text-pencil">XP</span>
               </div>
-
-              {/* Firewall illustration */}
-              <div className="hidden sm:flex items-center justify-center">
-                <FirewallIllustration />
+              <div className="w-px h-8 bg-ink/8" />
+              <div>
+                <span className="font-sans text-lg font-bold leading-none block" style={{ color: accent }}>LVL {level}</span>
+                <span className="font-sans text-xs font-semibold uppercase tracking-wider text-pencil">Level</span>
+              </div>
+              <div className="w-px h-8 bg-ink/8" />
+              <div>
+                <span className="font-mono text-lg font-bold text-ink leading-none block">{completedLessons}/{totalLessons}</span>
+                <span className="font-sans text-xs font-semibold uppercase tracking-wider text-pencil">Lessons</span>
               </div>
             </div>
-          </Link>
-        ) : (
-          <div className="bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-6 flex items-center justify-center">
-            <div className="text-center">
-              <p className="font-sans text-xl font-bold text-ink">All caught up!</p>
-              <p className="mt-2 text-sm text-pencil">You have completed all available lessons.</p>
+
+            {/* Streak + day tracker */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                {weekDays.map((day, i) => (
+                  <div key={i}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold ${
+                      day.visited ? "text-white" : day.isToday ? "border-[1.5px] text-pencil" : "text-pencil/25 bg-ink/[0.03]"
+                    }`}
+                    style={{
+                      backgroundColor: day.visited ? accent : undefined,
+                      borderColor: day.isToday && !day.visited ? accent : undefined,
+                      ...(day.isToday && !day.visited ? { "--pc": `${accent}30`, animation: "pulseRing 2.5s ease-in-out infinite" } : {}),
+                    }}>
+                    {day.label}
+                  </div>
+                ))}
+              </div>
+              <StreakFlame streak={streak} />
             </div>
           </div>
-        )}
-
-        {/* ── Stats Column ── */}
-        <div className="flex flex-col gap-3">
-          {[
-            { type: "lessons", value: `${completedLessons}/${totalLessons}`, label: "Lessons Completed" },
-            { type: "skills", value: `${completedSkillsCount}/${relevantSkills.length}`, label: "Skills Mastered" },
-            { type: "badges", value: `${progress.earnedBadges.length}`, label: "Badges Earned" },
-            { type: "jobs", value: `${matchingJobs.length}`, label: "Matching Jobs" },
-          ].map((stat, i) => (
-            <div
-              key={stat.type}
-              className="bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-4 flex items-center gap-4"
-              style={{
-                animation: `fadeSlideIn 0.5s ease-out ${0.3 + i * 0.15}s both`,
-              }}
-            >
-              <StatIcon type={stat.type} />
-              <div>
-                <p className="font-sans text-xl font-bold text-ink leading-none">{stat.value}</p>
-                <p className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil mt-0.5">
-                  {stat.label}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
-      </div>
 
-      {/* ═══ 3. ROADMAP SECTION ═══ */}
-      {stages.length > 0 && (
-        <div
-          ref={roadmapReveal.ref}
-          className="transition-all duration-700"
-          style={{
-            opacity: roadmapReveal.isVisible ? 1 : 0,
-            transform: roadmapReveal.isVisible ? "translateY(0)" : "translateY(20px)",
-          }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <p className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-              Your Roadmap
-            </p>
+        {/* Divider */}
+        <div className="mt-5 h-px bg-ink/6" />
+      </header>
+
+
+      {/* ═══════════════════════════════════════════════════════════
+          MAIN: Two-column layout — Learning | Certifications
+          ═══════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start mb-10" style={{ animation: "sIn .6s ease-out .1s both" }}>
+
+        {/* ──────── LEFT COLUMN: Learning ──────── */}
+        <div className="space-y-6">
+          {/* Continue Learning Card */}
+          {activeSkill && currentLesson && !allDone ? (
             <Link
-              to={`/fields/${profile.field}`}
-              className="group flex items-center gap-1 font-sans text-sm font-semibold text-rust hover:underline"
+              to={`/skills/${activeSkill.slug}/${currentLesson.id}`}
+              className="group block bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,.06)] rounded-xl p-5 lg:p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
             >
-              View full roadmap
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"
-                className="transition-transform duration-200 group-hover:translate-x-0.5">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2"
-                  strokeLinecap="round" strokeLinejoin="round" />
+              <div className="grid grid-cols-[1fr_100px] gap-5 items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent, animation: "breatheDot 2s ease-in-out infinite" }} />
+                    <span className="font-sans text-xs font-semibold uppercase tracking-wider text-pencil">{activeSkill.name}</span>
+                  </div>
+                  <h2 className="font-sans text-2xl font-bold text-ink leading-tight mb-1.5">{currentLesson.title}</h2>
+                  <p className="font-sans text-sm text-pencil">
+                    Lesson {currentLesson.number} of {skillLessons.length}
+                    <span className="mx-1.5 text-ink/10">&middot;</span>
+                    ~{currentLesson.estimatedMinutes} min
+                  </p>
+
+                  {/* Phase blocks */}
+                  <div className="flex items-center gap-1.5 mt-4">
+                    {["learn", "apply", "challenge"].map(phase => {
+                      const steps = currentLesson.phases[phase]?.steps || 0;
+                      const lt = currentLesson.phases.learn.steps, at = currentLesson.phases.apply.steps;
+                      let ps = 0; if (phase === "apply") ps = lt; if (phase === "challenge") ps = lt + at;
+                      const pc = Math.max(0, Math.min(steps, lessonProg.completed - ps));
+                      const complete = pc >= steps, isActive = phase === currentPhase;
+                      return (
+                        <div key={phase} className="flex-1">
+                          <div className={`h-8 rounded-md flex items-center justify-center text-xs font-semibold uppercase tracking-wider ${
+                            complete ? "text-white" : isActive ? "text-white" : "text-pencil/30 bg-ink/[0.04]"
+                          }`} style={{
+                            backgroundColor: complete || isActive ? accent : undefined,
+                            opacity: complete ? 0.8 : isActive ? 1 : 0.5,
+                          }}>
+                            {complete && <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="mr-1"><path d="M4 8L7 11L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                            {phase}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex-1 mr-4">
+                      <div className="h-[2px] w-full rounded-full bg-faint overflow-hidden">
+                        <div className="h-full rounded-full" style={{
+                          backgroundColor: accent,
+                          width: lessonProg.total > 0 ? `${(lessonProg.completed / lessonProg.total) * 100}%` : "0%",
+                          animation: "fillW 1s ease-out .5s both",
+                        }} />
+                      </div>
+                      <span className="font-sans text-xs text-pencil mt-1 block">{lessonProg.completed}/{lessonProg.total} steps</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 text-white rounded-lg px-6 py-3 font-sans text-sm font-semibold transition-all group-hover:shadow-md shrink-0"
+                      style={{ backgroundColor: accent }}>
+                      Continue
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-0.5">
+                        <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="hidden sm:block" style={{ width: 100, height: 100 }}>
+                  <Illust />
+                </div>
+              </div>
+            </Link>
+          ) : (
+            <div className="bg-card border-[1.5px] border-ink/12 rounded-xl p-6 text-center">
+              <p className="font-sans text-lg font-bold text-ink">All caught up!</p>
+              <p className="text-sm text-pencil mt-1">New content coming soon.</p>
+            </div>
+          )}
+
+          {/* Skill Path */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-sans text-sm font-semibold uppercase tracking-wider text-pencil">Your Skills</span>
+              <span className="font-sans text-xs text-pencil">{progress.completedSkills.length}/{relevantSkills.length} mastered</span>
+            </div>
+            <div className="bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,.06)] rounded-xl px-5 py-4">
+              <SkillPath relevantSkills={relevantSkills} progress={progress}
+                activeSkill={activeSkill} getSkillProgress={getSkillProgress} accent={accent} />
+            </div>
+          </div>
+        </div>
+
+        {/* ──────── RIGHT COLUMN: Certification Roadmap ──────── */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-sans text-sm font-semibold uppercase tracking-wider text-pencil">Certification Roadmap</span>
+            <Link to={`/fields/${profile.field}`}
+              className="group flex items-center gap-1 font-sans text-xs font-semibold hover:underline" style={{ color: accent }}>
+              Full details
+              <svg width="8" height="8" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-0.5">
+                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {stages.map((stg, i) => {
-              const isActive = i === 0;
-              const certsInStage = stg.certs;
-              const durationLabel =
-                stg.totalWeeks >= 52
-                  ? `${Math.round(stg.totalWeeks / 4)} mo`
-                  : `${stg.totalWeeks} wk`;
-
+          <div className="space-y-3">
+            {stages.map((stg, si) => {
+              const isCurrent = si === 0;
               return (
-                <div
-                  key={stg.stage}
-                  className={`bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5 transition-all duration-300 ${
-                    isActive ? "border-t-[3px] border-t-rust" : "opacity-50"
+                <div key={stg.stage}
+                  className={`bg-card border-[1.5px] rounded-xl transition-all duration-300 ${
+                    isCurrent ? "border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,.06)]" : "border-ink/6 opacity-50"
                   }`}
-                  style={{
-                    animation: roadmapReveal.isVisible
-                      ? `stageAppear 0.5s ease-out ${i * 0.12}s both`
-                      : "none",
-                  }}
+                  style={undefined}
                 >
-                  {/* Stage icon + number */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <div
-                      className={`flex h-9 w-9 items-center justify-center rounded-full border ${
-                        isActive
-                          ? "border-rust text-rust"
-                          : "border-faint text-pencil"
-                      }`}
-                    >
-                      <StageIcon stage={stg.stage} />
+                  {/* Stage header */}
+                  <div className="px-5 pt-4 pb-2.5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        isCurrent ? "text-white" : "text-pencil border border-ink/12"
+                      }`} style={isCurrent ? { backgroundColor: accent } : undefined}>
+                        {stg.stage}
+                      </div>
+                      <span className="font-sans text-base font-semibold text-ink">{stg.stageName}</span>
                     </div>
-                    <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                      Stage {stg.stage}
+                    <span className="font-mono text-xs text-pencil">
+                      ~{stg.totalWeeks >= 52 ? `${Math.round(stg.totalWeeks / 4)} mo` : `${stg.totalWeeks} wk`}
                     </span>
                   </div>
 
-                  {/* Stage name */}
-                  <p className="font-semibold text-ink text-sm mb-1">
-                    {stg.stageName}
-                  </p>
-
-                  {/* Duration */}
-                  <p className="font-sans text-sm text-pencil mb-3">
-                    {durationLabel}
-                  </p>
-
-                  {/* Cert names */}
-                  <div className="space-y-1 mb-3">
-                    {certsInStage.map((cert) => (
-                      <p
-                        key={cert.id}
-                        className="text-xs text-pencil truncate"
-                        title={cert.name}
+                  {/* Cert list — each clickable */}
+                  <div className="border-t border-ink/5">
+                    {stg.certs.map((cert, ci) => (
+                      <Link key={cert.id}
+                        to={`/fields/${profile.field}/certs/${cert.id}`}
+                        className={`group flex items-center justify-between px-5 py-3 transition-colors hover:bg-paper/60 ${
+                          ci < stg.certs.length - 1 ? "border-b border-ink/[0.04]" : ""
+                        }`}
                       >
-                        {cert.name}
-                      </p>
+                        <div className="min-w-0">
+                          <p className="font-sans text-sm font-semibold text-ink group-hover:text-ink truncate transition-colors">
+                            {cert.name}
+                          </p>
+                          <p className="font-sans text-xs text-pencil mt-0.5">
+                            {cert.provider}
+                            {cert.costPln > 0 && <> &middot; {cert.costPln.toLocaleString()} PLN</>}
+                            {cert.costPln === 0 && <> &middot; Free</>}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2.5 shrink-0 ml-3">
+                          <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                            cert.difficulty === "beginner" ? "bg-emerald-50 text-emerald-600" :
+                            cert.difficulty === "intermediate" ? "bg-amber-50 text-amber-600" :
+                            cert.difficulty === "advanced" ? "bg-orange-50 text-orange-600" :
+                            "bg-red-50 text-red-600"
+                          }`}>
+                            {cert.difficulty}
+                          </span>
+                          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" className="text-pencil/30 group-hover:text-ink/50 transition-colors">
+                            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                      </Link>
                     ))}
                   </div>
 
-                  {/* Active badge + mini progress */}
-                  {isActive && (
-                    <div>
-                      <div className="h-[3px] w-full rounded-full bg-faint overflow-hidden mb-2">
-                        <div
-                          className="h-full rounded-full bg-rust"
-                          style={{
-                            width: `${Math.max(5, (completedLessons / Math.max(totalLessons, 1)) * 100)}%`,
-                            animation: "fillBar 1s ease-out 0.8s both",
-                          }}
-                        />
-                      </div>
-                      <span className="inline-block font-sans text-xs font-semibold uppercase tracking-wide text-rust">
-                        In Progress
-                      </span>
+                  {isCurrent && (
+                    <div className="px-5 py-2.5 border-t border-ink/5">
+                      <span className="font-sans text-xs font-semibold uppercase tracking-wider" style={{ color: accent }}>In Progress</span>
                     </div>
                   )}
                 </div>
@@ -583,160 +549,69 @@ export default function Dashboard() {
             })}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* ═══ 4. BOTTOM ROW: SKILLS + OPPORTUNITIES ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* ── Your Skills ── */}
-        <div
-          ref={skillsReveal.ref}
-          className="transition-all duration-700"
-          style={{
-            opacity: skillsReveal.isVisible ? 1 : 0,
-            transform: skillsReveal.isVisible ? "translateY(0)" : "translateY(20px)",
-          }}
-        >
-          <p className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil mb-5">
-            Your Skills
-          </p>
 
-          <div className="divide-y divide-faint">
-            {relevantSkills.map((skill) => {
-              const sp = getSkillProgress(skill.id);
-              const status = getSkillStatus(skill);
-              const progressPct =
-                sp.total > 0 ? (sp.completed / sp.total) * 100 : 0;
-
-              return (
-                <Link
-                  key={skill.id}
-                  to={`/skills/${skill.slug}`}
-                  className="group block py-4 transition-colors duration-200 hover:bg-paper/50 -mx-2 px-2 rounded-lg"
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="font-semibold text-sm text-ink group-hover:text-rust transition-colors">
-                      {skill.name}
-                    </p>
-                    {status === "active" && (
-                      <span className="font-sans text-xs font-semibold uppercase tracking-wide text-merito bg-merito/10 px-2 py-0.5 rounded">
-                        Active
-                      </span>
-                    )}
-                    {status === "completed" && (
-                      <span className="font-sans text-xs font-semibold uppercase tracking-wide text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
-                        Done
-                      </span>
-                    )}
-                    {status === "next" && (
-                      <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                        Up next
-                      </span>
-                    )}
-                    {status === "locked" && (
-                      <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                        Locked
-                      </span>
-                    )}
-                  </div>
-
-                  <p className="font-sans text-sm text-pencil mb-2">
-                    {sp.completed} of {sp.total} lessons &middot;{" "}
-                    {status === "completed"
-                      ? "all done"
-                      : status === "active"
-                        ? "in progress"
-                        : status === "next"
-                          ? "up next"
-                          : "locked"}
-                  </p>
-
-                  {/* Mini progress bar */}
-                  <div className="h-[3px] w-full rounded-full bg-faint overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        status === "completed" ? "bg-emerald-500" : "bg-rust"
-                      }`}
-                      style={{ width: `${progressPct}%` }}
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ── Matching Opportunities ── */}
-        <div
-          ref={jobsReveal.ref}
-          className="transition-all duration-700"
-          style={{
-            opacity: jobsReveal.isVisible ? 1 : 0,
-            transform: jobsReveal.isVisible ? "translateY(0)" : "translateY(20px)",
-          }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <p className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-              Matching Opportunities
-            </p>
-            <Link
-              to="/jobs"
-              className="group flex items-center gap-1 font-sans text-sm font-semibold text-rust hover:underline"
-            >
-              See all
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"
-                className="transition-transform duration-200 group-hover:translate-x-0.5">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2"
-                  strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-          </div>
-
-          <div className="divide-y divide-faint">
-            {displayJobs.map((job) => {
-              const levelLabel =
-                job.experienceLevel === "junior"
-                  ? "Junior"
-                  : job.experienceLevel === "mid"
-                    ? "Mid"
-                    : "Senior";
-
-              return (
-                <Link
-                  key={job.id}
-                  to={`/jobs/${job.id}`}
-                  className="group grid gap-3 py-4 transition-colors duration-200 hover:bg-paper/50 -mx-2 px-2 rounded-lg"
-                  style={{ gridTemplateColumns: "50px 1fr auto" }}
-                >
-                  <div className="flex items-start pt-0.5">
-                    <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
-                      {levelLabel}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm text-ink group-hover:text-rust transition-colors">
-                      {job.title}
-                    </p>
-                    <p className="text-xs text-pencil mt-0.5">
-                      {job.company} &middot; {job.location}
-                    </p>
-                  </div>
-                  <div className="flex items-start">
-                    <span className="font-sans text-sm font-semibold text-rust whitespace-nowrap">
-                      {job.salaryMin.toLocaleString()} PLN
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-
-            {displayJobs.length === 0 && (
-              <p className="py-6 text-center text-sm text-pencil">
-                No matching opportunities yet. Complete more skills to unlock jobs.
-              </p>
+      {/* ═══════════════════════════════════════════════════════════
+          JOBS: Full-width career opportunities
+          ═══════════════════════════════════════════════════════════ */}
+      <section
+        ref={jobsReveal.ref}
+        className="transition-all duration-700"
+        style={{
+          opacity: jobsReveal.isVisible ? 1 : 0,
+          transform: jobsReveal.isVisible ? "translateY(0)" : "translateY(16px)",
+          animation: "sIn .6s ease-out .2s both",
+        }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <span className="font-sans text-sm font-semibold uppercase tracking-wider text-pencil">Career Opportunities</span>
+            {matchingJobs.length > 0 && (
+              <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full"
+                style={{ backgroundColor: `${accent}12`, color: accent }}>
+                {matchingJobs.length} matches
+              </span>
             )}
           </div>
+          <Link to="/jobs" className="group flex items-center gap-1 font-sans text-xs font-semibold hover:underline" style={{ color: accent }}>
+            Browse all jobs
+            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-0.5">
+              <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </Link>
         </div>
-      </div>
+
+        {matchingJobs.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {matchingJobs.slice(0, 6).map((job, i) => {
+              const lvl = experienceLevelColors[job.experienceLevel] || experienceLevelColors.junior;
+              return (
+                <Link key={job.id} to={`/jobs/${job.id}`}
+                  className="group bg-card border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,.06)] rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2.5">
+                    <span className={`inline-block rounded-full border px-2 py-0.5 font-sans text-xs font-semibold ${lvl.bg} ${lvl.text} ${lvl.border}`}>
+                      {lvl.label}
+                    </span>
+                    <span className="font-mono text-base font-bold shrink-0" style={{ color: accent }}>
+                      {(job.salaryMin / 1000).toFixed(0)}–{(job.salaryMax / 1000).toFixed(0)}k
+                    </span>
+                  </div>
+                  <h3 className="font-sans text-base font-bold text-ink group-hover:text-ink leading-tight">{job.title}</h3>
+                  <p className="font-sans text-sm text-pencil mt-1">{job.company}</p>
+                  <p className="font-sans text-xs text-pencil mt-0.5">{job.location} &middot; {job.type}</p>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bg-card border-[1.5px] border-ink/12 rounded-xl p-6 text-center">
+            <p className="font-sans text-sm font-semibold text-ink">Complete more skills to unlock job matches</p>
+            <p className="font-sans text-xs text-pencil mt-1">Your skills connect directly to real job listings.</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

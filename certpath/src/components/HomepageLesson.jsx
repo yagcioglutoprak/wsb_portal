@@ -1,386 +1,708 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 
-// --- Icons (Raw SVGs to ensure zero dependencies) ---
-const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12"></polyline>
-  </svg>
-);
-
-const PlayIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-  </svg>
-);
-
-const RobotIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="5" width="18" height="14" rx="3" fill="white" fillOpacity="0.2" />
-    <circle cx="8" cy="11" r="1" fill="white" stroke="none" />
-    <circle cx="16" cy="11" r="1" fill="white" stroke="none" />
-    <path d="M10 15h4" />
-    <path d="M12 5V3" />
-    <path d="M10 3h4" />
-  </svg>
-);
-
-const PackageIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2a9d8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-    <path d="m3.3 7 8.7 5 8.7-5" />
-    <path d="M12 22V12" />
-  </svg>
-);
-
-// --- Constants & Data ---
-const CELL_SIZE = 56;
-const COLS = 5;
-const ROWS = 4;
-
-const MAPS = [
-  // Scene 1 (teach): robot at (0,0), pkg at top-right, no walls
-  { pkg: { x: 4, y: 0 }, walls: [] },
-  // Scene 2 (do): same — robot moves right to package
-  { pkg: { x: 4, y: 0 }, walls: [] },
-  // Scene 3 (teach): same map as Scene 4 so user sees the walls before interacting
-  { pkg: { x: 1, y: 3 }, walls: [{ x: 2, y: 0 }] },
-  // Scene 4 (do): robot goes right, hits wall at (2,0), turns right (down), goes to (2,3), turns right (left)...
-  // With "turn right": robot spirals clockwise. Pkg at (4,3): right to wall→turn right(down)→down to (1,3)→...
-  // Simpler: wall at col 2 row 0, pkg at (1,3). Right→hit wall→turn right(down)→go down to (1,3)=pkg!
-  { pkg: { x: 1, y: 3 }, walls: [{ x: 2, y: 0 }] },
-  // Scene 5 (do): needs both turn right AND turn left to fire
-  // Walls: (2,0) blocks row 0, (1,2) blocks col 1 row 2, (0,1) blocks left when facing down at (1,1)
-  // Path: right→(1,0)→wall(2,0)→right clear(1,1)→turnR(down)→(1,1)→wall(1,2) AND right(0,1) wall→turnL(right)→(2,1)→(3,1)→(4,1)→OOB→right(4,2)clear→turnR(down)→(4,2)→(4,3)=pkg
-  // Correct answers: answers[0]="turn right", answers[1]="turn left"
-  { pkg: { x: 4, y: 3 }, walls: [{ x: 2, y: 0 }, { x: 1, y: 2 }, { x: 0, y: 1 }] },
-  // Scene 6 (teach): summary, grid hidden
-  { pkg: { x: 0, y: 0 }, walls: [] },
+const MAZE = [
+  [0, 0, 0, 1, 0, 0, 0],
+  [1, 1, 0, 1, 0, 1, 0],
+  [0, 0, 0, 0, 0, 1, 0],
+  [0, 1, 1, 1, 0, 0, 0],
+  [0, 0, 0, 1, 0, 1, 1],
+  [1, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0]
 ];
 
-const SCENES = [
-  { title: "Meet the robot", text: "This robot delivers packages. But it can\u2019t think for itself \u2014 it needs rules. You\u2019ll write them using if and else.", type: "teach" },
-  { title: "Your first rule", text: "The robot checks what\u2019s ahead. If the path is clear, it moves forward.", type: "do" },
-  { title: "But what if there\u2019s a wall?", text: "Real paths aren\u2019t always clear. When the robot hits a wall, it needs a backup plan. That\u2019s what else is for.", type: "teach" },
-  { title: "Write the rule", text: "Click or drag the right action into the else block to get the robot around the wall.", type: "do" },
-  { title: "Level up: nested conditions", text: "Now there are TWO walls. The robot needs to check both directions.", type: "do" },
-  { title: "What you just learned", text: "You just wrote a program. Every app, game, and website uses if/else logic like this \u2014 from Netflix recommendations to self-driving cars.", type: "teach" },
-];
+function getNeighbors(r, c) {
+  // Right, Down, Left, Up
+  const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]]; 
+  const valid = [];
+  for (const [dr, dc] of dirs) {
+    const nr = r + dr, nc = c + dc;
+    if (nr >= 0 && nr < 7 && nc >= 0 && nc < 7 && MAZE[nr][nc] === 0) {
+      valid.push([nr, nc]);
+    }
+  }
+  return valid;
+}
 
-// --- Inline keyframe styles (static, no XSS risk) ---
-const KEYFRAME_STYLES = [
-  '@keyframes fade-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }',
-  '.animate-fade-in { animation: fade-in 0.3s ease-out forwards; }',
-  '@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }',
-].join('\n');
-
-export default function HomepageLesson() {
-  const [step, setStep] = useState(0);
-  const [robotState, setRobotState] = useState({ x: 0, y: 0 });
-  const [activeLine, setActiveLine] = useState(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const [simStatus, setSimStatus] = useState('idle');
-  const [answers, setAnswers] = useState([null, null]);
-  const activeSimId = useRef(0);
-  const styleRef = useRef(null);
-
-  // Inject keyframe styles once
-  useEffect(() => {
-    if (styleRef.current) return;
-    const style = document.createElement('style');
-    style.textContent = KEYFRAME_STYLES;
-    document.head.appendChild(style);
-    styleRef.current = style;
-    return () => { if (style.parentNode) style.parentNode.removeChild(style); };
-  }, []);
-
-  useEffect(() => {
-    activeSimId.current = Date.now();
-    setRobotState({ x: 0, y: 0 });
-    setActiveLine(null);
-    setIsRunning(false);
-    setSimStatus('idle');
-    setAnswers([null, null]);
-  }, [step]);
-
-  const getForward = (x, y, d) => {
-    if (d === 0) return { x, y: y - 1 };
-    if (d === 1) return { x: x + 1, y };
-    if (d === 2) return { x, y: y + 1 };
-    return { x: x - 1, y };
-  };
-
-  const isClear = (nx, ny, walls) => nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !walls.some(w => w.x === nx && w.y === ny);
-
-  const runSimulation = async () => {
-    if (isRunning) return;
-    if (step === 3 && !answers[0]) return;
-    if (step === 4 && (!answers[0] || !answers[1])) return;
-
-    const simId = Date.now();
-    activeSimId.current = simId;
-    setIsRunning(true);
-    setSimStatus('running');
-
-    let cx = 0, cy = 0, dir = 1;
-    let succeeded = false;
-    setRobotState({ x: 0, y: 0 });
-    setActiveLine(null);
-
-    const wait = (ms) => new Promise(res => setTimeout(res, ms));
-    await wait(300);
-
-    let iterations = 0;
-    const map = MAPS[step];
-
-    while (iterations < 35) {
-      if (activeSimId.current !== simId) return;
-      iterations++;
-
-      if (cx === map.pkg.x && cy === map.pkg.y) { succeeded = true; setSimStatus('success'); break; }
-
-      setActiveLine(1);
-      await wait(400);
-      if (activeSimId.current !== simId) return;
-
-      const fwd = getForward(cx, cy, dir);
-      const fwdClear = isClear(fwd.x, fwd.y, map.walls);
-
-      if (fwdClear) {
-        setActiveLine(2);
-        await wait(350);
-        cx = fwd.x; cy = fwd.y;
-        setRobotState({ x: cx, y: cy });
-        await wait(350);
-      } else {
-        if (step === 1 || step === 2) { setSimStatus('error'); break; }
-
-        if (step === 3) {
-          setActiveLine(3); await wait(300);
-          setActiveLine(4); await wait(350);
-          const act = answers[0];
-          if (act === 'turn right') { dir = (dir + 1) % 4; }
-          else if (act === 'turn left') { dir = (dir + 3) % 4; }
-          else { setSimStatus('error'); break; }
-          await wait(200);
-        } else if (step === 4) {
-          setActiveLine(3); await wait(350);
-          const rightDir = (dir + 1) % 4;
-          const rFwd = getForward(cx, cy, rightDir);
-
-          if (isClear(rFwd.x, rFwd.y, map.walls)) {
-            setActiveLine(4); await wait(350);
-            const act = answers[0];
-            if (act === 'turn right') { dir = (dir + 1) % 4; }
-            else if (act === 'turn left') { dir = (dir + 3) % 4; }
-            else { setSimStatus('error'); break; }
-          } else {
-            setActiveLine(5); await wait(250);
-            setActiveLine(6); await wait(350);
-            const act = answers[1];
-            if (act === 'turn left') { dir = (dir + 3) % 4; }
-            else if (act === 'turn right') { dir = (dir + 1) % 4; }
-            else { setSimStatus('error'); break; }
-          }
-          await wait(200);
-        }
+function solveMaze(isBFS) {
+  const start = [0, 0];
+  const goal = [6, 6];
+  const frontier = [{ pos: start, path: [start] }];
+  const visited = new Set();
+  visited.add('0,0');
+  
+  const order = [];
+  let finalPath = [];
+  
+  while (frontier.length > 0) {
+    const current = isBFS ? frontier.shift() : frontier.pop();
+    const { pos, path } = current;
+    order.push(pos);
+    
+    if (pos[0] === goal[0] && pos[1] === goal[1]) {
+      finalPath = path;
+      break;
+    }
+    
+    const neighbors = getNeighbors(pos[0], pos[1]);
+    for (const [nr, nc] of neighbors) {
+      const key = `${nr},${nc}`;
+      if (!visited.has(key)) {
+        visited.add(key);
+        frontier.push({ pos: [nr, nc], path: [...path, [nr, nc]] });
       }
     }
+  }
+  
+  return { order, path: finalPath };
+}
 
-    if (activeSimId.current === simId) {
-      if (!succeeded) {
-        setSimStatus('error');
-        setTimeout(() => {
-          if (activeSimId.current === simId) {
-            setSimStatus('idle');
-            setRobotState({ x: 0, y: 0 });
-          }
-        }, 2000);
-      }
-      setIsRunning(false);
-      setActiveLine(null);
-    }
-  };
+const bfsData = solveMaze(true);
+const dfsData = solveMaze(false);
 
-  const handleAnswerPlace = (actionStr) => {
-    if (isRunning) return;
-    if (step === 3) setAnswers([actionStr, null]);
-    else if (step === 4) {
-      if (!answers[0]) setAnswers([actionStr, answers[1]]);
-      else if (!answers[1]) setAnswers([answers[0], actionStr]);
-      else setAnswers([answers[0], actionStr]);
-    }
-  };
+const ITEM_COLORS = {
+  1: 'bg-[#f4a261] shadow-[0_4px_12px_rgba(244,162,97,0.3)]',
+  2: 'bg-[#e76f51] shadow-[0_4px_12px_rgba(231,111,81,0.3)]',
+  3: 'bg-[#2a9d8f] shadow-[0_4px_12px_rgba(42,157,143,0.3)]',
+  4: 'bg-[#8338ec] shadow-[0_4px_12px_rgba(131,56,236,0.3)]'
+};
 
-  const removeAnswer = (idx) => {
-    if (isRunning) return;
-    const newAnswers = [...answers];
-    newAnswers[idx] = null;
-    setAnswers(newAnswers);
-  };
+function Scene1({ onComplete }) {
+  const [items, setItems] = useState([]);
+  const [exitingItem, setExitingItem] = useState(null);
 
-  const handleDragStart = (e, actionStr) => { e.dataTransfer.setData('action', actionStr); };
+  useEffect(() => {
+    const t1 = setTimeout(() => setItems([1]), 200);
+    const t2 = setTimeout(() => setItems([2, 1]), 500);
+    const t3 = setTimeout(() => setItems([3, 2, 1]), 800);
+    const t4 = setTimeout(() => setItems([4, 3, 2, 1]), 1100);
+    
+    // Queue: first in (1) is first out
+    const t5 = setTimeout(() => setExitingItem(1), 1800);
+    
+    const t6 = setTimeout(() => onComplete(), 3000);
 
-  const handleDrop = (e, idx) => {
-    e.preventDefault();
-    if (isRunning) return;
-    const actionStr = e.dataTransfer.getData('action');
-    if (actionStr) {
-      const newAnswers = [...answers];
-      newAnswers[idx] = actionStr;
-      setAnswers(newAnswers);
-    }
-  };
+    return () => { [t1, t2, t3, t4, t5, t6].forEach(clearTimeout); };
+  }, [onComplete]);
 
-  const map = MAPS[step];
-  const scene = SCENES[step];
-  const runBtnDisabled = isRunning || (step === 3 && !answers[0]) || (step === 4 && (!answers[0] || !answers[1]));
-
-  const gridCells = Array.from({ length: ROWS * COLS }, (_, i) => {
-    const x = i % COLS;
-    const y = Math.floor(i / COLS);
-    const isWall = map.walls.some(w => w.x === x && w.y === y);
-    const isPkg = map.pkg.x === x && map.pkg.y === y;
-    const isPath = step === 1 && y === 0 && x <= 4;
-
-    return (
-      <div key={i} className={`w-[56px] h-[56px] border border-black/5 absolute flex items-center justify-center ${isWall ? 'bg-[#1a1a2e]' : isPath ? 'bg-rust/10' : 'bg-white'}`} style={{ left: x * CELL_SIZE, top: y * CELL_SIZE }}>
-        {isWall && <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,#fff_8px,#fff_16px)]" />}
-        {isPkg && (
-          <div className="relative z-10 animate-bounce" style={{ animationDuration: '2s' }}>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${simStatus === 'success' ? 'bg-[#2a9d8f] scale-110 transition-transform' : 'bg-white border-2 border-[#2a9d8f]'}`}>
-              {simStatus === 'success' ? <CheckIcon /> : <PackageIcon />}
-            </div>
-          </div>
-        )}
+  return (
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
+         <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-[#e8ded1] p-2 bg-[#fdf8f5]">
+             {items.map(id => (
+                 <div key={id} className={`w-16 min-h-[32px] ${ITEM_COLORS[id]} text-white font-bold flex items-center justify-center rounded-lg ${exitingItem === id ? 'translate-y-16 opacity-0 transition-all duration-300 ease-in' : 'animate-pop'}`}>
+                     {id}
+                 </div>
+             ))}
+         </div>
+         <div className="text-xs font-bold text-pencil uppercase tracking-wide">FIFO — First In, First Out</div>
       </div>
-    );
-  });
-
-  const CodeLine = ({ n, active, children }) => (
-    <div className={`flex items-center px-4 py-1.5 transition-colors duration-200 ${active ? 'bg-rust/30' : 'bg-transparent'}`}>
-      <span className="w-5 shrink-0 text-white/30 text-right mr-4 text-xs select-none">{n}</span>
-      <div className="flex-1 whitespace-nowrap">{children}</div>
+      <div className="w-full lg:w-7/12 flex flex-col justify-center">
+         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">CONCEPT</span>
+         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">Meet the Queue</h3>
+         <p className="text-base text-ink/70 leading-relaxed">
+           A <strong className="text-[#f4a261] underline underline-offset-4 decoration-2">queue</strong> is first in, first out — just like a line at a coffee shop. The person who arrived first gets served first. BFS uses a queue to explore a maze layer by layer.
+         </p>
+      </div>
     </div>
   );
+}
 
-  const DropZone = ({ idx }) => {
-    const val = answers[idx];
-    return (
-      <div onClick={() => removeAnswer(idx)} onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, idx)}
-        className={`inline-flex items-center justify-center min-w-[140px] h-8 px-3 rounded-lg text-xs font-mono transition-all ${val ? 'bg-rust/20 border-2 border-rust text-white cursor-pointer hover:border-[#dc2626] hover:opacity-80' : 'border-2 border-dashed border-white/20 text-white/40 cursor-pointer hover:border-white/50 bg-white/5'}`}>
-        {val || "drop action here"}
+function Scene2({ onComplete }) {
+  const [items, setItems] = useState([]);
+  const [exitingItem, setExitingItem] = useState(null);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setItems([1]), 200);
+    const t2 = setTimeout(() => setItems([2, 1]), 500);
+    const t3 = setTimeout(() => setItems([3, 2, 1]), 800);
+    const t4 = setTimeout(() => setItems([4, 3, 2, 1]), 1100);
+    
+    // Stack: last in (4) is first out
+    const t5 = setTimeout(() => setExitingItem(4), 1800);
+    
+    const t6 = setTimeout(() => onComplete(), 3000);
+
+    return () => { [t1, t2, t3, t4, t5, t6].forEach(clearTimeout); };
+  }, [onComplete]);
+
+  return (
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+      <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
+         <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-b-2 border-[#e8ded1] rounded-b-xl p-2 bg-[#fdf8f5]">
+             {items.map(id => (
+                 <div key={id} className={`w-16 min-h-[32px] ${ITEM_COLORS[id]} text-white font-bold flex items-center justify-center rounded-lg ${exitingItem === id ? '-translate-y-16 opacity-0 transition-all duration-300 ease-in' : 'animate-pop'}`}>
+                     {id}
+                 </div>
+             ))}
+         </div>
+         <div className="text-xs font-bold text-pencil uppercase tracking-wide">LIFO — Last In, First Out</div>
+      </div>
+      <div className="w-full lg:w-7/12 flex flex-col justify-center">
+         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">CONCEPT</span>
+         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">Now the Stack</h3>
+         <p className="text-base text-ink/70 leading-relaxed">
+           A <strong className="text-[#8338ec] underline underline-offset-4 decoration-2">stack</strong> is last in, first out — like a pile of plates. The most recent item added is the first one removed. DFS uses a stack to dive deep into one path before backtracking.
+         </p>
+      </div>
+    </div>
+  );
+}
+
+function Scene3({ runMode, onComplete }) {
+  const [phase, setPhase] = useState("idle");
+  const [visitedIndex, setVisitedIndex] = useState(-1);
+  const [pathIndex, setPathIndex] = useState(-1);
+  const [activeLine, setActiveLine] = useState(null);
+  
+  const dropZone1Ref = useRef(null);
+  const dropZone2Ref = useRef(null);
+  const dropZone3Ref = useRef(null);
+
+  const pillSetRef = useRef(null);
+  const pillPopBfsRef = useRef(null);
+  const pillPopDfsRef = useRef(null);
+  const pillVisitedRef = useRef(null);
+  const movingPillContainerRef = useRef(null);
+  
+  const [pill1Style, setPill1Style] = useState({ opacity: 0 });
+  const [pill2Style, setPill2Style] = useState({ opacity: 0 });
+  const [pill3Style, setPill3Style] = useState({ opacity: 0 });
+
+  const data = runMode === 'bfs' ? bfsData : dfsData;
+
+  const animatePill = (sourceNode, targetNode, setStyle) => {
+    const containerNode = movingPillContainerRef.current;
+    if (sourceNode && targetNode && containerNode) {
+      const srcRect = sourceNode.getBoundingClientRect();
+      const tgtRect = targetNode.getBoundingClientRect();
+      const containerRect = containerNode.getBoundingClientRect();
+      
+      setStyle({
+        opacity: 1,
+        transform: `translate(${srcRect.left - containerRect.left}px, ${srcRect.top - containerRect.top}px)`,
+        transition: 'none'
+      });
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setStyle({
+            opacity: 1,
+            transform: `translate(${tgtRect.left - containerRect.left + 2}px, ${tgtRect.top - containerRect.top + 1}px)`,
+            transition: 'transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1)'
+          });
+        });
+      });
+    }
+  };
+
+  useEffect(() => {
+    let timer;
+    if (phase === "idle") {
+      timer = setTimeout(() => setPhase("anim_pill_1"), 1000);
+    } else if (phase === "anim_pill_1") {
+      animatePill(pillSetRef.current, dropZone1Ref.current, setPill1Style);
+      timer = setTimeout(() => setPhase("anim_pill_2"), 900);
+    } else if (phase === "anim_pill_2") {
+      const srcNode = runMode === 'bfs' ? pillPopBfsRef.current : pillPopDfsRef.current;
+      animatePill(srcNode, dropZone2Ref.current, setPill2Style);
+      timer = setTimeout(() => setPhase("anim_pill_3"), 900);
+    } else if (phase === "anim_pill_3") {
+      animatePill(pillVisitedRef.current, dropZone3Ref.current, setPill3Style);
+      timer = setTimeout(() => setPhase("running"), 900);
+    } else if (phase === "done") {
+      timer = setTimeout(() => setPhase("reset"), 2500);
+    } else if (phase === "reset") {
+      setVisitedIndex(-1);
+      setPathIndex(-1);
+      setActiveLine(null);
+      setPill1Style({ opacity: 0 });
+      setPill2Style({ opacity: 0 });
+      setPill3Style({ opacity: 0 });
+      timer = setTimeout(() => {
+        onComplete();
+      }, 500);
+    }
+    return () => clearTimeout(timer);
+  }, [phase, runMode, onComplete]);
+
+  useEffect(() => {
+    let cellTimer;
+    let lineTimer;
+    
+    if (phase === "running") {
+      const order = data.order;
+      
+      let curVisIdx = -1;
+      cellTimer = setInterval(() => {
+        curVisIdx++;
+        if (curVisIdx < order.length) {
+          setVisitedIndex(curVisIdx);
+        } else {
+          clearInterval(cellTimer);
+          clearInterval(lineTimer);
+          setActiveLine(7);
+          setPhase("path");
+        }
+      }, 120);
+
+      const loopLines = [4, 5, 6, 8, 9, 10];
+      let lineIdx = 0;
+      setActiveLine(loopLines[0]);
+      lineTimer = setInterval(() => {
+        lineIdx = (lineIdx + 1) % loopLines.length;
+        setActiveLine(loopLines[lineIdx]);
+      }, 300);
+      
+    } else if (phase === "path") {
+      const path = data.path;
+      
+      let curPathIdx = -1;
+      cellTimer = setInterval(() => {
+        curPathIdx++;
+        if (curPathIdx < path.length) {
+          setPathIndex(curPathIdx);
+        } else {
+          clearInterval(cellTimer);
+          setPhase("done");
+        }
+      }, 80);
+    }
+    
+    return () => {
+      clearInterval(cellTimer);
+      clearInterval(lineTimer);
+    };
+  }, [phase, data]);
+
+  const visitedSet = useMemo(() => {
+    const set = new Set();
+    const order = data.order;
+    for (let i = 0; i <= visitedIndex && i < order.length; i++) {
+      set.add(`${order[i][0]},${order[i][1]}`);
+    }
+    return set;
+  }, [data, visitedIndex]);
+
+  const pathSet = useMemo(() => {
+    const set = new Set();
+    const path = data.path;
+    for (let i = 0; i <= pathIndex && i < path.length; i++) {
+      set.add(`${path[i][0]},${path[i][1]}`);
+    }
+    return set;
+  }, [data, pathIndex]);
+
+  const renderCodeLine = (lineNum) => {
+    const isAct = activeLine === lineNum;
+    const baseClass = "px-2 py-0.5 transition-colors duration-150 flex items-center min-h-[28px]";
+    const actClass = isAct ? "bg-[rgba(40,86,166,0.3)] border-l-2 border-[#2856a6]" : "border-l-2 border-transparent";
+    
+    const wrapper = (children) => (
+      <div className={`${baseClass} ${actClass}`}>
+        <span className="text-white/30 w-6 shrink-0 select-none">{lineNum}</span>
+        <div className="flex items-center whitespace-pre">{children}</div>
       </div>
     );
+
+    switch (lineNum) {
+      case 1: return wrapper(<><span className="text-[#2a9d8f] font-bold">def</span> search(maze, start, goal):</>);
+      case 2: return wrapper(<>  frontier = [start]</>);
+      case 3: return wrapper(
+        <>
+          {"  visited = "}
+          <span 
+            ref={dropZone1Ref}
+            className={`inline-flex items-center justify-center w-[40px] h-[22px] border-2 border-dashed mx-0.5 align-middle rounded-md ${
+              ["idle", "anim_pill_1", "reset"].includes(phase) ? "border-white/30" : "border-transparent"
+            }`} 
+          >
+            {!["idle", "anim_pill_1", "reset"].includes(phase) && (
+              <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+                set
+              </div>
+            )}
+          </span>
+          ()
+        </>
+      );
+      case 4: return wrapper(<>  <span className="text-[#2a9d8f] font-bold">while</span> frontier:</>);
+      case 5: return wrapper(
+        <>
+          {"    current = frontier"}
+          <span 
+            ref={dropZone2Ref}
+            className={`inline-flex items-center justify-center w-[64px] h-[22px] border-2 border-dashed ml-0.5 align-middle rounded-md ${
+              ["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) ? "border-white/30" : "border-transparent"
+            }`} 
+          >
+            {!["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) && (
+              <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+                {runMode === 'bfs' ? '.pop(0)' : '.pop()'}
+              </div>
+            )}
+          </span>
+        </>
+      );
+      case 6: return wrapper(<>    <span className="text-[#2a9d8f] font-bold mr-1">if</span><span className="bg-[rgba(255,255,255,0.08)] rounded px-1.5 py-0.5">current == goal</span>:</>);
+      case 7: return wrapper(<>      <span className="text-[#2a9d8f] font-bold">return</span> trace_path()</>);
+      case 8: return wrapper(<>    <span className="text-[#2a9d8f] font-bold mr-1">for</span>n <span className="text-[#2a9d8f] font-bold mx-1">in</span>adjacent(current):</>);
+      case 9: return wrapper(
+        <>
+          {"      "}<span className="text-[#2a9d8f] font-bold mr-1">if</span>
+          <span className="bg-[rgba(255,255,255,0.08)] rounded px-1.5 py-[2px] inline-flex items-center">
+            n not in
+            <span 
+              ref={dropZone3Ref}
+              className={`inline-flex items-center justify-center w-[64px] h-[20px] border-2 border-dashed ml-1.5 align-middle rounded-md ${
+                ["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) ? "border-white/30" : "border-transparent"
+              }`} 
+            >
+              {!["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) && (
+                <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] scale-in-center leading-none">
+                  visited
+                </div>
+              )}
+            </span>
+          </span>:
+        </>
+      );
+      case 10: return wrapper(<>        frontier.append(n)</>);
+      default: return null;
+    }
   };
 
   return (
-    <div className="font-sans text-base text-ink w-full max-w-[680px] mx-auto bg-card rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] overflow-hidden">
-      <div className="p-6 pb-4">
-        <h3 className="font-bold text-lg mb-1">{scene.title}</h3>
-        <p className="text-ink/60 text-sm leading-relaxed">{scene.text}</p>
-      </div>
-
-      <div className="px-6 pb-6 flex flex-col sm:flex-row gap-6 items-center sm:items-start justify-center">
-        {step < 5 ? (
-          <>
-            <div className="relative shrink-0 w-[280px] h-[224px] bg-white rounded-xl border-[1.5px] border-ink/12 overflow-hidden shadow-inner">
-              {gridCells}
-              <div className={`absolute w-10 h-10 flex items-center justify-center bg-rust rounded-xl shadow-md z-20 ${isRunning ? 'transition-all duration-300 ease-in-out' : 'transition-all duration-500 ease-out'} ${simStatus === 'error' ? 'animate-[shake_0.4s_ease-in-out] border-2 border-[#dc2626]' : 'border-2 border-transparent'}`}
-                style={{ left: robotState.x * CELL_SIZE + 8, top: robotState.y * CELL_SIZE + 8 }}>
-                <RobotIcon />
-                {simStatus === 'success' && (
-                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-[#2a9d8f] text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm"><CheckIcon /></div>
-                )}
-              </div>
-            </div>
-
-            {scene.type === 'do' && (
-              <div className="flex-1 w-full max-w-[320px] flex flex-col gap-4">
-                <div className="bg-[#1a1a2e] text-white py-4 rounded-xl font-mono text-sm relative overflow-hidden shadow-md">
-                  <CodeLine n={1} active={activeLine === 1}>
-                    <span className="text-[#2a9d8f] font-bold mr-2">if</span>
-                    <span className="bg-white/10 px-2 py-0.5 rounded-md text-white/90">path ahead is clear</span>
-                  </CodeLine>
-                  <CodeLine n={2} active={activeLine === 2}>
-                    <span className="ml-6 text-white/70">move forward</span>
-                  </CodeLine>
-                  {step >= 3 && (
-                    <CodeLine n={3} active={activeLine === 3}>
-                      <span className="text-[#2a9d8f] font-bold">{step === 4 ? 'else if' : 'else'}</span>
-                      {step === 4 && <span className="bg-white/10 px-2 py-0.5 rounded-md text-white/90 ml-2">path right is clear</span>}
-                    </CodeLine>
-                  )}
-                  {step >= 3 && (
-                    <CodeLine n={4} active={activeLine === 4}>
-                      <span className="ml-6"><DropZone idx={0} /></span>
-                    </CodeLine>
-                  )}
-                  {step === 4 && (
-                    <>
-                      <CodeLine n={5} active={activeLine === 5}><span className="text-[#2a9d8f] font-bold">else</span></CodeLine>
-                      <CodeLine n={6} active={activeLine === 6}><span className="ml-6"><DropZone idx={1} /></span></CodeLine>
-                    </>
-                  )}
-                </div>
-
-                {(step === 3 || step === 4) && (
-                  <div className="flex flex-wrap gap-2">
-                    {['turn right', 'turn left', 'move backward'].map((act) => (
-                      <button key={act} draggable onDragStart={(e) => handleDragStart(e, act)} onClick={() => handleAnswerPlace(act)} disabled={isRunning}
-                        className="px-3 py-1.5 bg-white border-[1.5px] border-ink/12 rounded-lg font-mono text-xs shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:-translate-y-0.5 hover:shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
-                        {act}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between mt-auto pt-2">
-                  <button onClick={runSimulation} disabled={runBtnDisabled}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${simStatus === 'success' ? 'bg-[#2a9d8f] text-white shadow-md' : runBtnDisabled ? 'bg-paper text-pencil cursor-not-allowed' : 'bg-rust text-white shadow-md hover:bg-rust/90 active:scale-95'} ${!isRunning && !runBtnDisabled && simStatus === 'idle' && step < 3 ? 'animate-pulse' : ''}`}>
-                    {simStatus === 'success' ? <><CheckIcon /> Done</> : isRunning ? <span className="flex items-center gap-2 opacity-80"><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Running</span> : <><PlayIcon /> Run</>}
-                  </button>
-                  <div className="text-xs font-semibold px-2">
-                    {simStatus === 'success' && <span className="text-[#2a9d8f] animate-fade-in">Perfect!</span>}
-                    {simStatus === 'error' && <span className="text-[#dc2626] animate-fade-in">Got stuck. Trying again...</span>}
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="w-full flex flex-col items-center justify-center py-6 text-center animate-fade-in">
-            <div className="w-16 h-16 bg-[#2a9d8f]/10 rounded-2xl flex items-center justify-center mb-6">
-              <div className="text-[#2a9d8f] scale-150"><CheckIcon /></div>
-            </div>
-            <div className="max-w-sm w-full bg-white border-[1.5px] border-ink/12 rounded-xl p-5 text-left mb-8 shadow-sm">
-              <ul className="space-y-4">
-                {[['if', 'checks a condition'], ['else', 'runs when false'], ['else if', 'checks another option']].map(([kw, desc]) => (
-                  <li key={kw} className="flex items-start gap-3">
-                    <div className="mt-0.5 text-[#2a9d8f]"><CheckIcon /></div>
-                    <div><span className="font-mono font-bold text-[#2a9d8f] text-sm mr-2">{kw}</span><span className="text-sm text-ink/60">{desc}</span></div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <a href="/onboarding" className="bg-rust text-white rounded-xl px-8 py-3.5 font-bold text-sm shadow-md hover:bg-rust/90 transition-colors active:scale-95 mb-3 inline-block">Start your path →</a>
-            <p className="text-xs text-pencil font-medium">This is 1 of 48 interactive lessons in the Cybersecurity track</p>
-          </div>
-        )}
-      </div>
-
-      <div className="border-t-[1.5px] border-ink/5 p-4 bg-paper/50 flex items-center justify-between">
-        <button onClick={() => setStep(Math.max(0, step - 1))} className={`text-sm font-semibold px-2 py-1 transition-opacity ${step === 0 ? 'opacity-0 pointer-events-none' : 'text-pencil hover:text-ink'}`}>← Back</button>
-        <div className="flex gap-2">
-          {SCENES.map((_, i) => <div key={i} className={`w-2 h-2 rounded-full transition-colors duration-300 ${i === step ? 'bg-rust' : i < step ? 'bg-[#2a9d8f]' : 'bg-ink/10'}`} />)}
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+      {/* Moving Pill Overlay */}
+      <div ref={movingPillContainerRef} className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
+        <div 
+          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[32px] ${phase === 'anim_pill_1' ? 'opacity-100' : 'opacity-0'}`}
+          style={pill1Style}
+        >
+          set
         </div>
-        {(() => {
-          const isTeach = scene.type === 'teach';
-          const canNext = step < 5 && (isTeach || simStatus === 'success');
-          return (
-            <button onClick={() => setStep(Math.min(SCENES.length - 1, step + 1))} disabled={!canNext}
-              className={`text-sm font-semibold px-2 py-1 transition-opacity ${step >= 5 ? 'opacity-0 pointer-events-none' : ''} ${canNext ? 'text-rust hover:text-rust/80' : 'text-ink/20 cursor-not-allowed'}`}>Next →</button>
-          );
-        })()}
+        <div 
+          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_2' ? 'opacity-100' : 'opacity-0'}`}
+          style={pill2Style}
+        >
+          {runMode === 'bfs' ? '.pop(0)' : '.pop()'}
+        </div>
+        <div 
+          className={`absolute top-0 left-0 bg-white border-[1.5px] border-ink/12 rounded-md px-1.5 py-[1px] font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] flex items-center justify-center min-w-[48px] ${phase === 'anim_pill_3' ? 'opacity-100' : 'opacity-0'}`}
+          style={pill3Style}
+        >
+          visited
+        </div>
+      </div>
+
+      {/* Left: Maze */}
+      <div className="w-full lg:w-5/12 flex flex-col items-center justify-between gap-6">
+        <div className="grid grid-cols-7 gap-1 w-full max-w-[240px] p-2 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1]">
+          {MAZE.map((row, r) => row.map((cell, c) => {
+            const isWall = cell === 1;
+            const isStart = r === 0 && c === 0;
+            const isGoal = r === 6 && c === 6;
+            const isPath = pathSet.has(`${r},${c}`);
+            const isVisited = visitedSet.has(`${r},${c}`);
+            
+            return (
+              <div key={`${r}-${c}`} className={`aspect-square rounded relative flex items-center justify-center overflow-hidden ${isWall ? 'bg-[#2b2d42] shadow-inner' : 'bg-white border border-[#edf2f4]'}`}>
+                {!isWall && isVisited && !isPath && (
+                  <div className={`absolute inset-0 ${runMode === 'bfs' ? 'bg-[#f4a261]/40' : 'bg-[#4ea8de]/40'} animate-pop`} style={{ boxShadow: runMode === 'bfs' ? '0 0 12px rgba(244,162,97,0.5)' : '0 0 12px rgba(78,168,222,0.5)' }} />
+                )}
+                {!isWall && isPath && (
+                  <div className="absolute inset-0 bg-[#2a9d8f] animate-pop z-10" style={{ boxShadow: '0 0 15px rgba(42,157,143,0.6), inset 0 0 0 1px rgba(255,255,255,0.2)' }} />
+                )}
+                {isStart && !isPath && (
+                  <div className="absolute inset-0 bg-[#e9c46a] animate-pop flex items-center justify-center z-10 shadow-[0_0_10px_rgba(233,196,106,0.6)]">
+                    <span className="font-bold text-[10px] text-[#855a00]">S</span>
+                  </div>
+                )}
+                {isGoal && !isPath && (
+                  <div className="absolute inset-0 bg-[#e76f51] animate-pop flex items-center justify-center z-10 shadow-[0_0_10px_rgba(231,111,81,0.6)]">
+                    <span className="font-bold text-[10px] text-white">G</span>
+                  </div>
+                )}
+                {isPath && (isStart || isGoal) && (
+                  <span className="relative z-20 font-bold text-[10px] text-white">{isStart ? 'S' : 'G'}</span>
+                )}
+              </div>
+            );
+          }))}
+        </div>
+        
+        {/* Status Line */}
+        <div className="h-8 flex items-center justify-center w-full bg-white rounded-lg border border-[#e8ded1] shadow-sm">
+          {["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) ? (
+            <span className="text-xs text-pencil font-medium animate-pulse">Waiting for algorithm...</span>
+          ) : phase === "done" || phase === "path" ? (
+            <span className="text-xs text-[#2a9d8f] font-bold flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+              Path found! {data.path.length} steps
+            </span>
+          ) : (
+            <span className={`text-xs font-medium ${runMode === 'bfs' ? 'text-[#e76f51]' : 'text-[#4ea8de]'}`}>
+              {runMode === 'bfs' ? "BFS — exploring layer by layer..." : "DFS — going deep..."}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Right: Code & Controls */}
+      <div className="w-full lg:w-7/12 flex flex-col justify-between gap-5">
+        {/* Code Block */}
+        <div className="bg-[#1a1a2e] rounded-xl p-4 font-mono text-[13px] text-white/80 shadow-inner overflow-x-auto w-full">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <React.Fragment key={i}>
+              {renderCodeLine(i + 1)}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-col gap-3 mt-1">
+          <div className="flex flex-wrap gap-2">
+            <div 
+              ref={pillSetRef} 
+              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
+            >
+              set
+            </div>
+            
+            <div 
+              ref={pillPopBfsRef} 
+              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'bfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
+            >
+              .pop(0)
+            </div>
+
+            <div 
+              ref={pillPopDfsRef} 
+              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${runMode === 'dfs' && !["idle", "anim_pill_1", "reset"].includes(phase) ? "opacity-0" : "opacity-100"}`}
+            >
+              .pop()
+            </div>
+
+            <div 
+              ref={pillVisitedRef} 
+              className={`bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)] transition-opacity duration-200 ${["idle", "anim_pill_1", "anim_pill_2", "reset"].includes(phase) ? "opacity-100" : "opacity-0"}`}
+            >
+              visited
+            </div>
+
+            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">list</div>
+            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">frontier</div>
+            <div className="bg-white border-[1.5px] border-ink/12 rounded-md px-2 py-0.5 font-mono text-[11px] text-ink shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">current</div>
+          </div>
+          
+          <div className="flex justify-end">
+            <button className={`bg-rust text-white rounded-xl px-5 py-2 font-sans text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${phase === 'running' && visitedIndex < 2 ? 'scale-95 bg-rust/90' : 'scale-100'} ${phase === 'idle' ? 'animate-pulse' : ''}`}>
+              <span className="text-[10px]">▶</span> Run
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Scene4({ onComplete }) {
+  const [answered, setAnswered] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setAnswered(true), 1500);
+    const t2 = setTimeout(() => onComplete(), 4000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [onComplete]);
+
+  return (
+    <div className="flex flex-col p-6 gap-8 items-center justify-center bg-[#fdf8f5] min-h-[420px] w-full relative">
+        <div className="w-full max-w-lg">
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider mb-4 block w-max mx-auto">QUICK CHECK</span>
+            <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-8 text-center">Which data structure explores neighbors level by level?</h3>
+            
+            <div className="flex flex-col gap-3">
+                {/* Option A */}
+                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#e8ded1] bg-white opacity-40' : 'border-[#e8ded1] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
+                    <span className="font-medium text-ink">A. Stack (DFS)</span>
+                    <div className="w-5 h-5 rounded-full border border-ink/20" />
+                </div>
+                
+                {/* Option B */}
+                <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#10b981] bg-[#10b981]/10 shadow-[0_4px_20px_rgba(16,185,129,0.15)] scale-[1.02]' : 'border-[#e8ded1] bg-white shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
+                    <span className={`font-medium transition-colors duration-300 ${answered ? 'text-[#10b981] font-bold' : 'text-ink'}`}>B. Queue (BFS)</span>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${answered ? 'bg-[#10b981] border-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'border border-ink/20'}`}>
+                        {answered && <svg className="w-3 h-3 text-white scale-in-center" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>}
+                    </div>
+                </div>
+            </div>
+
+            <div className={`text-center mt-6 transition-all duration-300 ${answered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                <span className="text-[#10b981] font-bold text-sm flex items-center justify-center gap-1.5">
+                    Correct! Queue processes layer by layer.
+                </span>
+            </div>
+        </div>
+    </div>
+  );
+}
+
+function DemoCursor({ scene }) {
+  const [pos, setPos] = useState({ x: 50, y: 80 });
+  const [clicking, setClicking] = useState(false);
+
+  useEffect(() => {
+    const timers = [];
+    const t = (delay, fn) => timers.push(setTimeout(fn, delay));
+
+    setClicking(false);
+
+    if (scene === 3) {
+      // pill1@1000ms, pill2@1900ms, pill3@2800ms, running@3700ms
+      // measured: set(48,82) .pop(0)(56.9,82) visited(77.7,82) Run(90.1,93.4)
+      setPos({ x: 48, y: 82 });
+      // click "set"
+      t(1000, () => setClicking(true));
+      t(1200, () => setClicking(false));
+      // move to ".pop(0)"
+      t(1400, () => setPos({ x: 56.9, y: 82 }));
+      // click ".pop(0)"
+      t(1900, () => setClicking(true));
+      t(2100, () => setClicking(false));
+      // move to "visited"
+      t(2300, () => setPos({ x: 77.7, y: 82 }));
+      // click "visited"
+      t(2800, () => setClicking(true));
+      t(3000, () => setClicking(false));
+      // move to Run
+      t(3200, () => setPos({ x: 90.1, y: 93.4 }));
+      // click Run
+      t(3700, () => setClicking(true));
+      t(3900, () => setClicking(false));
+    } else if (scene === 4) {
+      // measured: option A(50,62.6) option B(50,75.3)
+      setPos({ x: 50, y: 62.6 });
+      t(700, () => setPos({ x: 50, y: 75.3 }));
+      t(1450, () => setClicking(true));
+      t(1650, () => setClicking(false));
+    }
+
+    return () => timers.forEach(clearTimeout);
+  }, [scene]);
+
+  if (scene !== 3 && scene !== 4) return null;
+
+  return (
+    <div
+      className="absolute z-[100] pointer-events-none"
+      style={{
+        left: `${pos.x}%`,
+        top: `${pos.y}%`,
+        transition: 'left 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94), top 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+      }}
+    >
+      <svg width="18" height="22" viewBox="0 0 18 22" fill="none" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}>
+        <path d="M1 1l6.5 19 2.5-7 7-2.5L1 1z" fill="#1a1a2e" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
+      </svg>
+      {clicking && (
+        <div
+          className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full"
+          style={{
+            background: 'rgba(40, 86, 166, 0.25)',
+            animation: 'cursorClick 300ms ease-out forwards',
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function HomepageLesson() {
+  const [scene, setScene] = useState(1);
+  const [animState, setAnimState] = useState('entered');
+  const [loopCount, setLoopCount] = useState(0);
+
+  const advanceScene = () => {
+    setAnimState('exiting');
+    setTimeout(() => {
+      setScene(prev => {
+        if (prev === 4) {
+          setLoopCount(c => c + 1);
+          return 1;
+        }
+        return prev + 1;
+      });
+      setAnimState('entering');
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            setAnimState('entered');
+        });
+      });
+    }, 300);
+  };
+
+  const getTransitionClass = () => {
+    if (animState === 'exiting') return 'opacity-0 -translate-x-8 transition-all duration-300 ease-in-out';
+    if (animState === 'entering') return 'opacity-0 translate-x-8 transition-none';
+    if (animState === 'entered') return 'opacity-100 translate-x-0 transition-all duration-300 ease-out';
+    return '';
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border-[1.5px] border-ink/12 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col w-full relative">
+      <style>{`
+        @keyframes popIn {
+          0% { transform: scale(0.5); opacity: 0; }
+          60% { transform: scale(1.15); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+          animation: popIn 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes scaleIn {
+          0% { transform: scale(0.8); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .scale-in-center {
+          animation: scaleIn 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes cursorClick {
+          0% { transform: scale(0.3); opacity: 1; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
+      `}</style>
+
+      <DemoCursor scene={scene} />
+
+      {/* Header */}
+      <div className="p-6 border-b border-[#e8ded1] relative bg-[#fdf8f5] z-10">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex gap-2">
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">ALGORITHMS</span>
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">LVL 1</span>
+          </div>
+          <div className="w-[1px] h-3 bg-amber-900/10" />
+          <div className="flex gap-1.5 items-center">
+              {[1, 2, 3, 4].map(step => (
+                  <div key={step} className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${step === scene ? 'bg-amber-500' : 'bg-amber-900/15'}`} />
+              ))}
+          </div>
+        </div>
+        <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-2">Maze Pathfinder</h3>
+        <p className="text-sm text-ink/60 leading-relaxed max-w-lg">
+          Learn how queues and stacks power two different search strategies — then use one to navigate a maze.
+        </p>
+      </div>
+
+      {/* Scene Container */}
+      <div className={`w-full overflow-hidden flex items-stretch bg-[#fdf8f5]`}>
+        <div className={`w-full flex-shrink-0 ${getTransitionClass()}`}>
+            {scene === 1 && <Scene1 onComplete={advanceScene} />}
+            {scene === 2 && <Scene2 onComplete={advanceScene} />}
+            {scene === 3 && <Scene3 runMode={loopCount % 2 === 0 ? 'bfs' : 'dfs'} onComplete={advanceScene} />}
+            {scene === 4 && <Scene4 onComplete={advanceScene} />}
+        </div>
       </div>
     </div>
   );

@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { fields, certifications, jobs, skills, lessons } from "../data/mock";
 import { programs } from "../data/programs";
+import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
 import {
   CybersecurityIcon, CloudIcon, DevOpsIcon, DataScienceIcon,
   BackendIcon, NetworkingIcon, ITSMIcon, FrontendIcon,
-  FinanceIcon, ManagementIcon, LogisticsIcon,
+  FinanceIcon, ManagementIcon, LogisticsIcon, ArrowRightIcon
 } from "../components/Icons";
 
 const fieldIcons = {
@@ -25,7 +26,6 @@ const years = [
 ];
 
 const stageNames = { 1: "Foundation", 2: "Associate", 3: "Professional", 4: "Expert" };
-const stageColors = ["#2856a6", "#3a6bc5", "#5a8ad0", "#7ba3dc"];
 
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Animated count-up                                                   */
@@ -50,68 +50,76 @@ function useCountUpLocal(target, duration = 900, shouldStart = true) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Animated hero SVG — abstract path visualization                     */
 /* ──────────────────────────────────────────────────────────────────── */
-function PathHeroSVG({ stageCount, fieldColor = "#2856a6" }) {
+function PathHeroSVG({ stageCount, fieldColor = "#DF5433" }) {
+  // We align this with the "Roadmap" visual style from Dashboard
   return (
-    <svg viewBox="0 0 600 120" className="w-full h-auto" style={{ maxWidth: 560 }}>
+    <svg viewBox="0 0 800 160" className="w-full h-auto" style={{ maxWidth: 800 }}>
       <defs>
         <linearGradient id="pathGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor={fieldColor} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={fieldColor} stopOpacity="0.4" />
+          <stop offset="0%" stopColor={fieldColor} stopOpacity="0.1" />
+          <stop offset="100%" stopColor={fieldColor} stopOpacity="0.3" />
         </linearGradient>
       </defs>
-      {/* Animated winding path */}
+      {/* Background dashed line */}
       <path
-        d="M 30 90 C 100 90, 120 30, 200 30 S 320 90, 400 60 S 500 20, 570 30"
-        fill="none" stroke="url(#pathGrad)" strokeWidth="28" strokeLinecap="round"
+        d="M 40 100 C 120 100, 160 40, 260 40 S 400 120, 520 80 S 680 40, 760 60"
+        fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6 6" className="text-ink/10"
+      />
+      {/* Animated reveal path */}
+      <path
+        d="M 40 100 C 120 100, 160 40, 260 40 S 400 120, 520 80 S 680 40, 760 60"
+        fill="none" stroke="url(#pathGrad)" strokeWidth="12" strokeLinecap="round"
+        strokeDasharray="1000" strokeDashoffset="1000"
+        style={{ animation: "drawRevealPath 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards" }}
       />
       <path
-        d="M 30 90 C 100 90, 120 30, 200 30 S 320 90, 400 60 S 500 20, 570 30"
+        d="M 40 100 C 120 100, 160 40, 260 40 S 400 120, 520 80 S 680 40, 760 60"
         fill="none" stroke={fieldColor} strokeWidth="3" strokeLinecap="round"
-        strokeDasharray="800" strokeDashoffset="800"
-        style={{ animation: "drawRevealPath 2s ease-out 0.3s forwards" }}
+        strokeDasharray="1000" strokeDashoffset="1000"
+        style={{ animation: "drawRevealPath 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards" }}
       />
+      
       {/* Stage milestone dots — appear sequentially */}
       {[
-        { cx: 30, cy: 90 },
-        { cx: 200, cy: 30 },
-        { cx: 400, cy: 60 },
-        { cx: 570, cy: 30 },
+        { cx: 40, cy: 100 },
+        { cx: 260, cy: 40 },
+        { cx: 520, cy: 80 },
+        { cx: 760, cy: 60 },
       ].slice(0, stageCount).map((pt, i) => (
         <g key={i}>
-          {/* Pulse ring */}
-          <circle cx={pt.cx} cy={pt.cy} r="16" fill={fieldColor} opacity="0.08"
-            style={{ animation: `pulseRing 2s ease-in-out ${1 + i * 0.3}s infinite` }}
+          {/* Pulse ring outer */}
+          <circle cx={pt.cx} cy={pt.cy} r="24" fill={fieldColor} opacity="0.05"
+            style={{ animation: `pulseRing 2.5s ease-in-out ${1 + i * 0.4}s infinite` }}
           />
-          {/* Solid dot */}
-          <circle cx={pt.cx} cy={pt.cy} r="8" fill="white" stroke={stageColors[i]} strokeWidth="3"
-            style={{ opacity: 0, animation: `dotAppear 0.5s ease-out ${0.8 + i * 0.3}s forwards` }}
+          {/* Inner ring */}
+          <circle cx={pt.cx} cy={pt.cy} r="16" fill={fieldColor} opacity="0.1"
+            style={{ animation: `pulseRingInner 2.5s ease-in-out ${1.1 + i * 0.4}s infinite` }}
           />
-          {/* Stage number */}
-          <text x={pt.cx} y={pt.cy + 1} textAnchor="middle" dominantBaseline="central"
-            fill={stageColors[i]} fontSize="8" fontWeight="700" fontFamily="Inter, sans-serif"
-            style={{ opacity: 0, animation: `dotAppear 0.5s ease-out ${0.8 + i * 0.3}s forwards` }}
+          {/* Solid dot container */}
+          <circle cx={pt.cx} cy={pt.cy} r="12" fill="#fdfcfa" stroke={fieldColor} strokeWidth="2.5"
+            style={{ opacity: 0, animation: `dotAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) ${0.8 + i * 0.4}s forwards` }}
+          />
+          {/* Stage label text */}
+          <text x={pt.cx} y={pt.cy + 1.5} textAnchor="middle" dominantBaseline="central"
+            fill={fieldColor} fontSize="10" fontWeight="700" fontFamily="Inter, sans-serif"
+            style={{ opacity: 0, animation: `dotAppear 0.5s ease-out ${0.9 + i * 0.4}s forwards` }}
           >
             {i + 1}
           </text>
-          {/* Stage label below */}
-          <text x={pt.cx} y={pt.cy + 26} textAnchor="middle" fill="#888"
-            fontSize="9" fontFamily="'IBM Plex Mono', monospace" letterSpacing="0.05em"
-            style={{ opacity: 0, animation: `dotAppear 0.5s ease-out ${1 + i * 0.3}s forwards` }}
+          {/* Stage name below */}
+          <text x={pt.cx} y={pt.cy + 34} textAnchor="middle" fill="#6b7280"
+            fontSize="11" fontFamily="Inter, sans-serif" fontWeight="600" letterSpacing="0.05em" className="uppercase"
+            style={{ opacity: 0, animation: `dotAppear 0.5s ease-out ${1 + i * 0.4}s forwards` }}
           >
             {Object.values(stageNames)[i]}
           </text>
         </g>
       ))}
-      {/* Animated particle traveling along path */}
-      <circle r="4" fill={fieldColor}>
-        <animateMotion dur="4s" repeatCount="indefinite" begin="1.5s"
-          path="M 30 90 C 100 90, 120 30, 200 30 S 320 90, 400 60 S 500 20, 570 30"
-        />
-      </circle>
       <style>{`
         @keyframes drawRevealPath { to { stroke-dashoffset: 0; } }
         @keyframes dotAppear { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
-        @keyframes pulseRing { 0%,100% { r:16; opacity:0.08; } 50% { r:22; opacity:0.03; } }
+        @keyframes pulseRing { 0%,100% { r:24; opacity:0.05; } 50% { r:32; opacity:0.02; } }
+        @keyframes pulseRingInner { 0%,100% { r:16; opacity:0.1; } 50% { r:20; opacity:0.04; } }
       `}</style>
     </svg>
   );
@@ -120,26 +128,26 @@ function PathHeroSVG({ stageCount, fieldColor = "#2856a6" }) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Salary bar visualization                                            */
 /* ──────────────────────────────────────────────────────────────────── */
-function SalaryBar({ min, max, show }) {
+function SalaryBar({ min, max, show, accent = "#DF5433" }) {
   const maxScale = 50000;
   const leftPct = (min / maxScale) * 100;
   const widthPct = ((max - min) / maxScale) * 100;
   return (
-    <div className="mt-1">
-      <div className="relative h-3 rounded-full bg-faint overflow-hidden">
+    <div className="mt-2">
+      <div className="relative h-4 rounded-full bg-ink/5 overflow-hidden border-[1px] border-ink/5 shadow-inner">
         <div
-          className="absolute top-0 left-0 h-full rounded-full"
+          className="absolute top-0 left-0 h-full rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]"
           style={{
-            background: "linear-gradient(90deg, #2856a6, #5a8ad0)",
+            background: `linear-gradient(90deg, ${accent}, #FFB020)`,
             left: `${leftPct}%`,
             width: show ? `${widthPct}%` : "0%",
-            transition: "width 1.2s ease-out 0.5s",
+            transition: "width 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s",
           }}
         />
       </div>
-      <div className="mt-2 flex justify-between">
-        <span className="font-mono text-xs text-pencil">0</span>
-        <span className="font-mono text-xs text-pencil">50k PLN/mo</span>
+      <div className="mt-3 flex justify-between">
+        <span className="font-mono text-xs font-semibold text-pencil">0</span>
+        <span className="font-mono text-xs font-semibold text-pencil">50k PLN/mo</span>
       </div>
     </div>
   );
@@ -148,49 +156,50 @@ function SalaryBar({ min, max, show }) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Stage card — clickable, rich                                        */
 /* ──────────────────────────────────────────────────────────────────── */
-function StageCard({ stageNum, certs, fieldSlug, delay, show }) {
+function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
   const name = stageNames[stageNum] || `Stage ${stageNum}`;
-  const color = stageColors[stageNum - 1] || stageColors[0];
   const months = Math.round(certs.reduce((s, c) => s + c.durationWeeks, 0) / 4);
   const cost = certs.reduce((s, c) => s + c.costPln, 0);
 
   return (
     <Link
       to={`/fields/${fieldSlug}`}
-      className="group block rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+      className="group block rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-[#fdfcfa] p-6 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 relative overflow-hidden"
       style={{
         opacity: show ? 1 : 0,
         transform: show ? "translateY(0)" : "translateY(24px)",
-        transition: `all 0.6s ease-out ${delay}ms`,
+        transition: `all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`,
       }}
     >
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-white/80 to-transparent pointer-events-none rounded-tr-xl" />
+      
       {/* Stage header */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-4 mb-5 relative z-10">
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-full text-white font-sans text-sm font-bold"
-          style={{ background: color }}
+          className="flex h-12 w-12 items-center justify-center rounded-xl text-white font-mono text-lg font-bold shadow-sm"
+          style={{ background: accent }}
         >
           {stageNum}
         </div>
         <div>
-          <span className="block font-sans text-lg font-bold text-ink group-hover:text-rust transition-colors">
+          <span className="block font-sans text-xl font-bold text-ink group-hover:text-ink/80 transition-colors tracking-tight">
             {name}
           </span>
-          <span className="block font-sans text-xs text-pencil">
+          <span className="block font-mono text-xs font-bold text-pencil uppercase tracking-wider mt-0.5">
             ~{months} months
           </span>
         </div>
       </div>
 
       {/* Cert list */}
-      <div className="space-y-2">
+      <div className="space-y-3 relative z-10 font-sans">
         {certs.map((cert) => (
-          <div key={cert.id} className="flex items-start gap-2">
-            <div className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: color }} />
+          <div key={cert.id} className="flex items-start gap-3 p-3 rounded-lg border border-ink/5 bg-white/50 group-hover:bg-white transition-colors">
+            <div className="mt-1 h-2 w-2 rounded-full shrink-0" style={{ background: accent }} />
             <div className="min-w-0">
-              <span className="block text-sm font-medium text-ink">{cert.name}</span>
-              <span className="block font-sans text-xs text-pencil">
-                {cert.provider} · {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
+              <span className="block text-sm font-bold text-ink">{cert.name}</span>
+              <span className="block font-sans text-xs font-medium text-pencil mt-1">
+                {cert.provider} <span className="mx-1 opacity-50">&middot;</span> {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
               </span>
             </div>
           </div>
@@ -198,12 +207,12 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show }) {
       </div>
 
       {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-faint flex items-center justify-between">
-        <span className="font-sans text-xs text-pencil">
-          {cost > 0 ? `~${cost.toLocaleString("pl-PL")} PLN total` : "Free"}
+      <div className="mt-5 pt-4 border-t border-ink/8 flex items-center justify-between relative z-10">
+        <span className="font-mono text-xs font-bold text-pencil uppercase tracking-wider">
+          {cost > 0 ? `~${cost.toLocaleString("pl-PL")} PLN` : "Free Overall"}
         </span>
-        <span className="font-sans text-xs font-semibold text-rust opacity-0 group-hover:opacity-100 transition-opacity">
-          View details &rarr;
+        <span className="font-sans text-xs font-bold transition-all group-hover:opacity-100 flex items-center gap-1 opacity-0" style={{ color: accent }}>
+          View details <ArrowRightIcon className="w-3.5 h-3.5" />
         </span>
       </div>
     </Link>
@@ -222,29 +231,29 @@ function JobCard({ job, delay, show }) {
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="group block rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+      className="group block rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-[#fdfcfa] p-5 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 flex flex-col justify-between"
       style={{
         opacity: show ? 1 : 0,
         transform: show ? "translateY(0)" : "translateY(16px)",
-        transition: `all 0.5s ease-out ${delay}ms`,
+        transition: `all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) ${delay}ms`,
       }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <span className={`inline-block rounded-full border px-2.5 py-0.5 font-sans text-xs font-medium capitalize ${levelColors[job.experienceLevel] || "bg-gray-50 text-gray-600 border-gray-200"}`}>
-            {job.experienceLevel}
-          </span>
-          <h3 className="mt-2 font-sans text-base font-bold text-ink group-hover:text-rust transition-colors truncate">
-            {job.title}
-          </h3>
-          <p className="mt-0.5 text-sm text-pencil">{job.company} · {job.location}</p>
-        </div>
-        <div className="text-right shrink-0">
-          <span className="block font-sans text-lg font-bold text-rust">
-            {(job.salaryMin / 1000).toFixed(0)}k
-          </span>
-          <span className="block font-sans text-xs text-pencil">PLN/mo</span>
-        </div>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <span className={`inline-block rounded border px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${levelColors[job.experienceLevel] || "bg-gray-50 text-gray-600 border-gray-200"}`}>
+          {job.experienceLevel}
+        </span>
+        <span className="block font-mono text-base font-bold text-rust shrink-0">
+          {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-[10px] text-pencil uppercase tracking-wider ml-0.5">PLN</span>
+        </span>
+      </div>
+      <h3 className="font-sans text-lg font-bold text-ink leading-tight mb-2 group-hover:text-rust transition-colors truncate">
+        {job.title}
+      </h3>
+      <p className="font-sans text-sm font-medium text-pencil mb-4">{job.company}</p>
+      
+      <div className="pt-4 border-t border-ink/8 flex items-center justify-between text-xs font-semibold text-pencil uppercase tracking-wider">
+        <span>{job.location}</span>
+        <span>{job.type}</span>
       </div>
     </Link>
   );
@@ -253,26 +262,61 @@ function JobCard({ job, delay, show }) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Loading phase                                                       */
 /* ──────────────────────────────────────────────────────────────────── */
-function LoadingPhase({ visible }) {
+function LoadingPhase({ visible, fieldColor }) {
+  const messages = [
+    "Analyzing your major...",
+    "Finding top certifications...",
+    "Matching entry-level roles...",
+    "Generating roadmap segments...",
+    "Finalizing your path..."
+  ];
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  useEffect(() => {
+    if (!visible) return;
+    const interval = setInterval(() => {
+      setMsgIdx((i) => (i + 1) % messages.length);
+    }, 450); // fast switching
+    return () => clearInterval(interval);
+  }, [visible, messages.length]);
+
   return (
     <div className={[
-      "absolute inset-0 flex flex-col items-center justify-center transition-all duration-700",
-      visible ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none",
+      "absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 px-6",
+      visible ? "opacity-100 scale-100" : "opacity-0 scale-[0.98] pointer-events-none",
     ].join(" ")}>
-      {/* Animated orbit rings */}
-      <div className="relative w-24 h-24 mb-8">
-        <div className="absolute inset-0 rounded-full border-2 border-rust/10" style={{ animation: "spinSlow 8s linear infinite" }} />
-        <div className="absolute inset-2 rounded-full border-2 border-rust/20" style={{ animation: "spinSlow 5s linear infinite reverse" }} />
-        <div className="absolute inset-4 rounded-full border-2 border-rust/30" style={{ animation: "spinSlow 3s linear infinite" }} />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-3 w-3 rounded-full bg-rust" style={{ animation: "pulseSoft 1.5s ease-in-out infinite" }} />
-        </div>
+      {/* Animated geometric builder */}
+      <div className="relative w-32 h-32 mb-10 flex items-center justify-center">
+        <div className="absolute inset-0 rounded-full border-[1.5px] border-dashed border-ink/20" style={{ animation: "spinSlow 12s linear infinite" }} />
+        <div className="absolute inset-4 rounded-full border-[1.5px] border-ink/10" style={{ animation: "spinSlow 8s linear infinite reverse" }} />
+        <div className="absolute inset-8 rounded-full border-[1px] border-ink/15" style={{ animation: "spinSlow 4s linear infinite" }} />
+        
+        <div className="absolute w-2 h-2 rounded-full" style={{ backgroundColor: fieldColor || '#F0562E', top: '10%', animation: "pulseDot 1.5s ease-in-out infinite" }} />
+        <div className="absolute w-1.5 h-1.5 rounded-full bg-ink/30" style={{ bottom: '20%', left: '15%', animation: "pulseDot 1.5s ease-in-out infinite 0.7s" }} />
+        <div className="absolute w-3 h-3 rounded-full bg-ink" style={{ right: '10%', top: '40%', animation: "pulseDot 1.5s ease-in-out infinite 0.4s" }} />
+        
+        <div className="h-6 w-6 rounded-lg bg-ink shadow-lg" style={{ animation: "pulseCore 2s ease-in-out infinite" }} />
       </div>
-      <h2 className="font-sans text-2xl font-bold text-ink">Building your path...</h2>
-      <p className="mt-3 text-sm text-pencil max-w-xs text-center leading-relaxed">
-        Analyzing certifications, matching jobs, and personalizing your roadmap
-      </p>
-      <style>{`@keyframes spinSlow { to { transform: rotate(360deg); } }`}</style>
+
+      <div className="h-[2px] w-48 bg-ink/10 rounded-full overflow-hidden mb-8">
+         <div className="h-full bg-ink rounded-full" style={{ width: '100%', animation: "loadingBar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite" }} />
+      </div>
+
+      <h2 className="font-sans text-3xl font-bold text-ink mb-4 tracking-tight">Building your roadmap</h2>
+      <div className="overflow-hidden h-[24px]">
+        <p className="text-base text-pencil font-medium font-sans text-center transition-transform duration-300"
+           key={msgIdx} style={{ animation: "slideUpText 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both" }}>
+          {messages[msgIdx]}
+        </p>
+      </div>
+      
+      <style>{`
+        @keyframes spinSlow { to { transform: rotate(360deg); } }
+        @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.5); opacity: 1; } }
+        @keyframes pulseCore { 0%, 100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.1) rotate(45deg); } }
+        @keyframes slideUpText { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes loadingBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+      `}</style>
     </div>
   );
 }
@@ -286,7 +330,8 @@ export default function Reveal() {
   const [phase, setPhase] = useState(1);
 
   useEffect(() => {
-    const timer = setTimeout(() => setPhase(2), 2000);
+    // Reveal length controls
+    const timer = setTimeout(() => setPhase(2), 2200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -294,6 +339,8 @@ export default function Reveal() {
 
   const fieldObj = fields.find((f) => f.slug === profile.field);
   const FieldIcon = fieldIcons[profile.field];
+  const fc = getFieldColor(profile.field);
+  const accent = fc.accent;
   const fieldCerts = certifications[profile.field] || [];
   const fieldJobs = fieldObj ? jobs.filter((j) => j.fieldId === fieldObj.id) : [];
   const salaryMin = fieldJobs.length ? Math.min(...fieldJobs.map((j) => j.salaryMin)) : 0;
@@ -307,6 +354,7 @@ export default function Reveal() {
   const stageNums = Object.keys(stages).map(Number).sort((a, b) => a - b);
 
   const yearLabel = years.find((y) => y.id === profile.year)?.label || "";
+  const ys = profile.year === "1" ? "st" : profile.year === "2" ? "nd" : profile.year === "3" ? "rd" : "th";
   const programLabel = programs.find((p) => p.id === profile.program)?.name || "";
 
   const firstSkill = skills.find((s) => s.fieldIds?.includes(profile.field));
@@ -314,169 +362,187 @@ export default function Reveal() {
   const firstLessonUrl = firstSkill && firstLesson ? `/skills/${firstSkill.slug}/${firstLesson.id}` : "/dashboard";
 
   const totalMonths = Math.round(fieldCerts.reduce((s, c) => s + c.durationWeeks, 0) / 4);
-  const totalCost = fieldCerts.reduce((s, c) => s + c.costPln, 0);
 
   const show = phase === 2;
-  const stagesCount = useCountUpLocal(stageNums.length, 800, show);
-  const certsCount = useCountUpLocal(fieldCerts.length, 800, show);
-  const jobsCount = useCountUpLocal(fieldJobs.length, 800, show);
+  const stagesCount = useCountUpLocal(stageNums.length, 1000, show);
+  const certsCount = useCountUpLocal(fieldCerts.length, 1200, show);
+  const jobsCount = useCountUpLocal(fieldJobs.length, 1400, show);
+  const monthsCount = useCountUpLocal(totalMonths, 1600, show);
 
   return (
-    <section className="relative min-h-[85vh] py-8 sm:py-12">
-      <LoadingPhase visible={phase === 1} />
+    <div className="min-h-screen bg-[#f5f3ef] selection:bg-ink selection:text-white relative overflow-hidden flex flex-col justify-center">
+      
+      <LoadingPhase visible={phase === 1} fieldColor={accent} />
 
-      <div className={[
-        "mx-auto max-w-4xl px-4 transition-all duration-700",
-        show ? "opacity-100" : "opacity-0 pointer-events-none",
+      <section className={[
+        "w-full mx-auto max-w-[1240px] px-6 md:px-12 py-16 transition-all duration-1000",
+        show ? "opacity-100" : "opacity-0 pointer-events-none scale-[0.98]",
       ].join(" ")}>
 
-        {/* ═══════════════ HERO — field name + animated path ═══════════════ */}
-        <div className="text-center mb-6" style={{ animation: show ? "fadeInUp 0.8s ease-out both" : "none" }}>
-          <div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-ink/12 bg-card px-4 py-1.5 mb-5">
-            {FieldIcon && <FieldIcon className="h-4 w-4 text-merito" />}
-            <span className="font-sans text-xs uppercase tracking-wide text-merito font-semibold">
+        {/* ═══════════════ HERO ═══════════════ */}
+        <div className="text-center mb-10" style={{ animation: show ? "fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) both" : "none" }}>
+          <div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-ink/10 bg-white/60 shadow-sm px-4 py-1.5 mb-6">
+            {FieldIcon && <div className="w-5 h-5 flex items-center justify-center rounded-md" style={{ backgroundColor: `${accent}15`, color: accent }}><FieldIcon className="w-3.5 h-3.5" /></div>}
+            <span className="font-sans text-xs uppercase tracking-widest font-bold text-ink">
               Your personalized path
             </span>
           </div>
-          <h1 className="font-sans text-5xl font-bold text-ink sm:text-6xl lg:text-7xl">
+          <h1 className="font-serif text-5xl md:text-7xl lg:text-[80px] leading-[0.9] text-ink tracking-tight mb-6">
             {fieldObj?.name || "Your Path"}
           </h1>
-          <p className="mt-3 text-lg text-graphite">
-            Tailored for a <span className="font-medium text-ink">{yearLabel}</span> {programLabel !== "Other" ? <span className="font-medium text-ink">{programLabel}</span> : ""} student
+          <p className="font-sans text-lg md:text-xl text-pencil font-medium max-w-2xl mx-auto">
+            Tailored for a <span className="text-ink font-bold">{profile.year}{ys} Year</span> studying <span className="text-ink font-bold">{programLabel}</span>. Here is how you bridge the gap to the industry.
           </p>
         </div>
 
-        {/* Animated path visualization */}
-        <div className="mb-10" style={{ animation: show ? "fadeInUp 0.8s ease-out 0.3s both" : "none" }}>
-          <PathHeroSVG stageCount={stageNums.length} />
-        </div>
-
-        {/* ═══════════════ STATS — inline, not cards ═══════════════ */}
-        <div
-          className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 mb-12 py-6 border-y border-faint"
-          style={{ animation: show ? "fadeInUp 0.6s ease-out 0.6s both" : "none" }}
+        {/* ═══════════════ STATS BENTO ═══════════════ */}
+        <div 
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16"
+          style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both" : "none" }}
         >
-          <div className="text-center">
-            <span className="block font-sans text-4xl font-bold text-ink">{stagesCount}</span>
-            <span className="block font-sans text-xs font-semibold text-pencil uppercase tracking-wide mt-1">Stages</span>
-          </div>
-          <div className="h-8 w-px bg-faint hidden sm:block" />
-          <div className="text-center">
-            <span className="block font-sans text-4xl font-bold text-ink">{certsCount}</span>
-            <span className="block font-sans text-xs font-semibold text-pencil uppercase tracking-wide mt-1">Certifications</span>
-          </div>
-          <div className="h-8 w-px bg-faint hidden sm:block" />
-          <div className="text-center">
-            <span className="block font-sans text-4xl font-bold text-ink">{jobsCount}</span>
-            <span className="block font-sans text-xs font-semibold text-pencil uppercase tracking-wide mt-1">Jobs in Poland</span>
-          </div>
-          <div className="h-8 w-px bg-faint hidden sm:block" />
-          <div className="text-center">
-            <span className="block font-sans text-4xl font-bold text-ink">~{totalMonths}</span>
-            <span className="block font-sans text-xs font-semibold text-pencil uppercase tracking-wide mt-1">Months</span>
-          </div>
-        </div>
-
-        {/* ═══════════════ SALARY RANGE — visual bar ═══════════════ */}
-        {salaryMin > 0 && (
-          <div
-            className="mb-12 rounded-xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] bg-card p-6"
-            style={{ animation: show ? "fadeInUp 0.6s ease-out 0.8s both" : "none" }}
-          >
-            <div className="flex items-baseline justify-between mb-3">
-              <div>
-                <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">What you could earn</span>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-sans text-3xl font-bold text-ink">
-                    {salaryMin.toLocaleString("pl-PL")} - {salaryMax.toLocaleString("pl-PL")}
-                  </span>
-                  <span className="font-mono text-sm text-pencil">PLN/month</span>
-                </div>
-              </div>
-              <span className="font-sans text-xs text-pencil">{fieldJobs.length} real listings</span>
+          {[
+            { value: stagesCount, label: "Stages", suffix: "" },
+            { value: certsCount, label: "Certifications", suffix: "" },
+            { value: jobsCount, label: "Jobs in Poland", suffix: "+" },
+            { value: monthsCount, label: "Months", suffix: "mo" },
+          ].map((stat, i) => (
+            <div key={i} className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-xl p-6 md:p-8 flex flex-col justify-center shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+              <span className="font-mono text-4xl md:text-5xl font-bold text-ink mb-2 tracking-tighter">
+                {stat.value}{stat.suffix}
+              </span>
+              <span className="font-sans text-xs font-bold uppercase tracking-widest text-pencil">
+                {stat.label}
+              </span>
             </div>
-            <SalaryBar min={salaryMin} max={salaryMax} show={show} />
-          </div>
-        )}
-
-        {/* ═══════════════ ROADMAP — clickable stage cards ═══════════════ */}
-        <div style={{ animation: show ? "fadeInUp 0.6s ease-out 1s both" : "none" }}>
-          <div className="flex items-baseline justify-between mb-6">
-            <h2 className="font-sans text-xl font-bold text-ink">Your Certification Roadmap</h2>
-            <Link to={`/fields/${profile.field}`} className="font-sans text-xs font-semibold text-rust hover:underline">
-              Full roadmap &rarr;
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {stageNums.map((num, idx) => (
-              <StageCard
-                key={num}
-                stageNum={num}
-                certs={stages[num]}
-                fieldSlug={profile.field}
-                delay={1000 + idx * 150}
-                show={show}
-              />
-            ))}
-          </div>
+          ))}
         </div>
 
-        {/* ═══════════════ JOBS — clickable cards ═══════════════ */}
-        {fieldJobs.length > 0 && (
-          <div className="mt-12" style={{ animation: show ? "fadeInUp 0.6s ease-out 1.5s both" : "none" }}>
-            <div className="flex items-baseline justify-between mb-6">
-              <h2 className="font-sans text-xl font-bold text-ink">
-                {fieldJobs.length} Jobs Waiting in Poland
-              </h2>
-              <Link to="/jobs" className="font-sans text-xs font-semibold text-rust hover:underline">
-                All jobs &rarr;
+        {/* ═══════════════ ANIMATED PATH ═══════════════ */}
+        <div className="mb-20 max-w-4xl mx-auto hidden md:block" style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both" : "none" }}>
+          <PathHeroSVG stageCount={stageNums.length} fieldColor={accent} />
+        </div>
+
+        {/* ═══════════════ TWO COLUMNS: ROADMAP & CAREER ═══════════════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 mb-24">
+          
+          {/* Column 1: Roadmap */}
+          <div style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s both" : "none" }}>
+            <div className="flex items-end justify-between mb-8 pb-4 border-b border-ink/8">
+              <div>
+                <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>Step-by-step</span>
+                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">The Roadmap</h2>
+              </div>
+              <Link to={`/fields/${profile.field}`} className="font-sans text-sm font-bold transition-colors flex items-center gap-1.5" style={{ color: accent }}>
+                Full details <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {fieldJobs.slice(0, 4).map((job, i) => (
-                <JobCard key={job.id} job={job} delay={1600 + i * 100} show={show} />
+            <div className="grid grid-cols-1 gap-5">
+              {stageNums.map((num, idx) => (
+                <StageCard
+                  key={num}
+                  stageNum={num}
+                  certs={stages[num]}
+                  fieldSlug={profile.field}
+                  delay={800 + idx * 100}
+                  show={show}
+                  accent={accent}
+                />
               ))}
             </div>
           </div>
-        )}
 
-        {/* ═══════════════ CTA — start learning ═══════════════ */}
+          {/* Column 2: Jobs & Salary */}
+          <div style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s both" : "none" }}>
+            <div className="flex items-end justify-between mb-8 pb-4 border-b border-ink/8">
+              <div>
+                <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">Market realities</span>
+                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">Career Outlook</h2>
+              </div>
+              <Link to="/jobs" className="font-sans text-sm font-bold text-rust hover:text-rust/80 transition-colors flex items-center gap-1.5">
+                All {fieldJobs.length} jobs <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Salary Visualizer */}
+            {salaryMin > 0 && (
+              <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-8 mb-8" style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1s both" : "none" }}>
+                <span className="block font-sans text-sm font-bold text-ink mb-1">Earning Potential</span>
+                <span className="block font-sans text-xs text-pencil mb-5">Based on entry-to-mid roles in {fieldObj?.name}</span>
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="font-mono text-3xl font-bold text-ink tracking-tighter">
+                    {salaryMin.toLocaleString("pl-PL")}–{salaryMax.toLocaleString("pl-PL")}
+                  </span>
+                  <span className="font-sans text-sm font-semibold text-pencil pb-1">PLN / mo</span>
+                </div>
+                <SalaryBar min={salaryMin} max={salaryMax} show={show} accent={accent} />
+              </div>
+            )}
+
+            {/* Job listings */}
+            <div className="grid grid-cols-1 gap-5">
+              {fieldJobs.slice(0, 3).map((job, i) => (
+                <JobCard key={job.id} job={job} delay={1100 + i * 150} show={show} />
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        {/* ═══════════════ CTA TICKET ═══════════════ */}
         <div
-          className="mt-14 rounded-2xl bg-ink p-10 text-center"
+          className="relative bg-[#fdfcfa] border-[2px] border-dashed border-ink/20 rounded-2xl p-10 md:p-16 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden"
           style={{
             opacity: show ? 1 : 0,
-            transform: show ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.6s ease-out 2s",
+            transform: show ? "translateY(0)" : "translateY(24px)",
+            transition: "all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1.5s",
           }}
         >
-          <h3 className="font-sans text-xl font-bold text-white">Ready to start?</h3>
-          <p className="mt-2 text-white/60 max-w-md mx-auto">
-            Your first lesson is already waiting. Jump in and start building your {fieldObj?.name} skills today.
-          </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link
-              to={firstLessonUrl}
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3.5 font-sans font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl"
+          {/* Ticket Cutouts */}
+          <div className="absolute top-1/2 -translate-y-1/2 -left-5 w-10 h-10 bg-[#f5f3ef] border-r-[2px] border-dashed border-ink/20 rounded-full" />
+          <div className="absolute top-1/2 -translate-y-1/2 -right-5 w-10 h-10 bg-[#f5f3ef] border-l-[2px] border-dashed border-ink/20 rounded-full" />
+
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <h3 className="font-serif text-4xl md:text-5xl font-bold text-ink tracking-tight mb-5">Ready to begin?</h3>
+            <p className="font-sans text-lg text-pencil mb-10 leading-relaxed">
+              Your first interactive lesson is unlocked and waiting. Jump in and start building real-world {fieldObj?.name} skills today.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to={firstLessonUrl}
+                className="w-full sm:w-auto text-white rounded-xl px-10 py-4 font-sans text-base font-bold inline-flex items-center justify-center gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                style={{ backgroundColor: accent, boxShadow: `0 8px 24px -6px ${accent}60` }}
+              >
+                Start first lesson
+                <ArrowRightIcon className="w-5 h-5" />
+              </Link>
+              <Link
+                to="/dashboard"
+                className="w-full sm:w-auto bg-white border border-ink/10 rounded-xl px-10 py-4 font-sans text-base font-bold text-ink hover:bg-ink/[0.02] transition-colors"
+              >
+                Skip to dashboard
+              </Link>
+            </div>
+            
+            <button
+              onClick={() => navigate("/onboarding")}
+              className="mt-8 font-sans text-sm font-semibold text-pencil underline underline-offset-4 hover:text-ink transition-colors"
             >
-              Start your first lesson
-              <span>&rarr;</span>
-            </Link>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-8 py-3.5 font-sans font-semibold text-white transition-all duration-200 hover:bg-white/10"
-            >
-              Go to dashboard
-            </Link>
+              Wait, I want to try a different field
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate("/onboarding")}
-            className="mt-5 font-sans text-sm text-white/40 underline underline-offset-2 transition-colors hover:text-white/70"
-          >
-            Try a different field
-          </button>
         </div>
-      </div>
-    </section>
+
+      </section>
+      
+      {/* Global CSS for fadeInUp if needed, already provided by tailwind or previous files, 
+          but adding it inline just in case so animations trigger correctly. */}
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
   );
 }

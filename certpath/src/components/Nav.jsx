@@ -41,7 +41,7 @@ export default function Nav() {
           </NavLink>
 
           {isOnboarded && (
-            <span className="font-sans text-xs font-semibold text-rust border border-faint rounded-full px-3 py-1.5">
+            <span className="font-sans text-xs font-semibold text-arcade border border-arcade/20 bg-arcade/5 rounded-full px-3 py-1.5">
               Lvl {level} · {xp} xp
             </span>
           )}
@@ -53,6 +53,18 @@ export default function Nav() {
             >
               Get Started
             </Link>
+          )}
+
+          {/* Dev: clear localStorage */}
+          {import.meta.env.DEV && (
+            <button
+              type="button"
+              onClick={() => { localStorage.clear(); window.location.reload(); }}
+              className="ml-2 text-[10px] text-pencil/50 hover:text-red-500 transition-colors"
+              title="Clear localStorage (dev only)"
+            >
+              Reset
+            </button>
           )}
         </nav>
       </div>

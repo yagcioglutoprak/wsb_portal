@@ -2796,7 +2796,7 @@ export const lessons = [
     title: "Variables & Data Types",
     description: "Variables as labeled boxes and data types as shapes that fit",
     estimatedMinutes: 15,
-    phases: { learn: { steps: 4 }, apply: { steps: 2 }, challenge: { steps: 1 } },
+    phases: { learn: { steps: 4 }, apply: { steps: 1 }, challenge: { steps: 1 } },
   },
   {
     id: "python-2",

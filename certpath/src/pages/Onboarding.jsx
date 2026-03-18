@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fields } from "../data/mock";
 import { programs } from "../data/programs";
+import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
 import {
   CybersecurityIcon,
@@ -411,141 +412,124 @@ const programIllustrations = {
 };
 
 /* ──────────────────────────────────────────────────────────────────── */
-/*  Checkmark for selected state                                        */
-/* ──────────────────────────────────────────────────────────────────── */
-
-function SelectCheckmark() {
-  return (
-    <svg
-      className="h-4 w-4 text-rust"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4.5 12.5l5 5L19.5 7" />
-    </svg>
-  );
-}
-
-/* ──────────────────────────────────────────────────────────────────── */
 /*  Progress bar                                                         */
 /* ──────────────────────────────────────────────────────────────────── */
 
 function ProgressBar({ current, total }) {
   return (
-    <div className="flex items-center gap-1.5">
-      {Array.from({ length: total }, (_, i) => (
-        <div
-          key={i}
-          className={[
-            "h-1 flex-1 rounded-full transition-all duration-500",
-            i + 1 <= current ? "bg-rust" : "bg-pencil/20",
-          ].join(" ")}
-        />
-      ))}
+    <div className="flex justify-center items-center gap-2">
+      {Array.from({ length: total }, (_, i) => {
+        const isActive = i + 1 === current;
+        const isPast = i + 1 < current;
+        return (
+          <div
+            key={i}
+            className={`h-2 rounded-full transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+              isActive ? "w-10 bg-rust" : isPast ? "w-4 bg-rust/30" : "w-4 bg-ink/10"
+            }`}
+          />
+        );
+      })}
     </div>
   );
 }
 
 /* ──────────────────────────────────────────────────────────────────── */
-/*  Illustrated card — year & program steps (SVG on right)              */
+/*  Illustrated card — year & program steps (Vertical Layout)           */
 /* ──────────────────────────────────────────────────────────────────── */
 
-function IllustratedCard({ label, selected, onClick, description, Illustration }) {
+function IllustratedCard({ label, selected, onClick, ...props }) {
+  const Illustration = props.Illustration;
   return (
     <button
       type="button"
       onClick={onClick}
-      className={[
-        "group/card relative w-full rounded-lg border-2 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+      className={`group relative w-full rounded-2xl p-6 text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] border-[1.5px] flex flex-col items-center justify-center min-h-[180px] ${
         selected
-          ? "border-rust bg-rust/5 shadow-lg"
-          : "border-faint bg-card hover:border-pencil/30",
-      ].join(" ")}
+          ? "border-rust bg-[#fdfcfa] shadow-[0_8px_0_0_rgba(240,86,46,0.15)] -translate-y-1"
+          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-white"
+      }`}
     >
-      {/* Checkmark — top left on select */}
-      <div
-        className={[
-          "absolute left-2.5 top-2.5 transition-all duration-200",
-          selected ? "scale-100 opacity-100" : "scale-75 opacity-0",
-        ].join(" ")}
-      >
-        <SelectCheckmark />
+      <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-[1.5px] ${
+        selected ? "bg-rust border-rust text-white scale-100 opacity-100" : "bg-white border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
+      }`}>
+        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4.5 12.5l5 5L19.5 7" />
+        </svg>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <span className="block font-sans text-lg font-semibold text-ink">{label}</span>
-          {description && (
-            <span className="mt-1 block text-base leading-relaxed text-graphite">
-              {description}
-            </span>
-          )}
+      {Illustration && (
+        <div className={`mb-4 w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center transition-colors duration-400 ${
+          selected ? "bg-rust/5 text-rust" : "bg-ink/[0.03] text-pencil group-hover:text-ink group-hover:bg-ink/[0.06]"
+        }`}>
+          <Illustration className="h-9 w-9" />
         </div>
-        {Illustration && (
-          <div className="flex-shrink-0">
-            <Illustration
-              className={[
-                "h-12 w-12 transition-colors duration-200",
-                selected
-                  ? "text-rust"
-                  : "text-pencil/30 group-hover/card:text-rust",
-              ].join(" ")}
-            />
-          </div>
-        )}
-      </div>
+      )}
+      
+      <span className={`font-sans text-lg font-bold tracking-tight transition-colors ${selected ? "text-rust" : "text-ink group-hover:text-ink"}`}>
+        {label}
+      </span>
+      {props.description && (
+        <p className="text-sm font-medium text-pencil mt-2 leading-relaxed">
+          {props.description}
+        </p>
+      )}
     </button>
   );
 }
 
 /* ──────────────────────────────────────────────────────────────────── */
-/*  Field card — step 3 (icon in top-right corner)                      */
+/*  Field card — step 3                                                 */
 /* ──────────────────────────────────────────────────────────────────── */
 
-function FieldSelectCard({ label, selected, onClick, description, slug }) {
-  const Icon = fieldIcons[slug];
+function FieldSelectCard({ label, selected, onClick, ...props }) {
+  const Icon = fieldIcons[props.slug];
+  const fieldColor = getFieldColor(props.slug);
+  const accent = fieldColor.accent;
+  
   return (
     <button
       type="button"
       onClick={onClick}
-      className={[
-        "group/card relative w-full rounded-lg border-2 p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+      className={`group relative w-full h-full rounded-2xl border-[1.5px] p-6 text-left transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex flex-col ${
         selected
-          ? "border-rust bg-rust/5 shadow-lg"
-          : "border-faint bg-card hover:border-pencil/30",
-      ].join(" ")}
+          ? "bg-[#fdfcfa] -translate-y-1 shadow-[0_8px_0_0_rgba(0,0,0,0.06)] z-10"
+          : "border-ink/12 bg-[#fdfcfa] shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:shadow-[0_12px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 block hover:bg-white z-0"
+      }`}
+      style={selected ? { borderColor: accent, boxShadow: `0 8px 0 0 ${accent}25` } : undefined}
     >
-      {/* Checkmark — top left on select */}
-      <div
-        className={[
-          "absolute left-2.5 top-2.5 transition-all duration-200",
-          selected ? "scale-100 opacity-100" : "scale-75 opacity-0",
-        ].join(" ")}
+      <div className={`absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 border-[1.5px] ${
+        selected ? "text-white scale-100 opacity-100" : "bg-white border-ink/20 text-transparent scale-50 opacity-0 group-hover:opacity-50 group-hover:scale-90"
+      }`}
+        style={selected ? { backgroundColor: accent, borderColor: accent } : undefined}
       >
-        <SelectCheckmark />
+        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4.5 12.5l5 5L19.5 7" />
+        </svg>
       </div>
 
-      {/* Field icon — top right */}
       {Icon && (
-        <Icon
-          className={[
-            "absolute right-4 top-4 h-8 w-8 transition-colors duration-200",
-            selected
-              ? "text-rust"
-              : "text-pencil/30 group-hover/card:text-rust",
-          ].join(" ")}
-        />
+        <div className={`mb-5 w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center transition-all duration-400 ${
+          selected ? "bg-white shadow-sm border border-ink/10" : "bg-ink/[0.03] text-pencil group-hover:text-ink group-hover:bg-ink/[0.05]"
+        }`}
+          style={selected ? { color: accent } : undefined}
+        >
+          <Icon className="h-7 w-7" />
+        </div>
       )}
+      
+      <span className={`font-sans text-xl font-bold tracking-tight transition-colors mb-2 pr-6 ${selected ? "text-ink" : "text-ink group-hover:text-ink/80"}`}
+            style={selected ? { color: accent } : undefined}>
+        {label}
+      </span>
+      
+      <p className="text-sm font-medium text-pencil leading-relaxed mt-auto">
+        {props.description}
+      </p>
 
-      <span className="block pr-10 font-sans text-lg font-semibold text-ink">{label}</span>
-      {description && (
-        <span className="mt-1 block pr-10 text-base leading-relaxed text-graphite">
-          {description}
-        </span>
+      {selected && (
+        <div className="absolute inset-0 rounded-2xl pointer-events-none border border-white/50 mix-blend-overlay" 
+             style={{ backgroundColor: `${accent}05` }} />
       )}
     </button>
   );
@@ -558,15 +542,14 @@ function FieldSelectCard({ label, selected, onClick, description, slug }) {
 function StepWrapper({ visible, direction, children }) {
   return (
     <div
-      className="transition-all duration-400 ease-out"
+      className="transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible
-          ? "translateX(0)"
+          ? "translateY(0) scale(1)"
           : direction === "forward"
-            ? "translateX(40px)"
-            : "translateX(-40px)",
-        transitionDuration: "400ms",
+            ? "translateY(24px) scale(0.98)"
+            : "translateY(-24px) scale(0.98)",
       }}
     >
       {children}
@@ -590,7 +573,6 @@ export default function Onboarding() {
   const [program, setProgram] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
 
-  /* Advance with animation */
   const goToStep = useCallback(
     (next) => {
       const dir = next > step ? "forward" : "back";
@@ -600,7 +582,7 @@ export default function Onboarding() {
         setStep(next);
         setDirection(dir);
         setVisible(true);
-      }, 300);
+      }, 400); 
     },
     [step],
   );
@@ -609,7 +591,6 @@ export default function Onboarding() {
     if (step > 1) goToStep(step - 1);
   }, [step, goToStep]);
 
-  /* Auto-advance after selection */
   const selectAndAdvance = useCallback(
     (setter, value) => {
       setter(value);
@@ -620,14 +601,12 @@ export default function Onboarding() {
     [step, goToStep],
   );
 
-  /* Step 3 field selection — save profile and navigate to reveal */
   const selectField = useCallback((slug) => {
     setSelectedField(slug);
     saveProfile({ year, program, field: slug });
     setTimeout(() => navigate("/reveal"), AUTO_ADVANCE_MS);
   }, [year, program, saveProfile, navigate]);
 
-  /* Filtered fields for step 3 */
   const programData = programs.find((p) => p.id === program);
   const availableFields =
     programData && programData.fieldSlugs
@@ -635,48 +614,66 @@ export default function Onboarding() {
       : fields;
 
   return (
-    <section className="flex min-h-[70vh] flex-col items-center justify-center py-8 sm:py-16">
-      {/* Progress + back */}
-      <div className="mb-10 flex w-full max-w-2xl items-center justify-between px-4">
-        {step > 1 ? (
+    <div className="min-h-[100dvh] bg-[#f5f3ef] selection:bg-rust selection:text-white flex flex-col relative overflow-hidden">
+      
+      {/* Decorative background blob */}
+      <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-rust/5 blur-[120px] pointer-events-none" />
+
+      {/* Top Nav (Home & Progress) */}
+      <div className="w-full px-6 sm:px-12 py-8 flex items-center justify-between relative z-20">
+         {step > 1 ? (
           <button
             type="button"
             onClick={goBack}
-            className="font-sans text-sm font-medium text-graphite transition-colors duration-200 hover:text-rust"
+            className="group flex w-[120px] items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-pencil hover:text-ink transition-colors duration-200"
           >
-            &larr; Back
+            <div className="w-8 h-8 rounded-full bg-white border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
+              <svg className="w-4 h-4 text-ink transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </div>
+            Back
           </button>
         ) : (
           <Link
             to="/"
-            className="font-sans text-sm font-medium text-graphite transition-colors duration-200 hover:text-rust"
+            className="group flex w-[120px] items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-pencil hover:text-ink transition-colors duration-200"
           >
-            &larr; Home
+            <div className="w-8 h-8 rounded-full bg-white border border-ink/10 flex items-center justify-center group-hover:border-ink/30 group-hover:shadow-sm transition-all duration-300">
+              <svg className="w-4 h-4 text-ink transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </div>
+            Home
           </Link>
         )}
-        <div className="w-32">
-          <ProgressBar current={step} total={3} />
-        </div>
+
+        <ProgressBar current={step} total={3} />
+        
+        <div className="w-[120px]" /> {/* Layout spacer */}
       </div>
 
-      {/* Step content */}
-      <div className="w-full max-w-2xl px-4">
+      {/* Main Content Area */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center px-6 pb-20 pt-4 relative z-10">
         <StepWrapper visible={visible} direction={direction}>
+          
           {/* ── Step 1: Year ──────────────────────────────── */}
           {step === 1 && (
-            <div>
-              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
-                01
-              </span>
-              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
-                What year are you in?
-              </h1>
-              <p className="mt-3 text-lg leading-relaxed text-graphite">
-                This helps us tailor everything to where you are in your studies.
-              </p>
-              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="w-full max-w-[900px]">
+              <div className="max-w-[600px] mb-12 mx-auto text-center">
+                <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
+                  Step 01
+                </span>
+                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
+                  What <span className="text-rust italic pr-2">year</span> are you in?
+                </h1>
+                <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-md mx-auto">
+                  This helps us tailor everything to where you are. Your roadmap will adjust to your current level.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {years.map((y, idx) => (
-                  <div key={y.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                  <div key={y.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 60 + 100}ms` }}>
                     <IllustratedCard
                       label={y.label}
                       selected={year === y.id}
@@ -691,19 +688,21 @@ export default function Onboarding() {
 
           {/* ── Step 2: Program ──────────────────────────── */}
           {step === 2 && (
-            <div>
-              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
-                02
-              </span>
-              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
-                What are you studying?
-              </h1>
-              <p className="mt-3 text-lg leading-relaxed text-graphite">
-                Your program helps us recommend the right certifications and opportunities for you.
-              </p>
-              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="w-full max-w-[1000px]">
+              <div className="max-w-[600px] mb-12 mx-auto text-center">
+                <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
+                  Step 02
+                </span>
+                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
+                  What are you <span className="text-rust italic pr-2">studying?</span>
+                </h1>
+                <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-lg mx-auto">
+                  Your program helps us recommend the right certifications and opportunities tailored for your exact degree.
+                </p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {programs.map((p, idx) => (
-                  <div key={p.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                  <div key={p.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50 + 100}ms` }}>
                     <IllustratedCard
                       label={p.name}
                       selected={program === p.id}
@@ -718,19 +717,21 @@ export default function Onboarding() {
 
           {/* ── Step 3: Field ────────────────────────────── */}
           {step === 3 && (
-            <div>
-              <span className="block font-sans text-xs font-semibold tracking-wide text-pencil">
-                03
-              </span>
-              <h1 className="mt-3 font-sans text-4xl font-bold text-ink sm:text-5xl">
-                What excites you most?
-              </h1>
-              <p className="mt-3 text-lg leading-relaxed text-graphite">
-                Go with what excites you — you can always explore other fields later.
-              </p>
-              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="w-full max-w-[1000px]">
+               <div className="max-w-[600px] mb-12 mx-auto text-center">
+                <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
+                  Step 03
+                </span>
+                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
+                  What <span className="text-rust italic pr-2">excites</span> you most?
+                </h1>
+                <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-lg mx-auto">
+                  Go with what excites you right now &mdash; you can always explore other fields and pivot later on.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {availableFields.map((f, idx) => (
-                  <div key={f.id} style={{ animation: 'fadeInUp 0.4s ease-out both', animationDelay: `${idx * 60}ms` }}>
+                  <div key={f.id} className="animate-fade-in-up flex flex-col items-stretch" style={{ animationDelay: `${idx * 50 + 100}ms` }}>
                     <FieldSelectCard
                       label={f.name}
                       description={f.description}
@@ -746,6 +747,6 @@ export default function Onboarding() {
 
         </StepWrapper>
       </div>
-    </section>
+    </div>
   );
 }
