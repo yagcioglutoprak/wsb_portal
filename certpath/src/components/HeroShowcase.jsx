@@ -194,7 +194,7 @@ export default function HeroShowcase() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex h-[420px] relative">
+      <div className="flex flex-col sm:flex-row h-[280px] sm:h-[340px] md:h-[420px] relative">
         
         {/* Play Icon Overlay (pulse when paused) */}
         {!isPlaying && (
@@ -206,10 +206,10 @@ export default function HeroShowcase() {
         )}
 
         {/* Editor Pane (Left) */}
-        <div className="w-3/5 border-r border-white/5 flex flex-col relative z-0 code-font">
-          <div className="flex text-xs uppercase tracking-wider text-pencil border-b border-white/5 bg-[#0B0F19]">
-            <div className="px-4 py-2 border-t-2 border-blue-500 bg-white/5 text-gray-300">hash_table.js</div>
-            <div className="px-4 py-2 opacity-50">data_structures.md</div>
+        <div className="w-full sm:w-3/5 border-b sm:border-b-0 sm:border-r border-white/5 flex flex-col relative z-0 code-font">
+          <div className="flex text-[10px] sm:text-xs uppercase tracking-wider text-pencil border-b border-white/5 bg-[#0B0F19]">
+            <div className="px-2 sm:px-4 py-1.5 sm:py-2 border-t-2 border-blue-500 bg-white/5 text-gray-300 truncate">hash_table.js</div>
+            <div className="px-2 sm:px-4 py-1.5 sm:py-2 opacity-50 truncate hidden sm:block">data_structures.md</div>
           </div>
           <div className="p-2 overflow-hidden flex-1 relative">
              {renderCode(CODE_STRING, state.codeChars, state.highlightCode)}
@@ -227,26 +227,26 @@ export default function HeroShowcase() {
         </div>
 
         {/* Visualizer Pane (Right) */}
-        <div className="w-2/5 relative overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#0B0F19] to-[#0B0F19]">
+        <div className="w-full sm:w-2/5 relative overflow-hidden bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-[#0B0F19] to-[#0B0F19]">
           
           <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
           
-          <div className="relative h-full p-6 flex flex-col justify-center gap-4">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-pencil mb-2 code-font">Memory Allocation</h3>
+          <div className="relative h-full p-3 sm:p-4 md:p-6 flex flex-col justify-center gap-2 sm:gap-3 md:gap-4">
+            <h3 className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-pencil mb-1 sm:mb-2 code-font">Memory Allocation</h3>
             
             {/* Memory Slots */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-3">
               {state.mem.map((slot, idx) => (
-                <div key={idx} className={`mem-slot flex items-stretch h-12 rounded-lg border border-white/10 bg-white/5 overflow-hidden ${state.focus === `mem-${idx}` ? 'active' : ''}`}>
-                  <div className="w-10 bg-black/40 border-r border-white/10 flex items-center justify-center text-xs code-font text-pencil">
+                <div key={idx} className={`mem-slot flex items-stretch h-8 sm:h-10 md:h-12 rounded-lg border border-white/10 bg-white/5 overflow-hidden ${state.focus === `mem-${idx}` ? 'active' : ''}`}>
+                  <div className="w-7 sm:w-8 md:w-10 bg-black/40 border-r border-white/10 flex items-center justify-center text-[10px] sm:text-xs code-font text-pencil">
                     {idx}
                   </div>
                   <div className="flex-1 p-2 flex items-center gap-2">
                     {!slot ? (
-                      <span className="text-ink text-xs italic">empty</span>
+                      <span className="text-ink text-[10px] sm:text-xs italic">empty</span>
                     ) : (
                       slot.map((item, i) => (
-                        <div key={i} className="bg-blue-500/20 border border-blue-500/30 rounded px-2 py-1 text-xs code-font text-blue-200 flex items-center gap-1">
+                        <div key={i} className="bg-blue-500/20 border border-blue-500/30 rounded px-1 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs code-font text-blue-200 flex items-center gap-0.5 sm:gap-1">
                           <span className="text-pink-400">"{item[0]}"</span>:<span className="text-green-300">"{item[1]}"</span>
                         </div>
                       ))
@@ -274,8 +274,8 @@ export default function HeroShowcase() {
         
         {/* Caption */}
         <div className="absolute bottom-16 left-0 right-0 h-12 flex items-center justify-center pointer-events-none">
-           <div className="glass-panel px-6 py-2 rounded-full border border-white/10 shadow-xl transform transition-all duration-300">
-             <span className="text-sm font-medium tracking-wide text-gray-300 glow-text">{state.caption}</span>
+           <div className="glass-panel px-3 sm:px-6 py-1.5 sm:py-2 rounded-full border border-white/10 shadow-xl transform transition-all duration-300 max-w-[90%] sm:max-w-none">
+             <span className="text-[11px] sm:text-sm font-medium tracking-wide text-gray-300 glow-text line-clamp-1">{state.caption}</span>
            </div>
         </div>
 

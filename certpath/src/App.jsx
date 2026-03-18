@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import Layout, { HomeLayout, OnboardingLayout, LessonLayout } from "./components/Layout";
 import Home from "./pages/Home";
 import Onboarding from "./pages/Onboarding";
@@ -15,33 +16,39 @@ import NotFound from "./pages/NotFound";
 import DevLessons from "./pages/DevLessons";
 import Lessons from "./pages/Lessons";
 import Certificates from "./pages/Certificates";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<HomeLayout />}>
-        <Route index element={<Home />} />
-      </Route>
-      <Route element={<OnboardingLayout />}>
-        <Route path="onboarding" element={<Onboarding />} />
-        <Route path="reveal" element={<Reveal />} />
-      </Route>
-      <Route element={<LessonLayout />}>
-        <Route path="skills/:skillSlug/:lessonId" element={<LessonViewer />} />
-      </Route>
-      <Route element={<Layout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="skills/:skillSlug" element={<SkillOverview />} />
-        <Route path="lessons" element={<Lessons />} />
-        <Route path="explore" element={<Explore />} />
-        <Route path="fields/:slug" element={<Roadmap />} />
-        <Route path="fields/:slug/certs/:certId" element={<CertDetail />} />
-        <Route path="certificates" element={<Certificates />} />
-        <Route path="jobs" element={<Jobs />} />
-        <Route path="jobs/:jobId" element={<JobDetail />} />
-        {import.meta.env.DEV && <Route path="dev/lessons" element={<DevLessons />} />}
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<HomeLayout />}>
+          <Route index element={<Home />} />
+        </Route>
+        <Route element={<OnboardingLayout />}>
+          <Route path="onboarding" element={<Onboarding />} />
+          <Route path="reveal" element={<Reveal />} />
+        </Route>
+        <Route element={<LessonLayout />}>
+          <Route path="skills/:skillSlug/:lessonId" element={<LessonViewer />} />
+        </Route>
+        <Route element={<Layout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="skills/:skillSlug" element={<SkillOverview />} />
+          <Route path="lessons" element={<Lessons />} />
+          <Route path="explore" element={<Explore />} />
+          <Route path="fields/:slug" element={<Roadmap />} />
+          <Route path="fields/:slug/certs/:certId" element={<CertDetail />} />
+          <Route path="certificates" element={<Certificates />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="jobs" element={<Jobs />} />
+          <Route path="jobs/:jobId" element={<JobDetail />} />
+          {import.meta.env.DEV && <Route path="dev/lessons" element={<DevLessons />} />}
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }

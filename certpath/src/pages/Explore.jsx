@@ -58,14 +58,14 @@ export default function Explore() {
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-ink/8">
           <div className="max-w-2xl">
-            <h1 className="font-sans text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[1.1]">
+            <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[1.1]">
               Find the path that fits your ambition.
             </h1>
             <p className="mt-4 text-base md:text-lg text-pencil leading-relaxed font-medium">
               Each field comes with a curated roadmap of certifications, interactive lessons, and real job opportunities. Choose a direction to see how far you can go.
             </p>
           </div>
-          <div className="shrink-0 flex gap-6 md:text-right font-sans text-xs font-semibold uppercase tracking-wider text-pencil">
+          <div className="shrink-0 flex gap-4 sm:gap-6 md:text-right font-sans text-xs font-semibold uppercase tracking-wider text-pencil">
             <div>
               <strong className="block text-2xl font-bold text-ink mb-1">{fields.length}</strong>
               Fields

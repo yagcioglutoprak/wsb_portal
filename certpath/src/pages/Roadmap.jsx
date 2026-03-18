@@ -147,7 +147,7 @@ export default function Roadmap() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
         <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all">
           <StageIcon className="w-5 h-5 mb-4 opacity-50" style={{ color: color.accent }} />
           <div>

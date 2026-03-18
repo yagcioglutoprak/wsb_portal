@@ -9,7 +9,7 @@ import useScrollReveal from "../hooks/useScrollReveal";
 /* ═══════════════════════════════════════════════════════════════════════
    STREAK TRACKING & FLAME
    ═══════════════════════════════════════════════════════════════════════ */
-const STREAK_KEY = "certpath:streak-visits";
+const STREAK_KEY = "clairy:streak-visits";
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 function readStreak() { try { const r = localStorage.getItem(STREAK_KEY); return r ? JSON.parse(r) : []; } catch { return []; } }
 function recordVisit() {
@@ -44,13 +44,13 @@ function getWeekVisits() {
 function StreakFlame({ streak }) {
   const t = Math.min(streak / 7, 1);
   return (
-    <div className="relative w-8 h-10 shrink-0">
-      <svg viewBox="0 0 32 40" className="w-full h-full" aria-hidden="true">
-        <ellipse cx="16" cy="30" rx={7 + t * 2} ry="14" fill="#F0562E" opacity={0.3 + t * 0.15} style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
-        <ellipse cx="16" cy="31" rx={5 + t} ry="11" fill="#f97316" opacity={0.55 + t * 0.2} style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
-        <ellipse cx="16" cy="32" rx={3 + t * 0.5} ry="8" fill="#FFB020" opacity={0.8 + t * 0.2} style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
+    <div className="relative w-14 h-16 shrink-0 flex items-center justify-center">
+      <svg viewBox="0 0 32 40" className="absolute inset-0 w-full h-full" aria-hidden="true">
+        <ellipse cx="16" cy="27" rx={11 + t * 2.5} ry="16" fill="#F0562E" opacity={0.45 + t * 0.15} style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
+        <ellipse cx="16" cy="29" rx={8.5 + t * 1.5} ry="13" fill="#f97316" opacity={0.65 + t * 0.2} style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
+        <ellipse cx="16" cy="31" rx={5.5 + t * 0.5} ry="10" fill="#FFB020" opacity={0.9 + t * 0.1} style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-mono text-xs font-bold text-white pt-2" style={{ textShadow: "0 1px 2px rgba(0,0,0,.3)" }}>{streak}</span>
+      <span className="relative z-10 font-mono text-lg font-bold text-white mt-4" style={{ textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>{streak}</span>
     </div>
   );
 }
@@ -462,32 +462,36 @@ export default function DashboardGemini() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6 md:gap-8 bg-white/50 px-6 py-4 rounded-2xl border border-ink/5 shadow-sm">
+          <div className="flex items-center bg-[#fdfcfa] px-8 py-4 rounded-2xl border-[1.5px] border-ink/8 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] h-[96px]">
             {/* Inline Stats */}
-            <div className="flex items-center gap-5">
-              <div className="flex flex-col items-end">
-                <span className="font-mono text-xl font-bold leading-none text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)]">{xpCount}</span>
-                <span className="font-sans text-xs font-bold uppercase tracking-wider text-arcade mt-1.5">XP</span>
+            <div className="flex items-center h-full">
+              <div className="flex flex-col items-center justify-center min-w-[4rem]">
+                <span className="font-sans text-4xl font-bold text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)] leading-none mb-2">{xpCount}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-arcade">XP</span>
               </div>
-              <div className="w-px h-8 bg-ink/10" />
-              <div className="flex flex-col items-end">
-                <span className="font-mono text-xl font-bold leading-none" style={{ color: accent }}>{level}</span>
-                <span className="font-sans text-xs font-bold uppercase tracking-wider text-pencil mt-1.5">Level</span>
+              
+              <div className="w-px h-12 bg-ink/10 mx-6 lg:mx-8" />
+              
+              <div className="flex flex-col items-center justify-center min-w-[4rem]">
+                <span className="font-sans text-4xl font-bold leading-none mb-2" style={{ color: accent }}>{level}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">Level</span>
               </div>
-              <div className="w-px h-8 bg-ink/10" />
-              <div className="flex flex-col items-end">
-                <span className="font-mono text-xl font-bold text-ink leading-none">{completedLessons}/{totalLessons}</span>
-                <span className="font-sans text-xs font-bold uppercase tracking-wider text-pencil mt-1.5">Lessons</span>
+              
+              <div className="w-px h-12 bg-ink/10 mx-6 lg:mx-8" />
+              
+              <div className="flex flex-col items-center justify-center min-w-[6rem] pr-8 lg:pr-10 border-r-[1.5px] border-ink/8 h-full">
+                <span className="font-mono text-4xl font-bold text-ink leading-none mb-2 tracking-tight">{completedLessons}/{totalLessons}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">Lessons</span>
               </div>
             </div>
 
             {/* Streak Tracker */}
-            <div className="flex items-center gap-4 pl-6 border-l border-ink/10">
-              <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center pl-8 lg:pl-10">
+              <div className="flex items-center gap-3 lg:gap-4">
                 {weekDays.map((day, i) => (
                   <div key={i}
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                      day.visited ? "text-white" : day.isToday ? "border-[1.5px] text-ink" : "text-pencil bg-ink/[0.04]"
+                    className={`w-11 h-11 rounded-full flex items-center justify-center font-sans text-sm font-bold transition-colors ${
+                      day.visited ? "text-white shadow-sm" : day.isToday ? "border-[2px] text-ink" : "text-pencil bg-ink/[0.03]"
                     }`}
                     style={{
                       backgroundColor: day.visited ? accent : undefined,
@@ -497,7 +501,9 @@ export default function DashboardGemini() {
                   </div>
                 ))}
               </div>
-              <StreakFlame streak={streak} />
+              <div className="pl-6 lg:pl-8 flex items-center justify-center">
+                <StreakFlame streak={streak} />
+              </div>
             </div>
           </div>
         </header>
@@ -511,7 +517,7 @@ export default function DashboardGemini() {
             {/* Continue Learning Card */}
             {activeSkill && currentLesson && !allDone ? (
               <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl overflow-hidden flex flex-col group">
-                <div className="p-8 lg:p-10 flex-1 grid grid-cols-[1fr_auto] gap-10 items-center">
+                <div className="p-6 sm:p-8 lg:p-10 flex-1 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-center">
                   <div>
                     <div className="flex items-center gap-3 mb-5">
                       <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: accent, animation: "breatheDot 2s ease-in-out infinite" }} />

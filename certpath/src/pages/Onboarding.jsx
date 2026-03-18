@@ -671,7 +671,7 @@ export default function Onboarding() {
                   This helps us tailor everything to where you are. Your roadmap will adjust to your current level.
                 </p>
               </div>
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
                 {years.map((y, idx) => (
                   <div key={y.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 60 + 100}ms` }}>
                     <IllustratedCard
@@ -700,7 +700,7 @@ export default function Onboarding() {
                   Your program helps us recommend the right certifications and opportunities tailored for your exact degree.
                 </p>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4">
                 {programs.map((p, idx) => (
                   <div key={p.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 50 + 100}ms` }}>
                     <IllustratedCard

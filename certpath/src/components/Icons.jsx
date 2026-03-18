@@ -1,5 +1,5 @@
 // ============================================================================
-// CertPath — SVG Icon Library (Avant-Garde Redux)
+// Clairy — SVG Icon Library (Avant-Garde Redux)
 // ============================================================================
 // Ultra-minimal, abstract, geometric icons. 24x24 viewBox, strokeWidth 1.
 // Designed for high-fidelity technical aesthetics.

@@ -1,7 +1,7 @@
 // ============================================================================
-// CertPath — Curated Certification Data
+// Clairy — Curated Certification Data
 // ============================================================================
-// This file contains all mock/seed data for the CertPath application.
+// This file contains all mock/seed data for the Clairy application.
 // Costs are in PLN. Duration is in weeks. Salaries are monthly PLN (gross).
 // ============================================================================
 

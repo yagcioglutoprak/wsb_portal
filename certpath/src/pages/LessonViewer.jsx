@@ -258,10 +258,10 @@ export default function LessonViewer() {
   return (
     <div className="flex h-screen flex-col bg-paper">
       {/* Top menu bar (Brilliant style) */}
-      <div className="flex h-16 shrink-0 items-center justify-between px-6 bg-[#fdfcfa] border-b-[1.5px] border-ink/5">
+      <div className="flex h-16 shrink-0 items-center justify-between px-3 sm:px-6 bg-[#fdfcfa] border-b-[1.5px] border-ink/5">
         <Link
           to={`/skills/${skillSlug}`}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-ink/40 transition-colors hover:bg-ink/5 hover:text-ink/80"
+          className="flex h-11 w-11 items-center justify-center rounded-xl text-ink/40 transition-colors hover:bg-ink/5 hover:text-ink/80"
           title="Exit lesson"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -270,7 +270,7 @@ export default function LessonViewer() {
         </Link>
 
         {/* Center Progress Container */}
-        <div className="flex flex-1 items-center justify-center gap-2 px-8 max-w-2xl">
+        <div className="flex flex-1 items-center justify-center gap-2 px-2 sm:px-8 max-w-2xl">
           {/* Main track */}
           <div className="relative h-2.5 flex-1 rounded-full bg-paper overflow-hidden">
             <div
@@ -316,7 +316,7 @@ export default function LessonViewer() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 flex flex-col">
         <div className="mx-auto w-full max-w-4xl flex-1 flex flex-col justify-center pt-8 pb-12">
           <div className="mb-8">
             <p className="mb-2 text-center font-sans text-sm font-bold uppercase tracking-wider text-ink/40">

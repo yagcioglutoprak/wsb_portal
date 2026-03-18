@@ -74,13 +74,13 @@ export default function Lessons() {
                       <div
                         key={lesson.id}
                         className={[
-                          "rounded-xl border-[1.5px] bg-card p-5 transition-all duration-200",
+                          "rounded-xl border-[1.5px] bg-card p-4 sm:p-5 transition-all duration-200",
                           unlocked
                             ? "border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
                             : "border-ink/6 opacity-50",
                         ].join(" ")}
                       >
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2.5">
                               <span className="font-mono text-xs text-pencil">

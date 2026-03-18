@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Single parent observer triggers sequential card reveals.
@@ -245,9 +246,9 @@ function LessonsCard({ revealed }) {
   }, [revealed]);
 
   return (
-    <Card revealed={revealed} className="md:col-span-2 lg:col-span-2 flex flex-col md:flex-row overflow-hidden min-h-[460px]">
+    <Card revealed={revealed} className="md:col-span-2 lg:col-span-2 flex flex-col md:flex-row overflow-hidden min-h-[360px] md:min-h-[460px]">
       {/* Left Panel - Visuals */}
-      <div className="w-full md:w-5/12 lg:w-1/2 bg-[#f8f6f2] relative border-b md:border-b-0 md:border-r border-ink/6 flex items-center justify-center p-8 min-h-[320px]">
+      <div className="w-full md:w-5/12 lg:w-1/2 bg-[#f8f6f2] relative border-b md:border-b-0 md:border-r border-ink/6 flex items-center justify-center p-4 sm:p-8 min-h-[240px] md:min-h-[320px]">
         <div className="relative z-10 w-full max-w-[160px]">
           {/* Conveyor track */}
           <div className="absolute left-1/2 -translate-x-1/2 top-[-20px] bottom-[-20px] w-1.5 bg-ink/5 rounded-full z-0"></div>
@@ -318,7 +319,7 @@ function LessonsCard({ revealed }) {
       </div>
 
       {/* Right Panel - Block Editor */}
-      <div className="w-full md:w-7/12 lg:w-1/2 p-6 md:p-8 flex flex-col justify-center bg-[#fdfcfa] relative">
+      <div className="w-full md:w-7/12 lg:w-1/2 p-4 sm:p-6 md:p-8 flex flex-col justify-center bg-[#fdfcfa] relative">
         {/* Fake Cursor */}
         <div
           className="absolute z-50 pointer-events-none flex items-start justify-start"
@@ -444,12 +445,10 @@ function LessonsCard({ revealed }) {
 // CARD 2 — Certification Roadmap with stage-completing animation
 // ═══════════════════════════════════════════════════════════════════
 function CertRoadmapCard({ revealed }) {
-  // Stages unlock sequentially after card is revealed
   const [activeStage, setActiveStage] = useState(0);
 
   useEffect(() => {
     if (!revealed) return;
-    // Stage 1 fills immediately, then each next stage fills 800ms later
     const timers = [];
     for (let i = 0; i < 4; i++) {
       timers.push(setTimeout(() => setActiveStage(i + 1), 400 + i * 700));
@@ -458,85 +457,82 @@ function CertRoadmapCard({ revealed }) {
   }, [revealed]);
 
   const stages = [
-    { name: "Foundation", certs: ["CompTIA A+", "Google IT Support"], duration: "~2 mo" },
-    { name: "Associate", certs: ["CompTIA Security+", "AWS Cloud Practitioner"], duration: "~3 mo" },
-    { name: "Professional", certs: ["Cisco CCNA", "CompTIA CySA+"], duration: "~4 mo" },
-    { name: "Expert", certs: ["CISSP", "AWS Solutions Architect"], duration: "~6 mo" },
+    { name: "Foundation", provider: "CompTIA", cert: "Security+", icon: "S+", field: "cybersecurity", id: "security-plus" },
+    { name: "Associate", provider: "AWS", cert: "Cloud Pract.", icon: "CP", field: "cloud-engineering", id: "aws-cloud-practitioner" },
+    { name: "Professional", provider: "Cisco", cert: "CCNA", icon: "CC", field: "networking", id: "cisco-ccna" },
+    { name: "Expert", provider: "ISC2", cert: "CISSP", icon: "CS", field: "cybersecurity", id: "cissp" },
   ];
 
   return (
-    <Card revealed={revealed}>
-      <div className="p-7">
-        <h3 className="font-sans text-lg font-bold text-ink tracking-tight">Certification roadmap</h3>
-        <p className="mt-1.5 text-sm text-pencil leading-relaxed">Industry-recognized certifications mapped stage by stage</p>
+    <Card revealed={revealed} className="flex flex-col">
+      <div className="p-6 md:p-7 flex-1 flex flex-col">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-violet/10 text-violet flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15l8.38-4.36a1 1 0 0 0 0-1.78L12 4.5 3.62 8.86a1 1 0 0 0 0 1.78L12 15z"></path><path d="m3.62 12.14 8.38 4.36 8.38-4.36"></path><path d="m3.62 16.14 8.38 4.36 8.38-4.36"></path></svg>
+          </div>
+          <div>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Certification roadmap</h3>
+             <p className="text-xs text-pencil mt-1">Industry-recognized stages</p>
+          </div>
+        </div>
 
-        <div className="mt-5 relative">
-          {/* Timeline line that draws down as stages complete */}
-          <div className="absolute left-[13px] top-[14px] w-[2px] bg-ink/[0.04]" style={{ height: "calc(100% - 28px)" }} />
+        <div className="relative pl-4">
+          {/* Track line — clipped to first/last node centers */}
+          <div className="absolute left-[27px] top-[11px] bottom-[11px] w-[2px] bg-ink/5" />
           <div
-            className="absolute left-[13px] top-[14px] w-[2px] bg-violet/40 rounded-full origin-top"
+            className="absolute left-[27px] top-[11px] bottom-[11px] w-[2px] bg-violet rounded-full origin-top"
             style={{
-              height: "calc(100% - 28px)",
               transform: `scaleY(${activeStage / 4})`,
               transition: "transform 600ms cubic-bezier(0.16,1,0.3,1)",
             }}
           />
 
+          <div className="flex flex-col gap-4">
           {stages.map((stage, i) => {
             const isCompleted = activeStage > i;
             const isCurrent = activeStage === i + 1 && activeStage < 4;
             const isLast = i === 3 && activeStage >= 4;
+            const isActive = isCompleted || isLast;
 
             return (
               <div
                 key={stage.name}
-                className="flex gap-3.5 mb-5 last:mb-0 relative"
+                className="relative flex items-center gap-4 group"
                 style={{
                   opacity: revealed ? 1 : 0,
-                  transform: revealed ? "translateY(0)" : "translateY(8px)",
-                  transition: `opacity 500ms ${200 + i * 150}ms, transform 500ms ${200 + i * 150}ms`,
-                  transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+                  transform: revealed ? "translateX(0)" : "translateX(-8px)",
+                  transition: `all 500ms cubic-bezier(0.16,1,0.3,1) ${200 + i * 150}ms`,
                 }}
               >
-                {/* Circle */}
+                {/* Timeline Node */}
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold font-sans flex-shrink-0 relative z-[5] transition-all duration-500"
+                  className="w-[22px] h-[22px] rounded-full flex items-center justify-center shrink-0 relative z-10 transition-all duration-500 bg-[#fdfcfa]"
                   style={{
-                    backgroundColor: isCompleted || isLast ? "#8b5cf6" : "transparent",
-                    color: isCompleted || isLast ? "white" : "rgba(139,92,246,0.4)",
-                    border: isCompleted || isLast ? "none" : "1.5px solid rgba(139,92,246,0.2)",
-                    transform: (isCurrent || isLast) ? "scale(1.1)" : "scale(1)",
-                    boxShadow: isCurrent ? "0 0 0 4px rgba(139,92,246,0.1)" : "none",
+                    border: `2px solid ${isActive ? '#8b5cf6' : 'rgba(20,20,43,0.1)'}`,
+                    boxShadow: isCurrent ? "0 0 0 4px rgba(139,92,246,0.15)" : "none",
                   }}
                 >
-                  {isCompleted || isLast ? (
-                    <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2.5 6l2.5 2.5L9.5 4" />
-                    </svg>
-                  ) : (
-                    i + 1
-                  )}
+                  <div className={`w-2.5 h-2.5 rounded-full transition-colors duration-500 ${isActive ? 'bg-violet' : 'bg-transparent'}`} />
                 </div>
 
-                {/* Stage info */}
-                <div className="flex-1 min-w-0 pb-0.5">
-                  <p className="text-xs font-semibold text-ink font-sans">{stage.name}</p>
-                  {stage.certs.map(cert => (
-                    <p key={cert} className="text-xs text-pencil leading-snug">{cert}</p>
-                  ))}
-                  <p
-                    className="text-xs font-sans font-medium mt-0.5 transition-colors duration-300"
-                    style={{ color: isCompleted || isLast ? "#8b5cf6" : "rgba(139,92,246,0.4)" }}
-                  >
-                    {stage.duration}
-                  </p>
-                </div>
+                {/* Content Card (Clickable Link) */}
+                <Link
+                  to={`/fields/${stage.field}/certs/${stage.id}`}
+                  className={`flex-1 bg-[#fdfcfa] border-[1.5px] rounded-xl p-3 flex items-center gap-3 transition-all duration-300 hover:-translate-y-0.5 ${isActive ? 'border-violet/30 shadow-[0_2px_8px_rgba(139,92,246,0.08)] hover:border-violet/60 hover:shadow-[0_4px_12px_rgba(139,92,246,0.15)]' : 'border-ink/5 hover:border-ink/15 hover:shadow-sm'}`}
+                >
+                  <div className={`w-8 h-8 rounded-md flex items-center justify-center font-mono text-xs font-bold transition-colors duration-500 shrink-0 ${isActive ? 'bg-violet/10 text-violet' : 'bg-ink/5 text-pencil'}`}>
+                    {stage.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-pencil truncate">{stage.name}</p>
+                    <p className={`text-sm font-bold transition-colors duration-500 truncate ${isActive ? 'text-ink group-hover:text-violet' : 'text-graphite group-hover:text-ink'}`}>{stage.cert}</p>
+                  </div>
+                </Link>
               </div>
             );
           })}
+          </div>
         </div>
-
-        <p className="mt-4 text-xs text-pencil">42 certifications across 11 fields</p>
       </div>
     </Card>
   );
@@ -546,44 +542,64 @@ function CertRoadmapCard({ revealed }) {
 // CARD 3 — Job Opportunities
 // ═══════════════════════════════════════════════════════════════════
 function JobsCard({ revealed }) {
+  const typeStyle = {
+    emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    sky: "bg-sky-50 text-sky-700 border-sky-200",
+  };
+
   const jobData = [
-    { title: "SOC Analyst", company: "CyberDefend · Warsaw", salary: "6-9k PLN", color: "bg-emerald-50 text-emerald-600" },
-    { title: "Cloud Intern", company: "Comarch · Krakow", salary: "4-6k PLN", color: "bg-amber-50 text-amber-600" },
-    { title: "Data Analyst", company: "Allegro · Poznan", salary: "7-10k PLN", color: "bg-violet-50 text-violet" },
+    { title: "SOC Analyst", company: "CyberDefend", location: "Warsaw", type: "Working Student", salary: "6-9k", color: "sky" },
+    { title: "Cloud Intern", company: "Comarch", location: "Krakow", type: "Internship", salary: "4-6k", color: "emerald" },
+    { title: "Data Analyst", company: "Allegro", location: "Poznan", type: "Internship", salary: "7-10k", color: "emerald" },
   ];
 
   return (
-    <Card revealed={revealed}>
-      <div className="p-6">
-        <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-sans text-lg font-bold text-ink tracking-tight">Real opportunities</h3>
-          <span className="inline-flex items-center rounded-full bg-orange/10 px-2 py-0.5 text-xs font-bold text-orange font-sans">28+</span>
+    <Card revealed={revealed} className="flex flex-col">
+      <div className="p-6 md:p-7 flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-rust/10 text-rust flex items-center justify-center shrink-0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div>
+               <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Real opportunities</h3>
+               <p className="text-xs text-pencil mt-1">Student jobs in Poland</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center rounded-full bg-rust/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rust border border-rust/20 shrink-0">28+ Live</span>
         </div>
 
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-3 flex-1 justify-center">
           {jobData.map((job, i) => (
             <div
               key={job.title}
-              className="bg-paper/50 rounded-lg px-3 py-2.5 flex items-center justify-between gap-2"
+              className="group relative bg-[#fdfcfa] border-[1.5px] border-ink/8 hover:border-rust/40 rounded-xl p-4 flex flex-col gap-3 cursor-pointer transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] hover:-translate-y-0.5"
               style={{
                 opacity: revealed ? 1 : 0,
                 transform: revealed ? "translateX(0)" : "translateX(-12px)",
-                transition: `opacity 500ms ${300 + i * 120}ms, transform 500ms ${300 + i * 120}ms`,
-                transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+                transition: `all 500ms cubic-bezier(0.16,1,0.3,1) ${300 + i * 120}ms`,
               }}
             >
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-ink truncate">{job.title}</p>
-                <p className="text-xs text-pencil truncate">{job.company}</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h4 className="text-sm font-bold text-ink group-hover:text-rust transition-colors leading-tight">{job.title}</h4>
+                  <p className="text-xs font-medium text-pencil mt-1">{job.company} &middot; {job.location}</p>
+                </div>
+                <div className="w-6 h-6 rounded-full bg-rust/5 flex items-center justify-center opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shrink-0">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-rust"><path d="M6 3L11 8L6 13"/></svg>
+                </div>
               </div>
-              <span className={`shrink-0 rounded-md px-2 py-1 text-xs font-bold whitespace-nowrap ${job.color}`}>
-                {job.salary}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${typeStyle[job.color]}`}>
+                  {job.type}
+                </span>
+                <span className="font-mono text-xs font-bold text-ink">
+                  {job.salary} <span className="text-[10px] text-pencil font-sans uppercase tracking-wider">PLN</span>
+                </span>
+              </div>
             </div>
           ))}
         </div>
-
-        <p className="mt-4 text-xs text-pencil">Student positions in Poland</p>
       </div>
     </Card>
   );
@@ -593,74 +609,82 @@ function JobsCard({ revealed }) {
 // CARD 4 — Personalized Path
 // ═══════════════════════════════════════════════════════════════════
 function PersonalizedPathCard({ revealed }) {
-  const [resultVisible, setResultVisible] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     if (!revealed) return;
-    const t = setTimeout(() => setResultVisible(true), 600);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setStep(1), 600);
+    const t2 = setTimeout(() => setStep(2), 1400);
+    const t3 = setTimeout(() => setStep(3), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [revealed]);
 
   return (
-    <Card revealed={revealed}>
-      <div className="p-6">
-        <h3 className="font-sans text-lg font-bold text-ink tracking-tight">Your path, personalized</h3>
-        <p className="mt-1.5 text-sm text-pencil leading-relaxed">Tailored to your major and semester</p>
-
-        {/* 3 steps */}
-        <div className="mt-5 flex items-center">
-          {["Year", "Program", "Field"].map((label, i) => (
-            <div key={label} className="flex items-center flex-1 min-w-0">
-              <div className="flex flex-col items-center gap-1.5">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-sans transition-all duration-500"
-                  style={{
-                    backgroundColor: revealed && i <= 1 ? "#2856a6" : "transparent",
-                    color: revealed && i <= 1 ? "white" : "rgba(40,86,166,0.3)",
-                    border: revealed && i <= 1 ? "none" : "1.5px dashed rgba(40,86,166,0.2)",
-                    transitionDelay: `${300 + i * 200}ms`,
-                  }}
-                >
-                  {i === 1 && revealed ? (
-                    <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 text-white" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 8l3.5 3.5L13 5" />
-                    </svg>
-                  ) : (
-                    i + 1
-                  )}
-                </div>
-                <span className="text-xs font-sans font-medium text-pencil">{label}</span>
-              </div>
-              {i < 2 && (
-                <div
-                  className="flex-1 h-0 mx-2 border-t border-dashed transition-colors duration-500"
-                  style={{
-                    borderColor: revealed ? "rgba(40,86,166,0.15)" : "rgba(40,86,166,0.05)",
-                    transitionDelay: `${400 + i * 200}ms`,
-                  }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Result card */}
-        <div
-          className="mt-5 bg-paper rounded-lg px-3 py-2.5 border border-ink/6"
-          style={{
-            opacity: resultVisible ? 1 : 0,
-            transform: resultVisible ? "translateY(0) scale(1)" : "translateY(6px) scale(0.97)",
-            transition: "all 600ms cubic-bezier(0.16,1,0.3,1)",
-          }}
-        >
-          <p className="text-xs font-bold text-ink">Cybersecurity</p>
-          <p className="text-xs text-pencil mt-0.5">4 stages · 8 certs · 12 jobs</p>
-          <div className="mt-2 h-1.5 rounded-full bg-ink/5 overflow-hidden">
-            <div className="h-full w-0 rounded-full bg-rust/30" />
+    <Card revealed={revealed} className="flex flex-col">
+      <div className="p-6 md:p-7 flex-1 flex flex-col">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-orange/10 text-orange flex items-center justify-center shrink-0">
+             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          </div>
+          <div>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Your path, personalized</h3>
+             <p className="text-xs text-pencil mt-1">Takes ~30 seconds to generate</p>
           </div>
         </div>
 
-        <p className="mt-4 text-xs text-pencil">Takes about 30 seconds</p>
+        <div className="flex flex-col gap-4 flex-1 justify-center">
+          {/* Form Rows */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between bg-ink/[0.02] border-[1.5px] border-ink/5 rounded-xl px-4 py-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-pencil w-16">Year</span>
+              {step >= 1 ? (
+                 <span className="text-sm font-bold text-ink animate-[fadeIn_0.3s_ease-out]">2nd Year</span>
+              ) : (
+                 <span className="w-1.5 h-3.5 bg-rust animate-pulse"></span>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-between bg-ink/[0.02] border-[1.5px] border-ink/5 rounded-xl px-4 py-3" style={{ opacity: step >= 1 ? 1 : 0.4, transition: "opacity 0.3s" }}>
+              <span className="text-xs font-bold uppercase tracking-wider text-pencil w-16">Major</span>
+              {step >= 2 ? (
+                 <span className="text-sm font-bold text-ink animate-[fadeIn_0.3s_ease-out]">Computer Science</span>
+              ) : step >= 1 ? (
+                 <span className="w-1.5 h-3.5 bg-rust animate-pulse"></span>
+              ) : null}
+            </div>
+
+            <div className="flex items-center justify-between bg-ink/[0.02] border-[1.5px] border-ink/5 rounded-xl px-4 py-3" style={{ opacity: step >= 2 ? 1 : 0.4, transition: "opacity 0.3s" }}>
+              <span className="text-xs font-bold uppercase tracking-wider text-pencil w-16">Goal</span>
+              {step >= 3 ? (
+                 <span className="text-sm font-bold text-ink animate-[fadeIn_0.3s_ease-out]">Cybersecurity</span>
+              ) : step >= 2 ? (
+                 <span className="w-1.5 h-3.5 bg-rust animate-pulse"></span>
+              ) : null}
+            </div>
+          </div>
+
+          {/* Generated Result */}
+          <div
+            className="mt-1 bg-[#2856a6] text-white rounded-xl p-4 shadow-[0_8px_16px_rgba(40,86,166,0.15)] relative overflow-hidden"
+            style={{
+              opacity: step >= 3 ? 1 : 0,
+              transform: step >= 3 ? "translateY(0) scale(1)" : "translateY(10px) scale(0.95)",
+              transition: "all 600ms cubic-bezier(0.34,1.56,0.64,1)",
+            }}
+          >
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white/10 to-transparent transform skew-x-12 animate-[shimmer_2.5s_infinite]" />
+            <div className="flex justify-between items-center relative z-10">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">Path Generated</p>
+                <p className="text-base font-bold">Cybersecurity Analyst</p>
+                <p className="text-xs text-white/80 mt-1">4 stages &middot; 8 certs &middot; 12 jobs</p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3L11 8L5 13"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Card>
   );
@@ -671,78 +695,78 @@ function PersonalizedPathCard({ revealed }) {
 // ═══════════════════════════════════════════════════════════════════
 function ProgressCard({ revealed }) {
   return (
-    <Card revealed={revealed}>
-      <div className="p-6">
-        <h3 className="font-sans text-lg font-bold text-ink tracking-tight">Track your progress</h3>
+    <Card revealed={revealed} className="flex flex-col">
+      <div className="p-6 md:p-7 flex-1 flex flex-col">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-amber/10 text-amber flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </div>
+          <div>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Track progress</h3>
+             <p className="text-xs text-pencil mt-1">Stay consistent</p>
+          </div>
+        </div>
 
-        <div className="mt-4">
-          {/* XP */}
-          <div className="flex items-baseline gap-1.5 mb-3">
-            <span className="font-sans text-2xl font-bold text-ink tracking-tight">350</span>
-            <span className="font-sans text-sm font-bold text-amber">XP</span>
-            <span className="ml-auto inline-flex items-center rounded-full bg-amber/10 px-2 py-0.5 text-xs font-bold text-amber font-sans">Level 4</span>
+        <div className="flex-1 flex flex-col justify-center gap-6">
+          {/* XP & Level */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-mono text-5xl font-bold text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)]">350</span>
+              <span className="font-sans text-sm font-bold uppercase tracking-wider text-arcade">XP</span>
+            </div>
+            <div className="bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl px-4 py-2 flex flex-col items-end">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-pencil">Current</span>
+              <span className="text-base font-bold text-ink">Level 4</span>
+            </div>
           </div>
 
           {/* Progress bar */}
-          <div className="h-2.5 rounded-full bg-amber/10 overflow-hidden mb-4 relative">
-            <div
-              className="h-full rounded-full bg-amber relative overflow-hidden"
-              style={{
-                width: revealed ? "65%" : "0%",
-                transition: "width 1.4s cubic-bezier(0.16,1,0.3,1) 0.4s",
-              }}
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-                  animation: revealed ? "shimmer 2.5s linear infinite 2s" : "none",
-                }}
-              />
+          <div>
+            <div className="flex justify-between text-xs font-bold text-pencil mb-2.5">
+              <span>Level 4</span>
+              <span>Level 5</span>
             </div>
-          </div>
-
-          {/* Badges */}
-          <div className="flex items-center gap-2 mb-4">
-            {[
-              { bg: "bg-teal/10", color: "text-teal", icon: "M2.5 6l2.5 2.5L9.5 4" },
-              { bg: "bg-violet/10", color: "text-violet", icon: "M6 1.5l1.3 2.7 3 .4-2.2 2.1.5 3L6 8.4l-2.6 1.3.5-3-2.2-2.1 3-.4L6 1.5z" },
-              { bg: "bg-orange/10", color: "text-orange", icon: "M7 1L3.5 7H7l-.5 4L10 5H7l.5-4z" },
-            ].map((badge, i) => (
+            <div className="h-3 rounded-full bg-ink/5 overflow-hidden relative shadow-inner">
               <div
-                key={i}
-                className={`w-8 h-8 rounded-full ${badge.bg} flex items-center justify-center`}
+                className="h-full rounded-full bg-amber relative overflow-hidden"
                 style={{
-                  opacity: revealed ? 1 : 0,
-                  transform: revealed ? "scale(1)" : "scale(0)",
-                  transition: `all 400ms cubic-bezier(0.34,1.56,0.64,1) ${600 + i * 150}ms`,
+                  width: revealed ? "65%" : "0%",
+                  transition: "width 1.4s cubic-bezier(0.16,1,0.3,1) 0.4s",
                 }}
               >
-                <svg viewBox="0 0 12 12" fill="none" className={`w-3.5 h-3.5 ${badge.color}`} stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d={badge.icon} />
-                </svg>
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+                    animation: revealed ? "shimmer 2.5s linear infinite 2s" : "none",
+                  }}
+                />
               </div>
-            ))}
+            </div>
           </div>
 
           {/* Streak */}
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {[true, true, true, false, false].map((filled, i) => (
-                <div
-                  key={i}
-                  className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${filled ? "bg-amber" : "bg-ink/5"}`}
-                  style={{ transitionDelay: revealed ? `${800 + i * 80}ms` : "0ms" }}
-                >
-                  {filled && (
-                    <svg viewBox="0 0 12 12" fill="none" className="w-2.5 h-2.5 text-white" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2.5 6l2 2L9.5 4" />
-                    </svg>
-                  )}
-                </div>
-              ))}
+          <div className="bg-[#fdfcfa] border-[1.5px] border-ink/8 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-10 shrink-0 relative flex items-center justify-center">
+                 <svg viewBox="0 0 32 40" className="w-full h-full absolute inset-0">
+                    <ellipse cx="16" cy="30" rx="9" ry="14" fill="#F0562E" opacity="0.45" style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
+                    <ellipse cx="16" cy="31" rx="6" ry="11" fill="#f97316" opacity="0.75" style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
+                    <ellipse cx="16" cy="32" rx="3.5" ry="8" fill="#FFB020" opacity="1" style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
+                 </svg>
+                 <span className="relative z-10 text-white font-mono text-xs font-bold pt-2 drop-shadow-md">3</span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-ink leading-tight">3 Day Streak!</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-pencil mt-0.5">Keep it burning</p>
+              </div>
             </div>
-            <span className="text-xs font-sans font-medium text-pencil">3-day streak</span>
+            <div className="flex gap-1.5">
+              {['M','T','W'].map((day, i) => (
+                <div key={day} className="w-7 h-7 rounded-md bg-amber text-white flex items-center justify-center text-xs font-bold shadow-[0_2px_0_0_rgba(245,158,11,0.4)]" style={{ opacity: revealed ? 1 : 0, transform: revealed ? "scale(1)" : "scale(0.8)", transition: `all 300ms cubic-bezier(0.34,1.56,0.64,1) ${800 + i*100}ms` }}>{day}</div>
+              ))}
+              <div className="w-7 h-7 rounded-md bg-ink/5 border border-ink/10 text-pencil flex items-center justify-center text-xs font-bold" style={{ opacity: revealed ? 1 : 0, transition: `opacity 300ms 1100ms` }}>T</div>
+            </div>
           </div>
         </div>
       </div>
@@ -768,6 +792,7 @@ export default function BentoGrid() {
         @keyframes shake { 0%,100% { transform:translateX(0) } 25% { transform:translateX(-4px) } 75% { transform:translateX(4px) } }
         @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
         @keyframes dropInBlock { 0% { opacity:0; transform:translateY(20px) scale(0.95) } 100% { opacity:1; transform:translateY(0) scale(1) } }
+        @keyframes flameSway { 0%,100%{transform:translateX(0) scaleY(1)} 33%{transform:translateX(-1px) scaleY(1.04)} 66%{transform:translateX(1px) scaleY(.97)} }
       `}</style>
 
       <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">

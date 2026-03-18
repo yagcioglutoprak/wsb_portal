@@ -115,7 +115,7 @@ export default function JobDetail() {
             </Link>
           )}
         </div>
-        <h1 className="font-sans text-4xl font-bold text-ink sm:text-5xl">
+        <h1 className="font-sans text-3xl font-bold text-ink sm:text-4xl md:text-5xl">
           {job.title}
         </h1>
         <p className="mt-2 text-xl text-graphite">{job.company}</p>
@@ -134,7 +134,7 @@ export default function JobDetail() {
               <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Location
               </span>
-              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
+              <span className="mt-1.5 block font-sans text-2xl sm:text-3xl font-bold text-ink">
                 {job.location}
               </span>
             </div>
@@ -142,7 +142,7 @@ export default function JobDetail() {
               <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Salary range
               </span>
-              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
+              <span className="mt-1.5 block font-sans text-2xl sm:text-3xl font-bold text-ink">
                 {job.salaryMin.toLocaleString("pl-PL")} - {job.salaryMax.toLocaleString("pl-PL")} PLN
               </span>
               <span className="mt-1 block text-sm text-graphite">
@@ -153,7 +153,7 @@ export default function JobDetail() {
               <span className="block font-sans text-xs font-semibold uppercase tracking-wide text-pencil">
                 Position type
               </span>
-              <span className="mt-1.5 block font-sans text-3xl font-bold text-ink">
+              <span className="mt-1.5 block font-sans text-2xl sm:text-3xl font-bold text-ink">
                 {job.type}
               </span>
               <span className="mt-1 block text-sm text-graphite">

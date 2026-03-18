@@ -157,7 +157,7 @@ const Scene2 = ({ onComplete }) => {
     { id: 's1', value: '"hello"', type: 'str' },
     { id: 'f1', value: '3.14', type: 'float' },
     { id: 'b1', value: 'True', type: 'bool' },
-    { id: 's2', value: '"CertPath"', type: 'str' },
+    { id: 's2', value: '"Clairy"', type: 'str' },
     { id: 'i2', value: '0', type: 'int' },
     { id: 'b2', value: 'False', type: 'bool' },
     { id: 'f2', value: '99.9', type: 'float' }

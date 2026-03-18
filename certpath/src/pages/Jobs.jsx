@@ -78,7 +78,7 @@ export default function Jobs() {
         <span className="inline-block bg-[#2a9d8f]/10 text-[#2a9d8f] border border-[#2a9d8f]/20 rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-widest mb-4">
           Hiring Now
         </span>
-        <h1 className="font-sans text-4xl font-bold text-ink sm:text-5xl lg:text-6xl tracking-tight leading-none mb-4">
+        <h1 className="font-sans text-2xl font-bold text-ink sm:text-4xl md:text-5xl lg:text-6xl tracking-tight leading-none mb-4">
           Opportunities for students
         </h1>
         <p className="max-w-2xl text-lg sm:text-xl leading-relaxed text-graphite font-medium">

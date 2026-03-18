@@ -392,7 +392,7 @@ export default function Reveal() {
 
         {/* ═══════════════ STATS BENTO ═══════════════ */}
         <div 
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16"
           style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both" : "none" }}
         >
           {[

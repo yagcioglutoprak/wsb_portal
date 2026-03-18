@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Logo */}
           <div className="lg:col-span-4">
             <Link to="/" className="font-serif text-[32px] font-bold tracking-tight text-white flex items-center gap-3 leading-none">
-              CertPath
+              Clairy
             </Link>
           </div>
 
@@ -76,8 +76,12 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-28 pt-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 pb-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link to="/terms" className="text-[13px] text-white/50 hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/privacy" className="text-[13px] text-white/50 hover:text-white transition-colors">Privacy Policy</Link>
+          </div>
           <div className="text-[13px] text-white/50">
-            © 2026 CertPath — Built for university students
+            © 2026 Clairy — Built for university students
           </div>
         </div>
       </div>

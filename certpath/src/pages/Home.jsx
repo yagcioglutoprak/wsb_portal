@@ -56,7 +56,7 @@ export default function Home() {
     <div className="min-h-screen selection:bg-rust selection:text-white relative overflow-hidden bg-[#f5f3ef]">
 
       {/* ═══════════════════ HERO ═══════════════════ */}
-      <section className="relative z-10 pt-16 pb-8 lg:pt-20 lg:pb-16 px-6 md:px-12 lg:px-24 max-w-[1600px] mx-auto">
+      <section className="relative z-10 pt-16 pb-8 lg:pt-20 lg:pb-16 px-4 sm:px-6 md:px-12 lg:px-24 max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative">
           <div className="animate-fade-in-up">
             {isOnboarded ? (
@@ -65,12 +65,12 @@ export default function Home() {
                   <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">Welcome back</span>
                   <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">LVL {level}</span>
                 </div>
-                <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-ink tracking-tight">
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[0.9] text-ink tracking-tight">
                   Keep building <br />
                   <span className="text-rust">your {fieldName} path.</span>
                 </h1>
                 <div className="mt-10 flex items-center gap-8">
-                  <Link to="/dashboard" className="bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
+                  <Link to="/dashboard" className="bg-rust text-white rounded-xl px-5 py-3 sm:px-8 sm:py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
                     Go to dashboard <ArrowRightIcon className="w-4 h-4" />
                   </Link>
                   <p className="font-sans text-sm text-pencil"><strong className="text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)]">{xp} XP</strong> earned</p>
@@ -82,7 +82,7 @@ export default function Home() {
                   <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">WSB Merito Students</span>
                   <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">Edition 2026</span>
                 </div>
-                <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[0.9] text-ink tracking-tight">
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[0.9] text-ink tracking-tight">
                   From classroom <br />
                   <span className="text-rust">to industry.</span>
                 </h1>
@@ -90,7 +90,7 @@ export default function Home() {
                   Tell us your major and semester. We'll build you a personalized path with interactive lessons, certifications, and real job opportunities.
                 </p>
                 <div className="mt-10 flex items-center gap-8">
-                  <Link to="/onboarding" className="bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
+                  <Link to="/onboarding" className="bg-rust text-white rounded-xl px-5 py-3 sm:px-8 sm:py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
                     Start your path <ArrowRightIcon className="w-4 h-4" />
                   </Link>
                   <div className="font-sans text-sm text-pencil">Takes ~30 seconds. No account needed.</div>
@@ -106,7 +106,7 @@ export default function Home() {
 
       {/* ═══════════════════ BENTO GRID ═══════════════════ */}
       <section className="relative z-10">
-        <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-24 py-14 lg:py-20">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24 py-14 lg:py-20">
           <div className="text-center mb-10 lg:mb-14">
             <h2 className="font-sans text-3xl lg:text-4xl font-bold text-ink tracking-tight">
               Everything you need to launch your career
@@ -121,7 +121,7 @@ export default function Home() {
 
       {/* ═══════════════════ INTERACTIVE FIELD EXPLORER ═══════════════════ */}
       <section ref={fieldsReveal.ref} className="relative z-10 py-16 lg:py-24">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="flex flex-col md:flex-row justify-between items-end mb-10 lg:mb-14 gap-8 border-b border-ink/8 pb-8">
             <div>
               <h2 className="font-sans text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[0.9]">Find your field</h2>
@@ -302,7 +302,7 @@ export default function Home() {
       {/* ═══════════════════ JOBS ═══════════════════ */}
       {activeJobs.length > 0 && (
         <section ref={jobsReveal.ref} className="relative z-10 py-16 lg:py-20">
-          <div className={`max-w-[1400px] mx-auto px-6 md:px-12 lg:px-24 transition-all duration-[1.2s] ease-[cubic-bezier(0.19,1,0.22,1)] ${jobsReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-24'}`}>
+          <div className={`max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24 transition-all duration-[1.2s] ease-[cubic-bezier(0.19,1,0.22,1)] ${jobsReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-24'}`}>
             <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6 pb-8 border-b border-ink/8">
               <div>
                 <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">Hiring now</span>
@@ -391,19 +391,19 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Ticket Footer / Stub */}
+            {/* Stats Footer */}
             <div className="mt-14 pt-6 border-t-[2px] border-dashed border-ink/10 flex items-center justify-between text-left font-mono text-xs text-pencil">
               <div>
-                <span className="block font-bold text-pencil mb-1">ISSUED TO</span>
-                <span className="font-semibold text-ink">WSB Merito Student</span>
+                <span className="block font-bold text-pencil mb-1">CERTIFICATIONS</span>
+                <span className="font-semibold text-ink">{totalCerts} across {fields.length} fields</span>
               </div>
               <div>
-                <span className="block font-bold text-pencil mb-1">VALID FOR</span>
-                <span className="font-semibold text-ink">EduTech Masters '26</span>
+                <span className="block font-bold text-pencil mb-1">LIVE JOBS</span>
+                <span className="font-semibold text-ink">{jobs.length} internships in Poland</span>
               </div>
               <div className="hidden sm:block text-right">
-                <span className="block font-bold text-pencil mb-1">PRICE</span>
-                <span className="font-semibold text-ink">0.00 PLN</span>
+                <span className="block font-bold text-pencil mb-1">COST</span>
+                <span className="font-semibold text-success">100% Free</span>
               </div>
             </div>
 

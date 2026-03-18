@@ -10,7 +10,7 @@ import useScrollReveal from "../hooks/useScrollReveal";
    STREAK TRACKING
    ═══════════════════════════════════════════════════════════════════════ */
 
-const STREAK_KEY = "certpath:streak-visits";
+const STREAK_KEY = "clairy:streak-visits";
 function todayStr() { return new Date().toISOString().slice(0, 10); }
 function readStreak() {
   try { const r = localStorage.getItem(STREAK_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
