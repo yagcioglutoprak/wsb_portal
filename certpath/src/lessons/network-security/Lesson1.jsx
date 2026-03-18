@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { CheckIcon } from "../../components/Icons";
 import DragDrop from "../../components/widgets/DragDrop";
 import Quiz from "../../components/widgets/Quiz";
+import { sounds } from "../../hooks/useSound";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // UI Components
@@ -40,6 +41,7 @@ function Scene1({ onComplete }) {
 
   const handleClick = (id) => {
     if (!clicked.includes(id)) {
+      sounds.pop();
       const newClicked = [...clicked, id];
       setClicked(newClicked);
       if (newClicked.length === nodes.length) {
@@ -73,9 +75,9 @@ function Scene1({ onComplete }) {
               onClick={() => handleClick(node.id)}
             >
               {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success | Bug 8 fix: font-mono → font-sans */}
-              <div className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/10 hover:bg-white/20 hover:scale-110'}`}>
+              <div className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:scale-110'}`}>
                 {isClicked && <CheckIcon className="w-8 h-8 text-white" />}
-                {!isClicked && <span className="text-white font-sans text-xs">{node.label}</span>}
+                {!isClicked && <span className="text-white font-sans text-sm font-semibold">{node.label}</span>}
               </div>
               <div className={`mt-3 w-48 text-center transition-all duration-500 ${isClicked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                 <p className="text-white text-sm font-bold bg-ink/50 px-2 py-1 rounded">{node.label}</p>
@@ -131,6 +133,7 @@ function Scene2({ onComplete }) {
 
   const sendRequest = () => {
     if (sendingRef.current || doneRef.current) return;
+    sounds.pop();
     sendingRef.current = true;
     setPacketPos(0);
 
@@ -234,6 +237,7 @@ function Scene3({ onComplete }) {
 
   const handleClick = (id) => {
     if (!found.includes(id)) {
+      sounds.pop();
       const newFound = [...found, id];
       setFound(newFound);
       if (newFound.length === spots.length) {
@@ -251,44 +255,40 @@ function Scene3({ onComplete }) {
 
       <div className="w-full max-w-4xl bg-[#1a1a2e] rounded-2xl p-12 relative mt-4">
         {/* Background Path */}
-        <div className="absolute top-1/2 left-12 right-12 h-2 bg-white/5 -translate-y-1/2 rounded-full" />
+        <div className="absolute top-[40%] left-12 right-12 h-2 bg-white/5 -translate-y-1/2 rounded-full" />
 
-        <div className="flex justify-between items-center relative z-10 text-white/50">
-          <div className="text-3xl">💻</div>
-          <div className="text-3xl">📡</div>
-          <div className="text-3xl">🏢</div>
-          <div className="text-3xl">🧱</div>
-          <div className="text-3xl">🗄️</div>
+        {/* Network devices row */}
+        <div className="flex justify-between items-center relative z-10 mb-4">
+          {["💻", "📡", "🏢", "🧱", "🗄️"].map((icon, i) => (
+            <div key={i} className="flex flex-col items-center w-20">
+              <div className="text-4xl mb-1">{icon}</div>
+              <span className="text-white/70 text-xs font-semibold">{["Laptop", "Router", "ISP", "Firewall", "Server"][i]}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Spots */}
-        {spots.map((spot) => {
-          const isFound = found.includes(spot.id);
-          // Bug 4 fix: conditional tooltip positioning for spots near the right edge
-          const isNearRight = spot.x > 75;
-          return (
-            <div
-              key={spot.id}
-              className="absolute top-1/2 -translate-y-1/2 group z-20"
-              style={{ left: `${spot.x}%` }}
-            >
-              {/* Bug 6 fix: #dc2626 → bg-error / border-error */}
-              <button
-                onClick={() => handleClick(spot.id)}
-                className={`w-10 h-10 -translate-x-1/2 rounded-full border-2 flex items-center justify-center transition-all ${isFound ? 'bg-error border-error' : 'bg-white/10 border-white/30 hover:bg-white/20 animate-pulse'}`}
-              >
-                {isFound ? "⚠️" : "?"}
-              </button>
-
-              {isFound && (
-                <div className={`absolute top-12 bg-[#fdfcfa] rounded-xl p-3 w-48 text-center shadow-lg border-2 border-error animate-slide-up max-w-[calc(100vw-2rem)] ${isNearRight ? 'right-0' : 'left-1/2 -translate-x-1/2'}`}>
-                  <h4 className="font-bold text-ink text-sm">{spot.title}</h4>
-                  <p className="text-xs text-graphite mt-1">{spot.desc}</p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {/* Vulnerability spots — below the device row */}
+        <div className="flex justify-between items-start relative z-20 mt-6 px-4">
+          {spots.map((spot) => {
+            const isFound = found.includes(spot.id);
+            return (
+              <div key={spot.id} className="flex flex-col items-center">
+                <button
+                  onClick={() => handleClick(spot.id)}
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${isFound ? 'bg-error border-error text-white' : 'bg-white/10 border-white/30 text-white/60 hover:bg-white/20 animate-pulse'}`}
+                >
+                  {isFound ? "⚠️" : "?"}
+                </button>
+                {isFound && (
+                  <div className="mt-2 bg-[#fdfcfa] rounded-xl p-3 w-44 text-center shadow-lg border-2 border-error animate-slide-up">
+                    <h4 className="font-bold text-ink text-sm">{spot.title}</h4>
+                    <p className="text-xs text-graphite mt-1">{spot.desc}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mt-8 text-graphite font-medium">
@@ -303,15 +303,15 @@ function Scene3({ onComplete }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function Scene4({ onComplete }) {
   const items = [
-    { id: "c", text: "Only the right people can see the data" },
-    { id: "i", text: "The data hasn't been tampered with" },
-    { id: "a", text: "The system is up and running when you need it" }
+    { id: "c", label: "Only the right people can see the data" },
+    { id: "i", label: "The data hasn't been tampered with" },
+    { id: "a", label: "The system is up and running when you need it" }
   ];
 
   const zones = [
-    { id: "zone_c", title: "Confidentiality", example: "HTTPS encrypts your bank password so nobody can read it in transit." },
-    { id: "zone_i", title: "Integrity", example: "File checksums ensure the downloaded update wasn't altered by malware." },
-    { id: "zone_a", title: "Availability", example: "Backup servers take over instantly if the main server goes offline." }
+    { id: "zone_c", label: "Confidentiality", example: "HTTPS encrypts your bank password so nobody can read it in transit." },
+    { id: "zone_i", label: "Integrity", example: "File checksums ensure the downloaded update wasn't altered by malware." },
+    { id: "zone_a", label: "Availability", example: "Backup servers take over instantly if the main server goes offline." }
   ];
 
   return (
@@ -334,7 +334,7 @@ function Scene4({ onComplete }) {
         <div className="grid grid-cols-3 gap-4 mt-8 text-sm text-center">
            {zones.map(z => (
              <div key={z.id} className="p-4 bg-[#fdfcfa] border-[1.5px] border-ink/10 rounded-xl">
-               <strong className="block text-rust mb-2">{z.title} Example:</strong>
+               <strong className="block text-rust mb-2">{z.label} Example:</strong>
                <span className="text-graphite">{z.example}</span>
              </div>
            ))}
@@ -371,6 +371,13 @@ function Scene5({ onComplete }) {
   const handleDrop = (e, zoneId) => {
     e.preventDefault();
     if (!dragging) return;
+    sounds.snap();
+    const zone = zones.find(z => z.id === zoneId);
+    if (zone && zone.target === dragging) {
+      sounds.correct();
+    } else {
+      sounds.wrong();
+    }
     setPlacements({ ...placements, [zoneId]: dragging });
     setDragging(null);
   };
@@ -449,6 +456,7 @@ function Scene5({ onComplete }) {
                   }`}
                   // Bug 2 fix: click handler to return wrong tools to tray
                   onClick={isWrong ? () => {
+                    sounds.pop();
                     setPlacements(prev => {
                       const next = { ...prev };
                       delete next[zone.id];
@@ -529,6 +537,7 @@ function Scene6({ onComplete }) {
 
   const handleEventClick = (ev) => {
     if (!ev.bad || solved.includes(ev.id)) return;
+    sounds.pop();
     setActiveEvent(ev);
   };
 

@@ -6,8 +6,8 @@
   --color-warm: #e8e4dc;
   --color-card: #fdfcfa;
   --color-rust: #DF5433; /* Warm Terracotta - Primary Action (Softened) */
-  --color-graphite: #3d4a5e;
-  --color-pencil: #6b7280;
+  --color-graphite: #374151;
+  --color-pencil: #4b5563;
   --color-faint: rgba(20, 34, 68, 0.08);
   --color-merito: #2856a6; /* WSB Blue - Institutional Authority */
 
@@ -54,7 +54,7 @@
   50% { box-shadow: 0 0 0 8px rgba(240, 86, 46, 0.10); }
 }
 
-@keyframes slideInRight {
+@keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
 }

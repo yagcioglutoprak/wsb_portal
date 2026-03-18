@@ -83,7 +83,7 @@ export default function Jobs() {
         </h1>
         <p className="max-w-2xl text-lg sm:text-xl leading-relaxed text-graphite font-medium">
           Real internships and working student positions in Poland.
-          Scraped live from LinkedIn — updated March 2026.
+          Curated from LinkedIn — March 2026.
         </p>
       </div>
 

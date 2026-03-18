@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { sounds } from "../../hooks/useSound";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -73,6 +74,7 @@ export default function Quiz({ data, onComplete }) {
     setShowResult(true);
 
     if (index === correctIndex) {
+      sounds.correct();
       setAnimatingCorrect(true);
       setShowConfetti(true);
       setTimeout(() => {
@@ -81,6 +83,7 @@ export default function Quiz({ data, onComplete }) {
       setTimeout(() => setShowConfetti(false), 800);
       onComplete?.();
     } else {
+      sounds.wrong();
       setAnimatingWrong(true);
       setTimeout(() => {
         setAnimatingWrong(false);

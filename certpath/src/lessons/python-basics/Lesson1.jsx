@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowRightIcon, CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SHARED UI COMPONENTS
@@ -51,7 +52,7 @@ const Scene1 = ({ onComplete }) => {
 
   useEffect(() => {
     const allFilled = boxes.every(b => b.name && b.value && PAIRS[b.name] === b.value);
-    if (allFilled) onComplete();
+    if (allFilled) { sounds.correct(); onComplete(); }
   }, [boxes, onComplete]);
 
   const triggerShake = (id) => {
@@ -72,12 +73,14 @@ const Scene1 = ({ onComplete }) => {
 
         if (itemType === 'name' && !box.name) {
           if (currentUsedNames.includes(itemContent)) return box;
+          sounds.snap();
           return { ...box, name: itemContent };
         }
 
         if (itemType === 'value' && !box.value) {
-          if (!box.name) { triggerShake(boxId); return box; }
-          if (PAIRS[box.name] !== itemContent) { triggerShake(boxId); return box; }
+          if (!box.name) { triggerShake(boxId); sounds.wrong(); return box; }
+          if (PAIRS[box.name] !== itemContent) { triggerShake(boxId); sounds.wrong(); return box; }
+          sounds.snap();
           return { ...box, value: itemContent };
         }
 
@@ -173,9 +176,11 @@ const Scene2 = ({ onComplete }) => {
 
     if (item.type === targetType) {
       if (!placedItems.includes(itemId)) {
+        sounds.snap();
         setPlacedItems(prev => [...prev, itemId]);
       }
     } else {
+      sounds.wrong();
       setShakeItemId(itemId);
       shakeTimerRef.current = setTimeout(() => setShakeItemId(null), 500);
     }
@@ -183,6 +188,7 @@ const Scene2 = ({ onComplete }) => {
 
   useEffect(() => {
     if (placedItems.length === items.length) {
+      sounds.correct();
       onComplete();
     }
   }, [placedItems, items.length, onComplete]);
@@ -262,12 +268,14 @@ const Scene3 = ({ onComplete }) => {
 
   const handleStep = () => {
     if (step < lines.length) {
+      sounds.pop();
       setStep(s => s + 1);
     }
   };
 
   useEffect(() => {
     if (step === lines.length) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 1000);
       return () => clearTimeout(t);
     }
@@ -290,7 +298,7 @@ const Scene3 = ({ onComplete }) => {
             </div>
             <div className="text-xs font-mono text-pencil">main.py</div>
           </div>
-          <div className="bg-[#1e1e1e] border border-[#333] rounded-b-xl p-6 font-mono text-sm leading-8 text-ink/70 shadow-2xl overflow-hidden relative">
+          <div className="bg-[#1e1e1e] border border-[#333] rounded-b-xl p-6 font-mono text-sm leading-8 text-gray-300 shadow-2xl overflow-hidden relative">
             {lines.map((line, i) => (
               <div key={line.id} className={`relative flex items-center px-4 -mx-4 transition-colors duration-300 ${step === i + 1 ? 'bg-blue-500/15 text-blue-100' : 'text-pencil'}`}>
                 <span className="w-6 text-ink select-none">{i + 1}</span>
@@ -377,9 +385,11 @@ const Scene4 = ({ onComplete }) => {
 
   const handleRun = () => {
     if (selectedFix === 'str(age)') {
+      sounds.correct();
       setRunState('success');
       timerRef.current = setTimeout(() => onComplete(), 1500);
     } else if (selectedFix !== null) {
+      sounds.wrong();
       setShakeKey(k => k + 1);
     } else {
       setRunState('error');
@@ -389,7 +399,7 @@ const Scene4 = ({ onComplete }) => {
   const codeDisplay = () => {
     if (runState === 'success') {
       return (
-        <span className="text-ink/70">
+        <span className="text-gray-300">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-amber-500 bg-amber-500/20 px-1 rounded">str(age)</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
@@ -397,14 +407,14 @@ const Scene4 = ({ onComplete }) => {
 
     if (selectedFix) {
       return (
-        <span className="text-ink/70">
+        <span className="text-gray-300">
           message = <span className="text-amber-300">"I am "</span> + <span className="text-blue-300 bg-blue-500/20 px-1 rounded">{selectedFix}</span> + <span className="text-amber-300">" years old"</span>
         </span>
       );
     }
 
     return (
-      <span className="text-ink/70">
+      <span className="text-gray-300">
         message = <span className="text-amber-300">"I am "</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-blue-300">age</span> <span className={`transition-all duration-300 inline-block ${runState === 'error' ? 'text-red-400 font-bold scale-150 mx-1' : 'text-pencil'}`}>+</span> <span className="text-amber-300">" years old"</span>
       </span>
     );
@@ -423,7 +433,7 @@ const Scene4 = ({ onComplete }) => {
           <div className="w-3 h-3 rounded-full bg-green-400 opacity-50"></div>
         </div>
 
-        <div className="text-ink/70 flex flex-col">
+        <div className="text-gray-300 flex flex-col">
           <span>
             age = <span className="text-blue-300">25</span>
           </span>
@@ -459,7 +469,7 @@ const Scene4 = ({ onComplete }) => {
             {['str(age)', 'int(age)', 'float(age)'].map((opt) => (
               <button
                 key={opt}
-                onClick={() => setSelectedFix(opt)}
+                onClick={() => { sounds.pop(); setSelectedFix(opt); }}
                 className={`px-6 py-2 rounded-lg font-mono text-sm border-2 transition-all ${
                   selectedFix === opt
                     ? 'border-rust bg-rust/10 text-rust'
@@ -528,6 +538,7 @@ const Scene5 = ({ onComplete }) => {
     if (!item) return;
 
     if (item.prop === prop) {
+      sounds.snap();
       setFields(prev => ({ ...prev, [prop]: item }));
       setAvailableValues(prev => prev.filter(v => v.id !== valId));
     }
@@ -537,6 +548,7 @@ const Scene5 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 1500);
       return () => clearTimeout(t);
     }
@@ -672,14 +684,17 @@ const Scene6 = ({ onComplete }) => {
 
   const handleFix = (bugId, correct) => {
     if (correct) {
+      sounds.correct();
       setBugs(prev => ({ ...prev, [bugId]: { fixed: true, active: false } }));
     } else {
+      sounds.wrong();
       setBugs(prev => ({ ...prev, [bugId]: { ...prev[bugId], active: false } }));
     }
   };
 
   const handleRun = () => {
     if (allFixed) {
+      sounds.correct();
       setRunState('success');
       timerRef.current = setTimeout(() => onComplete(), 2000);
     }
@@ -687,6 +702,7 @@ const Scene6 = ({ onComplete }) => {
 
   const toggleBug = (bugId) => {
     if (bugs[bugId].fixed) return;
+    sounds.pop();
     setBugs(prev => ({
       ...prev,
       b1: { ...prev.b1, active: bugId === 'b1' },
@@ -702,7 +718,7 @@ const Scene6 = ({ onComplete }) => {
       </p>
 
       <div className="w-full bg-[#1e1e1e] border border-[#333] rounded-xl p-8 font-mono text-sm leading-10 shadow-2xl relative">
-        <div className="text-ink/70 flex flex-col relative">
+        <div className="text-gray-300 flex flex-col relative">
 
           <div className="flex items-center">
             <span className="w-32 text-blue-300">first_name</span> <span className="text-pencil mx-2">=</span>
@@ -774,7 +790,7 @@ const Scene6 = ({ onComplete }) => {
 
           <div className="flex items-center">
             <span className="w-32 text-blue-300">email</span> <span className="text-pencil mx-2">=</span>
-            <span className="text-ink/70">first_name <span className="text-pencil">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
+            <span className="text-gray-300">first_name <span className="text-pencil">+</span> <span className="text-amber-300">"@merito.pl"</span></span>
           </div>
 
         </div>

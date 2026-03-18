@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { lessons, skills } from "../data/mock";
 import { lessonRegistry } from "../lessons/registry";
 import useProgress from "../hooks/useProgress";
+import useSound from "../hooks/useSound";
 
 const PHASE_ORDER = ["learn", "apply", "challenge"];
 
@@ -41,6 +42,7 @@ export default function LessonViewer() {
   const skill = skills.find((s) => s.slug === skillSlug);
   const { progress, completeStep, completeLesson, completeSkill, xp } =
     useProgress();
+  const sfx = useSound();
 
   const [currentPhase, setCurrentPhase] = useState("learn");
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -69,9 +71,11 @@ export default function LessonViewer() {
   const handleComplete = useCallback(() => {
     const stepId = `${lessonId}-${currentPhase}-${currentStepIndex + 1}`;
     completeStep(stepId);
-  }, [lessonId, currentPhase, currentStepIndex, completeStep]);
+    sfx.stepComplete();
+  }, [lessonId, currentPhase, currentStepIndex, completeStep, sfx]);
 
   const handleNext = useCallback(() => {
+    sfx.pop();
     const phaseSteps = lesson.phases[currentPhase].steps;
     if (currentStepIndex < phaseSteps - 1) {
       setCurrentStepIndex((i) => i + 1);
@@ -89,6 +93,7 @@ export default function LessonViewer() {
     // Lesson complete -- show celebration
     setShowCompletion(true);
     completeLesson(lessonId);
+    sfx.lessonComplete();
     // Check if skill is complete
     const skillLessons = lessons.filter((l) => l.skillId === skill.id);
     const allDone = skillLessons.every(

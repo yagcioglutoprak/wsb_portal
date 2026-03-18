@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SCENE 1: What does data look like? (learn step 0)
@@ -43,12 +44,14 @@ const Scene1 = ({ onComplete }) => {
 
   useEffect(() => {
     if (clickedCols.length === columns.length) {
+      sounds.correct();
       completeTimerRef.current = setTimeout(onComplete, 1500);
       return () => clearTimeout(completeTimerRef.current);
     }
   }, [clickedCols.length, columns.length, onComplete]);
 
   const handleColClick = (colKey) => {
+    sounds.pop();
     setSelectedCol(columns.find(c => c.key === colKey));
     if (!clickedCols.includes(colKey)) {
       setClickedCols([...clickedCols, colKey]);
@@ -151,12 +154,14 @@ const Scene2 = ({ onComplete }) => {
   const colKeys = ['id', 'name', 'score'];
 
   const handleInteract = (type, info) => {
+    sounds.pop();
     setClickedTypes(prev => new Set([...prev, type]));
     setActiveItem({ type, info });
   };
 
   useEffect(() => {
     if (clickedTypes.size === 4) {
+      sounds.correct();
       completeTimerRef.current = setTimeout(onComplete, 3000);
       return () => clearTimeout(completeTimerRef.current);
     }
@@ -297,9 +302,11 @@ const Scene3 = ({ onComplete }) => {
     const key = `${rowId}-${colKey}`;
     if (isProblem) {
       if (!foundProblems.includes(key)) {
+        sounds.correct();
         setFoundProblems([...foundProblems, key]);
       }
     } else {
+      sounds.wrong();
       clearTimeout(wrongTimerRef.current);
       setWrongClick(key);
       wrongTimerRef.current = setTimeout(() => setWrongClick(null), 1000);
@@ -402,11 +409,14 @@ const Scene4 = ({ onComplete }) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
 
+    sounds.snap();
     if (item.type === targetType) {
+      sounds.correct();
       if (!placedItems.includes(itemId)) {
         setPlacedItems(prev => [...prev, itemId]);
       }
     } else {
+      sounds.wrong();
       clearTimeout(shakeTimerRef.current);
       setShakeItemId(itemId);
       shakeTimerRef.current = setTimeout(() => setShakeItemId(null), 500);
@@ -500,6 +510,7 @@ const Scene5 = ({ onComplete }) => {
   ];
 
   const handleFix = (probId, opt) => {
+    sounds.pop();
     setFixes(prev => ({ ...prev, [probId]: opt }));
     if (activeProblem < 5) setActiveProblem(p => p + 1);
   };
@@ -508,6 +519,7 @@ const Scene5 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       completeTimerRef.current = setTimeout(onComplete, 3000);
       return () => clearTimeout(completeTimerRef.current);
     }
@@ -624,19 +636,23 @@ const Scene6 = ({ onComplete }) => {
   const handleQ1Submit = (e) => {
     e.preventDefault();
     if (q1Input.trim() === '3') {
+      sounds.correct();
       setAnswers(prev => ({ ...prev, q1: true }));
     } else {
+      sounds.wrong();
       setQ1Input("");
     }
   };
 
   const handleCellClick = (q, val) => {
-    if (q === 'q2' && val === 'category') setAnswers(prev => ({ ...prev, q2: true }));
-    if (q === 'q3' && val === '-500') setAnswers(prev => ({ ...prev, q3: true }));
+    if (q === 'q2' && val === 'category') { sounds.correct(); setAnswers(prev => ({ ...prev, q2: true })); }
+    else if (q === 'q3' && val === '-500') { sounds.correct(); setAnswers(prev => ({ ...prev, q3: true })); }
+    else { sounds.wrong(); }
   };
 
   const handleQ4 = (val) => {
-    if (val === 'Date') setAnswers(prev => ({ ...prev, q4: true }));
+    if (val === 'Date') { sounds.correct(); setAnswers(prev => ({ ...prev, q4: true })); }
+    else { sounds.wrong(); }
   };
 
   const allDone = answers.q1 && answers.q2 && answers.q3 && answers.q4;

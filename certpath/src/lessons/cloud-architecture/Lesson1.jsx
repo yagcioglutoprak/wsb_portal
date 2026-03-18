@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SCENE 1: Your own server room (learn-0)
@@ -27,6 +28,7 @@ const Scene1 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 3000);
       return () => clearTimeout(timer);
     }
@@ -58,7 +60,7 @@ const Scene1 = ({ onComplete }) => {
         {Object.entries(items).map(([key, item]) => (
           <div key={key} className="flex flex-col items-center gap-4 relative group">
             <button
-              onClick={() => setClicked(prev => ({ ...prev, [key]: true }))}
+              onClick={() => { sounds.pop(); setClicked(prev => ({ ...prev, [key]: true })); }}
               className={`w-32 h-32 rounded-2xl flex flex-col items-center justify-center text-4xl shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border-2 ${
                 clicked[key] ? 'bg-rust/5 border-rust/40 scale-105' : 'bg-[#fdfcfa] border-ink/10'
               }`}
@@ -110,8 +112,10 @@ const Scene2 = ({ onComplete }) => {
     if (!item) return;
 
     if (item.target === targetColumn) {
+      sounds.snap();
       setPlacedItems(prev => ({ ...prev, [itemId]: targetColumn }));
     } else {
+      sounds.wrong();
       setShakeId(itemId);
       clearTimeout(shakeTimerRef.current);
       shakeTimerRef.current = setTimeout(() => setShakeId(null), 500);
@@ -122,6 +126,7 @@ const Scene2 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 1500);
       return () => clearTimeout(timer);
     }
@@ -274,8 +279,10 @@ const Scene3 = ({ onComplete }) => {
     if (!item) return;
 
     if (item.type === targetId) {
+      sounds.snap();
       setPlaced(prev => ({ ...prev, [itemId]: targetId }));
     } else {
+      sounds.wrong();
       setShakeId(itemId);
       clearTimeout(shakeTimerRef.current);
       shakeTimerRef.current = setTimeout(() => setShakeId(null), 500);
@@ -286,6 +293,7 @@ const Scene3 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(timer);
     }
@@ -385,6 +393,7 @@ const Scene4 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const t = setTimeout(onComplete, 2000);
       return () => clearTimeout(t);
     }
@@ -400,7 +409,7 @@ const Scene4 = ({ onComplete }) => {
       {/* Toggle */}
       <div className="flex bg-ink/5 p-1 rounded-xl">
         <button 
-          onClick={() => setMode('fixed')}
+          onClick={() => { sounds.pop(); setMode('fixed'); }}
           className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
             mode === 'fixed' ? 'bg-[#fdfcfa] shadow-sm text-ink' : 'text-ink/50 hover:text-ink/80'
           }`}
@@ -408,7 +417,7 @@ const Scene4 = ({ onComplete }) => {
           Fixed (Own Servers)
         </button>
         <button 
-          onClick={() => setMode('cloud')}
+          onClick={() => { sounds.pop(); setMode('cloud'); }}
           className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
             mode === 'cloud' ? 'bg-rust text-white shadow-sm' : 'text-ink/50 hover:text-ink/80'
           }`}
@@ -503,8 +512,10 @@ const Scene5 = ({ onComplete }) => {
     if (!service) return;
 
     if (service.type === expectedType) {
+      sounds.snap();
       setMatched(prev => ({ ...prev, [reqId]: service }));
     } else {
+      sounds.wrong();
       setShakeId(reqId);
       clearTimeout(shakeTimerRef.current);
       shakeTimerRef.current = setTimeout(() => setShakeId(null), 500);
@@ -515,6 +526,7 @@ const Scene5 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(timer);
     }
@@ -618,6 +630,11 @@ const Scene6 = ({ onComplete }) => {
 
   const handleAnswer = (option) => {
     if (showExplanation) return;
+    if (option === scenarios[currentScenario].correct) {
+      sounds.correct();
+    } else {
+      sounds.wrong();
+    }
     setAnswers(prev => ({ ...prev, [currentScenario]: option }));
     setShowExplanation(true);
   };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { CheckIcon } from "../../components/Icons";
 import DragDrop from "../../components/widgets/DragDrop";
 import Quiz from "../../components/widgets/Quiz";
+import { sounds } from "../../hooks/useSound";
 
 function SectionHeader({ title, subtitle }) {
   return (
@@ -38,9 +39,17 @@ function Scene1({ onComplete }) {
 
   const handleDecision = (allow) => {
     if (animating || showResults) return;
+    sounds.pop();
     setAnimating(true);
 
     setTimeout(() => {
+      const isCorrect = allow === currentPacket.shouldAllow;
+      if (isCorrect) {
+        sounds.correct();
+      } else {
+        sounds.wrong();
+      }
+
       const newDecisions = [...decisions, { ...currentPacket, userAllowed: allow }];
       setDecisions(newDecisions);
 
@@ -138,11 +147,13 @@ function Scene2({ onComplete }) {
   }, []);
 
   const handlePlace = (rule) => {
+    sounds.snap();
     setAvailable(available.filter(r => r.id !== rule.id));
     setPlaced([...placed, rule]);
   };
 
   const handleRemove = (rule) => {
+    sounds.pop();
     setPlaced(placed.filter(r => r.id !== rule.id));
     setAvailable([...available, rule]);
   };
@@ -187,7 +198,7 @@ function Scene2({ onComplete }) {
             <h3 className="font-bold text-white mb-4 border-b border-white/10 pb-2">Firewall Ruleset (Top to Bottom)</h3>
             <div className="flex flex-col gap-2 min-h-[200px]">
               {placed.map((rule, idx) => (
-                <div key={rule.id} onClick={() => handleRemove(rule)} className="bg-white/10 border border-white/20 p-3 rounded-lg flex items-center gap-4 cursor-pointer hover:bg-white/20 transition-colors">
+                <div key={rule.id} onClick={() => handleRemove(rule)} className="bg-white/10 border border-white/20 p-3 rounded-lg flex items-center gap-4 cursor-pointer hover:bg-white/20 hover:border-white/30 active:scale-[0.98] transition-all">
                   <span className="w-6 h-6 rounded-full bg-ink/50 text-white flex items-center justify-center text-xs">{idx + 1}</span>
                   <span className="text-white text-sm flex-1">{rule.text}</span>
                   <span className={`text-xs font-bold px-2 py-1 rounded ${rule.action === 'Allow' ? 'bg-success/20 text-success' : 'bg-error/20 text-error'}`}>
@@ -262,6 +273,7 @@ function Scene3({ onComplete }) {
   const [decision, setDecision] = useState(null);
 
   const startInspection = () => {
+    sounds.pop();
     setInspecting(true);
     setRuleIdx(0);
     setDecision(null);
@@ -281,6 +293,11 @@ function Scene3({ onComplete }) {
       if (currentRule.field === "Any") match = true;
 
       if (match) {
+        if (currentRule.action.includes('Allow')) {
+          sounds.correct();
+        } else {
+          sounds.wrong();
+        }
         setDecision(currentRule.action);
         setInspecting(false);
       } else {
@@ -288,6 +305,7 @@ function Scene3({ onComplete }) {
           setRuleIdx(ruleIdx + 1);
         } else {
           // No more rules to check — default deny
+          sounds.wrong();
           setDecision("Block (Default Deny)");
           setInspecting(false);
         }
@@ -298,6 +316,7 @@ function Scene3({ onComplete }) {
   }, [inspecting, ruleIdx, pktIdx, rules, packets]);
 
   const nextPacket = () => {
+    sounds.pop();
     if (pktIdx < packets.length - 1) {
       setPktIdx(pktIdx + 1);
       setRuleIdx(-1);
@@ -417,6 +436,8 @@ function Scene4({ onComplete }) {
     if (!dragging) return;
 
     if (dragging.target === colId) {
+      sounds.snap();
+      sounds.correct();
       setPlacements({
         ...placements,
         [colId]: [...placements[colId], dragging]
@@ -425,6 +446,7 @@ function Scene4({ onComplete }) {
       setDragging(null);
     } else {
       // Wrong column visual feedback
+      sounds.wrong();
       setWrongDrop(colId);
       wrongTimerRef.current = setTimeout(() => setWrongDrop(null), 500);
       setDragging(null);
@@ -519,6 +541,7 @@ function Scene5({ onComplete }) {
   ];
 
   const toggleRule = (key) => {
+    sounds.pop();
     setRules(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -669,6 +692,7 @@ function Scene6({ onComplete }) {
 
   const handleLogClick = (log) => {
     if (!log.bad || rulesMade.includes(log.id)) return;
+    sounds.pop();
     setActiveFlag(log);
   };
 
@@ -731,7 +755,7 @@ function Scene6({ onComplete }) {
                     'border-transparent text-white/70'
                   }`}
                 >
-                  <span className="opacity-50 mr-4 inline-block w-16">{log.time}</span>
+                  <span className="opacity-70 mr-4 inline-block w-16">{log.time}</span>
                   {isFixed ? log.text.replace('[ALLOW]', '[BLOCKED]') : log.text}
                   {isSuspicious && <span className="ml-2 animate-pulse">⚠️</span>}
                   {isFixed && <span className="ml-2 text-success">🛡️ Rule applied</span>}

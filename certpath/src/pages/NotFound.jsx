@@ -18,7 +18,7 @@ export default function NotFound() {
         className="mt-8 inline-flex items-center gap-2 bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200"
       >
         <span aria-hidden="true">&larr;</span>
-        Back to fields
+        Back to home
       </Link>
     </section>
   );

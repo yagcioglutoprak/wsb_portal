@@ -604,7 +604,7 @@ export default function Onboarding() {
   const selectField = useCallback((slug) => {
     setSelectedField(slug);
     saveProfile({ year, program, field: slug });
-    setTimeout(() => navigate("/reveal"), AUTO_ADVANCE_MS);
+    setTimeout(() => navigate("/dashboard?welcome=1"), AUTO_ADVANCE_MS);
   }, [year, program, saveProfile, navigate]);
 
   const programData = programs.find((p) => p.id === program);

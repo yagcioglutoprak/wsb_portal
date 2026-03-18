@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { sounds } from "../../hooks/useSound";
 
 export default function DragDrop({
   items,
@@ -43,6 +44,7 @@ export default function DragDrop({
     setDraggedItem(null);
     setIsDragging(false);
     setDragOverZone(null);
+    sounds.snap();
     onDrop?.(next);
   };
 
@@ -74,6 +76,7 @@ export default function DragDrop({
     setFeedback(isCorrect);
 
     if (isCorrect) {
+      sounds.correct();
       setShowRipple(true);
       setTimeout(() => setShowRipple(false), 800);
       zones.forEach((z, i) => {
@@ -83,6 +86,7 @@ export default function DragDrop({
       });
       setTimeout(() => onComplete?.(), zones.length * 200 + 300);
     } else {
+      sounds.wrong();
       const wrongIds = zones
         .filter((z) => placements[z.id] !== undefined)
         .map((z) => z.id);

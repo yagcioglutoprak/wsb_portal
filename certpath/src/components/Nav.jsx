@@ -39,6 +39,9 @@ export default function Nav() {
           <NavLink to="/explore" className={linkClass}>
             Explore
           </NavLink>
+          <NavLink to="/certificates" className={linkClass}>
+            Certificates
+          </NavLink>
           <NavLink to="/jobs" className={linkClass}>
             Opportunities
           </NavLink>

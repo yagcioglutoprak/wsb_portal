@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sounds } from "../../hooks/useSound";
 
 // Icon for completed steps
 const CheckIcon = ({ className = "w-5 h-5" }) => (
@@ -25,12 +26,14 @@ const Scene1 = ({ onComplete }) => {
 
   const checkCompletion = (newFound) => {
     if (Object.values(newFound).every(Boolean)) {
+      sounds.correct();
       timerRef.current = setTimeout(onComplete, 1000);
     }
   };
 
   const handleFind = (key, tooltipText) => {
     if (!found[key]) {
+      sounds.pop();
       const newFound = { ...found, [key]: true };
       setFound(newFound);
       setActiveTooltip(tooltipText);
@@ -175,12 +178,14 @@ const Scene2 = ({ onComplete }) => {
 
   const checkCompletion = (newExplored) => {
     if (Object.values(newExplored).every(Boolean)) {
+      sounds.correct();
       timerRef.current = setTimeout(onComplete, 1000);
     }
   };
 
   const handleExplore = (key, label, idx) => {
     if (!explored[key]) {
+      sounds.pop();
       const newExplored = { ...explored, [key]: true };
       setExplored(newExplored);
       if (key === 'row') setExploredRowIdx(idx);
@@ -332,8 +337,11 @@ const Scene3 = ({ onComplete }) => {
 
   const handleInsert = () => {
     if (validate()) {
+      sounds.correct();
       setSuccess(true);
       completeTimerRef.current = setTimeout(onComplete, 2000);
+    } else {
+      sounds.wrong();
     }
   };
 
@@ -344,6 +352,7 @@ const Scene3 = ({ onComplete }) => {
   };
 
   const handleFix = (field, value) => {
+    sounds.pop();
     setFormData(prev => ({ ...prev, [field]: value }));
     setShowOptions(null);
     setErrors(prev => ({ ...prev, [field]: null }));
@@ -471,11 +480,13 @@ const Scene4 = ({ onComplete }) => {
   }, []);
 
   const handleInsert = () => {
+    sounds.wrong();
     setAttempted(true);
   };
 
   const handleFixOption = (option) => {
     if (option === 'change_id') {
+      sounds.correct();
       setFixed(true);
       quizTimerRef.current = setTimeout(() => setQuizPhase(true), 1500);
     }
@@ -483,8 +494,11 @@ const Scene4 = ({ onComplete }) => {
 
   const handleQuizAnswer = (answer) => {
     if (answer === 'id') {
+      sounds.correct();
       setQuizDone(true);
       completeTimerRef.current = setTimeout(onComplete, 1500);
+    } else {
+      sounds.wrong();
     }
   };
 
@@ -675,12 +689,14 @@ const Scene5 = ({ onComplete }) => {
       const isCorrect = col.isFk ? targetAssignments[col.sourceId].includes(activeTable) && activeTable === 'enrollments' : targetAssignments[col.id].includes(activeTable);
 
       if (isCorrect && !assignments[activeTable].find(c => c.id === col.id)) {
+        sounds.snap();
         setAssignments(prev => ({
           ...prev,
           [activeTable]: [...prev[activeTable], col]
         }));
         setPool(prev => prev.filter(c => c.id !== col.id));
       } else {
+        sounds.wrong();
         setShakingCol(col.id);
         if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
         shakeTimerRef.current = setTimeout(() => setShakingCol(null), 400);
@@ -690,6 +706,7 @@ const Scene5 = ({ onComplete }) => {
 
   useEffect(() => {
     if (pool.length === 0 && !completed) {
+      sounds.correct();
       setTimeout(() => setCompleted(true), 0);
       completeTimerRef.current = setTimeout(onComplete, 3000);
     }
@@ -789,6 +806,7 @@ const Scene6 = ({ onComplete }) => {
 
   const handleFix = (pid, isCorrect) => {
     if (isCorrect) {
+      sounds.correct();
       const newFixed = { ...fixed, [pid]: true };
       setFixed(newFixed);
       setActiveProblem(null);
@@ -797,6 +815,7 @@ const Scene6 = ({ onComplete }) => {
         completeTimerRef.current = setTimeout(onComplete, 1000);
       }
     } else {
+      sounds.wrong();
       setWrongAnswer(true);
       if (wrongTimerRef.current) clearTimeout(wrongTimerRef.current);
       wrongTimerRef.current = setTimeout(() => setWrongAnswer(false), 800);
@@ -830,11 +849,11 @@ const Scene6 = ({ onComplete }) => {
             </thead>
             <tbody>
               <tr>
-                <td className={`p-2 font-mono ${fixed.p1 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => !fixed.p1 && setActiveProblem('p1')}>
+                <td className={`p-2 font-mono ${fixed.p1 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => { if (!fixed.p1) { sounds.pop(); setActiveProblem('p1'); } }}>
                   {fixed.p1 ? '1' : '"one"'}
                 </td>
                 <td className="p-2">Widget</td>
-                <td className={`p-2 font-mono ${fixed.p2 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => !fixed.p2 && setActiveProblem('p2')}>
+                <td className={`p-2 font-mono ${fixed.p2 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => { if (!fixed.p2) { sounds.pop(); setActiveProblem('p2'); } }}>
                   {fixed.p2 ? '9.99' : '$9.99'}
                 </td>
                 <td className="p-2">Electronics</td>
@@ -853,8 +872,8 @@ const Scene6 = ({ onComplete }) => {
             <thead>
               <tr className="bg-paper border-b border-ink/10">
                 <th className="p-2 text-left text-sm font-sans font-semibold">order_id</th>
-                <th className={`p-2 text-left text-sm font-sans font-semibold ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => !fixed.p3 && setActiveProblem('p3')}>customer_name</th>
-                <th className={`p-2 text-left text-sm font-sans font-semibold ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => !fixed.p3 && setActiveProblem('p3')}>customer_email</th>
+                <th className={`p-2 text-left text-sm font-sans font-semibold ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => { if (!fixed.p3) { sounds.pop(); setActiveProblem('p3'); } }}>customer_name</th>
+                <th className={`p-2 text-left text-sm font-sans font-semibold ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => { if (!fixed.p3) { sounds.pop(); setActiveProblem('p3'); } }}>customer_email</th>
                 {fixed.p3 && <th className="p-2 text-left text-sm font-sans font-semibold text-success">customer_id</th>}
                 <th className="p-2 text-left text-sm font-sans font-semibold">product</th>
                 <th className="p-2 text-left text-sm font-sans font-semibold">qty</th>
@@ -863,10 +882,10 @@ const Scene6 = ({ onComplete }) => {
             <tbody>
               <tr>
                 <td className="p-2 font-mono">1</td>
-                <td className={`p-2 ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => !fixed.p3 && setActiveProblem('p3')}>Jan K.</td>
-                <td className={`p-2 ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => !fixed.p3 && setActiveProblem('p3')}>jan@mail.com</td>
+                <td className={`p-2 ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => { if (!fixed.p3) { sounds.pop(); setActiveProblem('p3'); } }}>Jan K.</td>
+                <td className={`p-2 ${!fixed.p3 ? 'text-error cursor-pointer hover:bg-error/10' : 'text-ink/30 line-through'}`} onClick={() => { if (!fixed.p3) { sounds.pop(); setActiveProblem('p3'); } }}>jan@mail.com</td>
                 {fixed.p3 && <td className="p-2 text-success font-bold font-mono">42</td>}
-                <td className={`p-2 font-mono ${fixed.p4 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => !fixed.p4 && setActiveProblem('p4')}>
+                <td className={`p-2 font-mono ${fixed.p4 ? 'text-success font-bold' : 'text-error cursor-pointer hover:bg-error/10 border border-transparent hover:border-error rounded'}`} onClick={() => { if (!fixed.p4) { sounds.pop(); setActiveProblem('p4'); } }}>
                   {fixed.p4 ? '1 (id)' : '"Widget"'}
                 </td>
                 <td className="p-2 font-mono">2</td>
@@ -883,7 +902,7 @@ const Scene6 = ({ onComplete }) => {
               reviews
             </span>
             {!fixed.p5 && (
-              <span className="text-xs bg-error/10 text-error px-2 py-1 rounded cursor-pointer animate-pulse" onClick={() => setActiveProblem('p5')}>Missing PK!</span>
+              <span className="text-xs bg-error/10 text-error px-2 py-1 rounded cursor-pointer animate-pulse" onClick={() => { sounds.pop(); setActiveProblem('p5'); }}>Missing PK!</span>
             )}
           </h3>
           <table className="w-full border-collapse">

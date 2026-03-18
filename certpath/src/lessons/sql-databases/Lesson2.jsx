@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sounds } from "../../hooks/useSound";
 
 const CheckIcon = ({ className = "w-5 h-5" }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,6 +28,7 @@ const Scene1 = ({ onComplete }) => {
   const completedRef = useRef(false);
 
   const toggleCol = (col) => {
+    sounds.pop();
     setSelectedCols(prev => {
       if (prev.includes(col)) {
         if (prev.length === 1) return prev; // keep at least one
@@ -43,12 +45,14 @@ const Scene1 = ({ onComplete }) => {
   useEffect(() => {
     if (explorationCount >= 3 && !completedRef.current) {
       completedRef.current = true;
+      sounds.correct();
       const t = setTimeout(onComplete, 2000);
       return () => clearTimeout(t);
     }
   }, [explorationCount, onComplete]);
 
   const handleRun = () => {
+    sounds.pop();
     setHasRun(true);
     setExplorationCount(1);
   };
@@ -177,6 +181,7 @@ const Scene2 = ({ onComplete }) => {
   useEffect(() => {
     if (hasChanged && !completedRef.current) {
       completedRef.current = true;
+      sounds.correct();
       const timer = setTimeout(onComplete, 5000);
       return () => clearTimeout(timer);
     }
@@ -207,14 +212,14 @@ const Scene2 = ({ onComplete }) => {
               <select 
                 className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm outline-none"
                 value={whereCol}
-                onChange={(e) => { setWhereCol(e.target.value); setHasChanged(true); }}
+                onChange={(e) => { sounds.pop(); setWhereCol(e.target.value); setHasChanged(true); }}
               >
                 {COLUMNS.map(c => <option key={c} value={c} className="bg-[#1a1a2e]">{c}</option>)}
               </select>
               <select 
                 className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm outline-none"
                 value={whereOp}
-                onChange={(e) => { setWhereOp(e.target.value); setHasChanged(true); }}
+                onChange={(e) => { sounds.pop(); setWhereOp(e.target.value); setHasChanged(true); }}
               >
                 {['=', '>', '<', '>=', '<=', '!='].map(op => <option key={op} value={op} className="bg-[#1a1a2e]">{op}</option>)}
               </select>
@@ -227,7 +232,7 @@ const Scene2 = ({ onComplete }) => {
             </div>
           </div>
           <div className="text-sm text-graphite italic">
-            Try: <span className="font-mono bg-paper px-1 rounded cursor-pointer hover:bg-ink/10" onClick={() => {setWhereCol('department'); setWhereOp('='); setWhereVal('Computer Science'); setHasChanged(true);}}>department = "Computer Science"</span> or <span className="font-mono bg-paper px-1 rounded cursor-pointer hover:bg-ink/10" onClick={() => {setWhereCol('gpa'); setWhereOp('>='); setWhereVal('4.0'); setHasChanged(true);}}>gpa &gt;= 4.0</span>
+            Try: <span className="font-mono bg-paper px-1 rounded cursor-pointer hover:bg-ink/10" onClick={() => {sounds.pop(); setWhereCol('department'); setWhereOp('='); setWhereVal('Computer Science'); setHasChanged(true);}}>department = "Computer Science"</span> or <span className="font-mono bg-paper px-1 rounded cursor-pointer hover:bg-ink/10" onClick={() => {sounds.pop(); setWhereCol('gpa'); setWhereOp('>='); setWhereVal('4.0'); setHasChanged(true);}}>gpa &gt;= 4.0</span>
           </div>
         </div>
 
@@ -278,7 +283,13 @@ const Scene3 = ({ onComplete }) => {
   const andCount = STUDENTS_DATA.filter(r => r.department === "Computer Science" && r.gpa > 3.5).length; // 3
   const orCount = STUDENTS_DATA.filter(r => r.department === "Computer Science" || r.gpa > 3.5).length; // 6
 
+  const correctAnswers = { q1: 3, q2: 6, q3: 4 };
   const handleQuiz = (q, val) => {
+    if (val === correctAnswers[q]) {
+      sounds.correct();
+    } else {
+      sounds.wrong();
+    }
     setQuizAnswers(prev => {
       const next = { ...prev, [q]: val };
       if (Object.keys(next).length === 3) {
@@ -306,13 +317,13 @@ const Scene3 = ({ onComplete }) => {
             <div><span className="text-[#e76f51] font-bold">WHERE</span> department = 'Computer Science'</div>
             <div className="flex items-center gap-2 mt-1">
               <div className="bg-white/10 rounded-lg p-1 flex">
-                <button 
-                  className={`px-3 py-1 rounded text-sm font-bold ${operator === 'AND' ? 'bg-[#e76f51] text-white' : 'text-white/50 hover:text-white'}`}
-                  onClick={() => setOperator('AND')}
+                <button
+                  className={`px-3 py-1 rounded text-sm font-bold transition-all ${operator === 'AND' ? 'bg-[#e76f51] text-white' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
+                  onClick={() => { sounds.pop(); setOperator('AND'); }}
                 >AND</button>
-                <button 
-                  className={`px-3 py-1 rounded text-sm font-bold ${operator === 'OR' ? 'bg-[#e76f51] text-white' : 'text-white/50 hover:text-white'}`}
-                  onClick={() => setOperator('OR')}
+                <button
+                  className={`px-3 py-1 rounded text-sm font-bold transition-all ${operator === 'OR' ? 'bg-[#e76f51] text-white' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
+                  onClick={() => { sounds.pop(); setOperator('OR'); }}
                 >OR</button>
               </div>
               <span>gpa &gt; 3.5</span>
@@ -430,6 +441,7 @@ const Scene4 = ({ onComplete }) => {
 
   useEffect(() => {
     if (interacted && limit < 8 && sortCol !== 'id') {
+      sounds.correct();
       const timer = setTimeout(onComplete, 4000);
       return () => clearTimeout(timer);
     }
@@ -454,12 +466,12 @@ const Scene4 = ({ onComplete }) => {
               <select 
                 className="bg-white/10 border border-white/20 rounded px-2 py-1 text-white text-sm outline-none"
                 value={sortCol}
-                onChange={(e) => { setSortCol(e.target.value); setInteracted(true); }}
+                onChange={(e) => { sounds.pop(); setSortCol(e.target.value); setInteracted(true); }}
               >
                 {COLUMNS.map(c => <option key={c} value={c} className="bg-[#1a1a2e]">{c}</option>)}
               </select>
               <button 
-                onClick={() => { setSortDir(prev => prev === 'ASC' ? 'DESC' : 'ASC'); setInteracted(true); }}
+                onClick={() => { sounds.pop(); setSortDir(prev => prev === 'ASC' ? 'DESC' : 'ASC'); setInteracted(true); }}
                 className="bg-white/10 hover:bg-white/20 px-3 py-1 rounded text-sm font-bold transition-colors w-16"
               >
                 {sortDir}
@@ -560,6 +572,7 @@ const Scene5 = ({ onComplete }) => {
     // simplified validation for prototype: exact string match from expected list, or using match function
     const qClean = queryInput.replace(/\s+/g, ' ').trim();
     if (questions[currentQ].queryMatch(qClean) || queryInput === predefinedQueries[currentQ]) {
+      sounds.correct();
       setError(false);
       clearTimeout(errorTimerRef.current);
       if (currentQ < questions.length - 1) {
@@ -571,6 +584,7 @@ const Scene5 = ({ onComplete }) => {
         successTimerRef.current = setTimeout(onComplete, 1500);
       }
     } else {
+      sounds.wrong();
       setError(true);
       clearTimeout(errorTimerRef.current);
       errorTimerRef.current = setTimeout(() => setError(false), 600);
@@ -579,6 +593,7 @@ const Scene5 = ({ onComplete }) => {
 
   // Helper to insert predefined text for user to avoid typing everything
   const handleInsert = () => {
+    sounds.pop();
     setQueryInput(predefinedQueries[currentQ]);
   };
 
@@ -693,6 +708,7 @@ const Scene6 = ({ onComplete }) => {
 
   const handleFix = (pid, isCorrect) => {
     if (isCorrect) {
+      sounds.correct();
       const newFixed = { ...fixed, [pid]: true };
       setFixed(newFixed);
       setActiveProblem(null);
@@ -700,6 +716,7 @@ const Scene6 = ({ onComplete }) => {
         completeTimerRef.current = setTimeout(onComplete, 1000);
       }
     } else {
+      sounds.wrong();
       setActiveProblem(null);
     }
   };
@@ -733,7 +750,7 @@ const Scene6 = ({ onComplete }) => {
                   <span>
                     {prob.bad.split(prob.errorZone)[0]}
                     <span 
-                      onClick={() => setActiveProblem(prob.id)}
+                      onClick={() => { sounds.pop(); setActiveProblem(prob.id); }}
                       className="bg-error/20 text-error font-bold border-b-2 border-error border-dashed cursor-pointer hover:bg-error/30 px-1 rounded animate-pulse"
                     >
                       {prob.errorZone}

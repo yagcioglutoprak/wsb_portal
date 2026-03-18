@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SCENE 1: The building blocks (learn-0)
@@ -29,8 +30,10 @@ const Scene1 = ({ onComplete }) => {
     const draggedId = e.dataTransfer.getData('compId');
 
     if (draggedId === targetSlot) {
+      sounds.snap();
       setPlaced(prev => ({ ...prev, [targetSlot]: true }));
     } else {
+      sounds.wrong();
       setShakeId(targetSlot);
       setTimeout(() => setShakeId(null), 500);
     }
@@ -40,6 +43,7 @@ const Scene1 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(timer);
     }
@@ -157,6 +161,7 @@ const Scene2 = ({ onComplete }) => {
   ];
 
   const handleZoom = (id) => {
+    sounds.pop();
     setActiveComp(id);
     setViewed(prev => new Set(prev).add(id));
   };
@@ -165,6 +170,7 @@ const Scene2 = ({ onComplete }) => {
 
   useEffect(() => {
     if (isComplete) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 3000);
       return () => clearTimeout(timer);
     }
@@ -324,7 +330,7 @@ const Scene3 = ({ onComplete }) => {
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             disabled={step === journey.length - 1}
-            className="bg-paper border border-ink/20 px-6 py-2 rounded-lg font-bold text-sm text-ink disabled:opacity-50"
+            className="bg-paper border border-ink/20 px-6 py-2 rounded-lg font-bold text-sm text-ink hover:bg-ink/5 hover:border-ink/30 disabled:opacity-50 transition-colors"
           >
             {isPlaying ? 'Pause' : 'Play'}
           </button>
@@ -389,6 +395,7 @@ const Scene4 = ({ onComplete }) => {
   ];
 
   const handleFailClick = (id) => {
+    sounds.pop();
     setActiveFailure(id);
     setViewedFailures(prev => new Set(prev).add(id));
   };
@@ -415,8 +422,10 @@ const Scene4 = ({ onComplete }) => {
 
   const handleAnswer = (optId, isCorrect) => {
     if (isCorrect) {
+      sounds.correct();
       setAnswerState({ id: optId, result: 'correct' });
     } else {
+      sounds.wrong();
       setAnswerState({ id: optId, result: 'wrong' });
     }
   };
@@ -621,6 +630,7 @@ const Scene5 = ({ onComplete }) => {
     // Check if component is valid for current step
     if (currentReq.need.includes(compId)) {
       if (!architecture.includes(compId)) {
+        sounds.snap();
         const newArch = [...architecture, compId];
         setArchitecture(newArch);
         setErrorMsg(null);
@@ -636,6 +646,7 @@ const Scene5 = ({ onComplete }) => {
         }
       }
     } else {
+      sounds.wrong();
       setErrorMsg("Not quite. Read the requirement again.");
       setTimeout(() => setErrorMsg(null), 2000);
     }
@@ -648,6 +659,7 @@ const Scene5 = ({ onComplete }) => {
   // Cleanup for simulation onComplete timeout (Bug #7)
   useEffect(() => {
     if (simulating) {
+      sounds.correct();
       const timer = setTimeout(() => onComplete(), 4000);
       return () => clearTimeout(timer);
     }
@@ -768,6 +780,11 @@ const Scene6 = ({ onComplete }) => {
   ];
 
   const handleFix = (opt) => {
+    if (opt.correct) {
+      sounds.correct();
+    } else {
+      sounds.wrong();
+    }
     setSelectedFix(opt);
     if (opt.correct) {
       setTimeout(() => setFixed(true), 1500);
@@ -820,7 +837,7 @@ const Scene6 = ({ onComplete }) => {
         </div>
 
         {/* Metrics */}
-        <div className="bg-[#1e1e1e] rounded-xl p-6 text-ink/70 font-mono shadow-xl flex flex-col justify-center">
+        <div className="bg-[#1e1e1e] rounded-xl p-6 text-gray-300 font-mono shadow-xl flex flex-col justify-center">
           <div className="mb-4">
             <div className="text-xs text-pencil uppercase tracking-widest mb-1">Database CPU Load</div>
             <div className="flex items-center gap-3">

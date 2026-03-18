@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SCENE 1: The fork in the road (learn step 0)
@@ -17,6 +18,7 @@ const Scene1 = ({ onComplete }) => {
     if (age < 18 && !deniedRef.current) deniedRef.current = true;
 
     if (grantedRef.current && deniedRef.current) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(t);
     }
@@ -96,7 +98,7 @@ const Scene1 = ({ onComplete }) => {
         </div>
 
         {/* Code Editor */}
-        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-ink/70 font-mono text-sm flex flex-col justify-center gap-2 relative overflow-hidden">
+        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-gray-300 font-mono text-sm flex flex-col justify-center gap-2 relative overflow-hidden">
           <div className="flex gap-2 mb-4 absolute top-4 left-4">
             <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
             <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
@@ -146,6 +148,7 @@ const Scene2 = ({ onComplete }) => {
 
   useEffect(() => {
     if (correctCount === expressions.length) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 1500);
       return () => clearTimeout(t);
     }
@@ -163,8 +166,10 @@ const Scene2 = ({ onComplete }) => {
       if (exp.state === 'correct') return exp;
 
       if (exp.correct === answer) {
+        sounds.pop();
         return { ...exp, state: 'correct' };
       } else {
+        sounds.wrong();
         return { ...exp, state: 'wrong' };
       }
     }));
@@ -264,6 +269,7 @@ const Scene3 = ({ onComplete }) => {
   useEffect(() => {
     // Need at least 6 different interactions to complete
     if (discovered.size >= 6) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(t);
     }
@@ -284,8 +290,8 @@ const Scene3 = ({ onComplete }) => {
           <div className="flex flex-col gap-12 z-10">
             <div className="flex items-center gap-4">
                <div className="text-pencil font-bold font-mono">A</div>
-               <button 
-                 onClick={() => setInputA(!inputA)}
+               <button
+                 onClick={() => { sounds.pop(); setInputA(!inputA); }}
                  className={`w-16 h-10 rounded-full transition-colors relative shadow-inner flex items-center ${inputA ? 'bg-success/20' : 'bg-ink/10'}`}
                >
                  <div className={`w-8 h-8 rounded-full shadow-sm absolute transition-all duration-300 flex items-center justify-center font-mono text-xs font-bold ${inputA ? 'left-[30px] bg-success text-white' : 'left-[4px] bg-[#fdfcfa] text-ink/40'}`}>
@@ -296,8 +302,8 @@ const Scene3 = ({ onComplete }) => {
             
             <div className={`flex items-center gap-4 transition-opacity duration-300 ${operator === 'not A' ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                <div className="text-pencil font-bold font-mono">B</div>
-               <button 
-                 onClick={() => setInputB(!inputB)}
+               <button
+                 onClick={() => { sounds.pop(); setInputB(!inputB); }}
                  className={`w-16 h-10 rounded-full transition-colors relative shadow-inner flex items-center ${inputB ? 'bg-success/20' : 'bg-ink/10'}`}
                >
                  <div className={`w-8 h-8 rounded-full shadow-sm absolute transition-all duration-300 flex items-center justify-center font-mono text-xs font-bold ${inputB ? 'left-[30px] bg-success text-white' : 'left-[4px] bg-[#fdfcfa] text-ink/40'}`}>
@@ -318,9 +324,9 @@ const Scene3 = ({ onComplete }) => {
           {/* Operator Box */}
           <div className="flex flex-col gap-2 z-10 mx-auto bg-[#fdfcfa] p-2 rounded-xl shadow-lg border-2 border-rust/20 w-40">
              {['and', 'or', 'not A'].map(op => (
-               <button 
+               <button
                  key={op}
-                 onClick={() => setOperator(op)}
+                 onClick={() => { sounds.pop(); setOperator(op); }}
                  className={`font-mono font-bold py-2 rounded-lg transition-all ${operator === op ? 'bg-rust text-white shadow-md scale-105' : 'bg-transparent text-ink/50 hover:bg-ink/5'}`}
                >
                  {op}
@@ -406,6 +412,7 @@ const Scene4 = ({ onComplete }) => {
 
   useEffect(() => {
     if (pathsExplored.size === 3) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 2000);
       return () => clearTimeout(t);
     }
@@ -426,8 +433,8 @@ const Scene4 = ({ onComplete }) => {
              <div className="flex-1 flex flex-col gap-2">
                <label className="text-sm font-bold text-ink font-mono">is_student</label>
                <div className="flex bg-ink/5 p-1 rounded-lg">
-                 <button onClick={() => setIsStudent(true)} className={`flex-1 py-1.5 rounded-md font-mono text-sm transition-all ${isStudent ? 'bg-[#fdfcfa] shadow-sm font-bold text-success' : 'text-ink/60'}`}>True</button>
-                 <button onClick={() => setIsStudent(false)} className={`flex-1 py-1.5 rounded-md font-mono text-sm transition-all ${!isStudent ? 'bg-[#fdfcfa] shadow-sm font-bold text-error' : 'text-ink/60'}`}>False</button>
+                 <button onClick={() => { sounds.pop(); setIsStudent(true); }} className={`flex-1 py-1.5 rounded-md font-mono text-sm transition-all ${isStudent ? 'bg-[#fdfcfa] shadow-sm font-bold text-success' : 'text-ink/60 hover:text-ink hover:bg-ink/5'}`}>True</button>
+                 <button onClick={() => { sounds.pop(); setIsStudent(false); }} className={`flex-1 py-1.5 rounded-md font-mono text-sm transition-all ${!isStudent ? 'bg-[#fdfcfa] shadow-sm font-bold text-error' : 'text-ink/60 hover:text-ink hover:bg-ink/5'}`}>False</button>
                </div>
              </div>
              <div className={`flex-1 flex flex-col gap-2 transition-opacity duration-300 ${!isStudent ? 'opacity-40' : 'opacity-100'}`}>
@@ -485,7 +492,7 @@ const Scene4 = ({ onComplete }) => {
         </div>
 
         {/* Code Editor */}
-        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-ink/70 font-mono text-sm leading-8 flex flex-col justify-center gap-1 relative min-h-[300px]">
+        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-gray-300 font-mono text-sm leading-8 flex flex-col justify-center gap-1 relative min-h-[300px]">
            <div className="absolute top-4 left-4 flex gap-2">
              <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
              <div className="w-3 h-3 rounded-full bg-amber-500/80"></div>
@@ -554,6 +561,7 @@ const Scene5 = ({ onComplete }) => {
     // Only complete if they are placed correctly (descending order)
     if (isComplete) {
       if (blanks.A === '90' && blanks.B === '80' && blanks.C === '70' && blanks.D === '60') {
+        sounds.correct();
         const t = setTimeout(() => onComplete(), 2000);
         return () => clearTimeout(t);
       }
@@ -572,6 +580,7 @@ const Scene5 = ({ onComplete }) => {
       setAvailableValues(prev => [...prev, { id: `t${currentBlanks[gradeLevel]}`, val: currentBlanks[gradeLevel] }]);
     }
 
+    sounds.snap();
     setBlanks(prev => ({ ...prev, [gradeLevel]: item.val }));
     setAvailableValues(prev => prev.filter(v => v.id !== valId));
   };
@@ -594,7 +603,7 @@ const Scene5 = ({ onComplete }) => {
         {/* Editor Side */}
         <div className="flex-1 flex flex-col gap-6 w-full">
            
-           <div className="bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-ink/70 font-mono text-sm leading-loose border border-[#222]">
+           <div className="bg-[#1a1a2e] rounded-2xl p-6 shadow-xl text-gray-300 font-mono text-sm leading-loose border border-[#222]">
               <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-4">
                  <span className="text-pencil">score =</span>
                  <input 
@@ -708,6 +717,7 @@ const Scene6 = ({ onComplete }) => {
 
   useEffect(() => {
     if (loopAdded) {
+      sounds.correct();
       const t = setTimeout(() => onComplete(), 2500);
       return () => clearTimeout(t);
     }
@@ -732,7 +742,7 @@ const Scene6 = ({ onComplete }) => {
          
          {!bug1Fixed ? (
            <button 
-             onClick={() => setShowOptions(!showOptions)}
+             onClick={() => { sounds.pop(); setShowOptions(!showOptions); }}
              className={`px-1 rounded border-b-2 border-red-500/50 hover:bg-red-500/10 transition-colors relative ${showOptions ? 'bg-red-500/20' : ''}`}
            >
              entered_user <span className="text-red-400 font-bold">=</span> username:
@@ -746,10 +756,10 @@ const Scene6 = ({ onComplete }) => {
          {showOptions && !bug1Fixed && (
             <div className="absolute top-8 left-10 bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-xl p-3 shadow-xl z-20 w-64 text-ink flex flex-col gap-2">
                <div className="text-xs font-sans text-pencil mb-1">Pick the correct comparison:</div>
-               <button onClick={() => { setBug1Fixed(true); setShowOptions(false); if (phaseTimerRef.current) clearTimeout(phaseTimerRef.current); phaseTimerRef.current = setTimeout(() => setPhase(2), 1500); }} className="text-left px-3 py-2 hover:bg-success/10 rounded font-mono text-sm">
+               <button onClick={() => { sounds.correct(); setBug1Fixed(true); setShowOptions(false); if (phaseTimerRef.current) clearTimeout(phaseTimerRef.current); phaseTimerRef.current = setTimeout(() => setPhase(2), 1500); }} className="text-left px-3 py-2 hover:bg-success/10 rounded font-mono text-sm">
                  entered_user <span className="text-success font-bold">==</span> username:
                </button>
-               <button onClick={() => setShowOptions(false)} className="text-left px-3 py-2 hover:bg-ink/5 rounded font-mono text-sm">
+               <button onClick={() => { sounds.wrong(); setShowOptions(false); }} className="text-left px-3 py-2 hover:bg-ink/5 rounded font-mono text-sm">
                  entered_user <span className="font-bold">:=</span> username:
                </button>
             </div>
@@ -777,7 +787,8 @@ const Scene6 = ({ onComplete }) => {
           <div
             onDragOver={e => e.preventDefault()}
             onDrop={e => {
-              if (e.dataTransfer.getData('type') === 'correct') setLoopAdded(true);
+              if (e.dataTransfer.getData('type') === 'correct') { sounds.snap(); setLoopAdded(true); }
+              else { sounds.wrong(); }
             }}
             className="border-2 border-dashed border-rust/30 rounded-lg p-4 bg-rust/5 relative my-2 min-h-[60px] flex items-center justify-center"
           >

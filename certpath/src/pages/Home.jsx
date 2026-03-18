@@ -217,25 +217,25 @@ export default function Home() {
 
                             <div className="space-y-3">
                               {certStages[stageName].slice(0, 2).map((cert) => (
-                                <div key={cert.id} className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-xl p-4 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 transition-colors">
+                                <a key={cert.id} href={cert.url} target="_blank" rel="noopener noreferrer" className="group block bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-xl p-4 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:-translate-y-0.5 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.06)] transition-all duration-200">
                                   <div className="flex justify-between items-start gap-4">
                                     <div>
-                                      <h4 className="font-sans text-sm font-bold text-ink leading-tight">{cert.name}</h4>
-                                      <p className="font-sans text-xs text-pencil mt-1">{cert.provider}</p>
+                                      <h4 className="font-sans text-sm font-bold text-ink leading-tight group-hover:text-rust transition-colors">{cert.name}</h4>
+                                      <p className="font-sans text-xs text-pencil mt-1">{cert.provider} · <span className="font-mono">{cert.costPln > 0 ? `${cert.costPln.toLocaleString()} PLN` : 'Free'}</span></p>
                                     </div>
                                     <div className="flex flex-col items-end gap-1.5 shrink-0">
-                                      {cert.costPln === 0 && (
-                                        <span className="bg-success/10 text-success border border-success/20 rounded px-1.5 py-0.5 font-sans text-xs font-bold uppercase tracking-wider">Free</span>
-                                      )}
                                       <div className="flex items-center gap-1.5">
                                         <span className="inline-block px-1.5 py-0.5 rounded border border-ink/10 font-sans text-xs font-bold uppercase tracking-wider text-pencil bg-ink/5">
                                           {cert.difficulty}
                                         </span>
                                         <span className="font-mono text-xs text-pencil">{cert.durationWeeks}W</span>
                                       </div>
+                                      {cert.examCode && (
+                                        <span className="font-mono text-xs text-pencil">{cert.examCode}</span>
+                                      )}
                                     </div>
                                   </div>
-                                </div>
+                                </a>
                               ))}
                             </div>
 
@@ -269,10 +269,15 @@ export default function Home() {
                           <span className="font-sans text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: activeColor.accent }}>Career Outcomes</span>
                           <div className="flex flex-wrap gap-2">
                             {activeJobs.slice(0, 3).map(job => (
-                              <div key={job.id} className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-lg px-3 py-2 flex items-center gap-2 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
-                                <span className="font-sans text-xs font-bold text-ink">{job.title}</span>
-                                <span className="font-mono text-xs text-pencil">{(job.salaryMin / 1000).toFixed(0)}k-{(job.salaryMax / 1000).toFixed(0)}k</span>
-                              </div>
+                              <a key={job.id} href={job.sourceUrl} target="_blank" rel="noopener noreferrer" className="group bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-lg px-3 py-2 flex items-center gap-2 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:-translate-y-0.5 transition-all duration-200">
+                                {job.source === "LinkedIn" && (
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#0A66C2" className="shrink-0">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                  </svg>
+                                )}
+                                <span className="font-sans text-xs font-bold text-ink group-hover:text-rust transition-colors">{job.title}</span>
+                                <span className="font-mono text-xs text-pencil">{(job.salaryMin / 1000).toFixed(1)}k–{(job.salaryMax / 1000).toFixed(1)}k</span>
+                              </a>
                             ))}
                           </div>
                         </div>
@@ -311,9 +316,11 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {activeJobs.slice(0, 6).map((job, i) => {
                 return (
-                  <Link
+                  <a
                     key={job.id}
-                    to={`/jobs/${job.id}`}
+                    href={job.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]"
                     style={{
                       opacity: jobsReveal.isVisible ? 1 : 0,
@@ -326,17 +333,26 @@ export default function Home() {
                         {job.type}
                       </span>
                       <span className="font-mono text-sm font-bold text-ink shrink-0">
-                        {(job.salaryMin / 1000).toFixed(0)}k–{(job.salaryMax / 1000).toFixed(0)}k <span className="text-xs text-pencil uppercase tracking-wider ml-0.5">PLN</span>
+                        {(job.salaryMin / 1000).toFixed(1)}k–{(job.salaryMax / 1000).toFixed(1)}k <span className="text-xs text-pencil uppercase tracking-wider ml-0.5">PLN</span>
                       </span>
                     </div>
                     <h3 className="text-base font-bold text-ink leading-tight mb-1.5 group-hover:text-rust transition-colors">{job.title}</h3>
                     <p className="text-sm font-medium text-pencil mb-5">{job.company}</p>
 
-                    <div className="pt-4 border-t border-ink/8 flex items-center justify-between text-xs font-semibold text-pencil uppercase tracking-wider">
-                      <span>{job.location}</span>
-                      <span>{job.type}</span>
+                    <div className="pt-4 border-t border-ink/8 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {job.source === "LinkedIn" && (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="#0A66C2" className="shrink-0">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                          </svg>
+                        )}
+                        <span className="text-xs font-semibold text-pencil uppercase tracking-wider">{job.location}</span>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-pencil/40 group-hover:text-rust transition-colors">
+                        <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                  </Link>
+                  </a>
                 );
               })}
             </div>
@@ -358,7 +374,8 @@ export default function Home() {
             <div className="relative z-10 text-center">
               <div className="w-16 h-16 bg-rust/5 text-rust border-[1.5px] border-rust/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
                 </svg>
               </div>
               <h2 className="font-sans text-4xl md:text-5xl font-bold text-ink tracking-tight mb-5">

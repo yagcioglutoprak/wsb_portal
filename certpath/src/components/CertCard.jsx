@@ -28,15 +28,22 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
       ].join(" ")}
     >
       {/* Cert name */}
-      <h4
-        className={[
-          "font-sans text-base font-semibold leading-snug",
-          locked ? "text-pencil" : "text-ink group-hover:text-rust",
-          "transition-colors duration-200",
-        ].join(" ")}
-      >
-        {cert.name}
-      </h4>
+      <div className="flex items-start justify-between gap-3">
+        <h4
+          className={[
+            "font-sans text-base font-semibold leading-snug",
+            locked ? "text-pencil" : "text-ink group-hover:text-rust",
+            "transition-colors duration-200",
+          ].join(" ")}
+        >
+          {cert.name}
+        </h4>
+        {!locked && cert.url && (
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-pencil/40 group-hover:text-rust transition-colors shrink-0 mt-1">
+            <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </div>
 
       {/* Description */}
       {cert.description && (
@@ -91,6 +98,15 @@ export default function CertCard({ cert, fieldSlug, locked = false }) {
   );
 
   if (locked) return card;
+
+  // If cert has an external URL, link directly to it
+  if (cert.url) {
+    return (
+      <a href={cert.url} target="_blank" rel="noopener noreferrer" className="block">
+        {card}
+      </a>
+    );
+  }
 
   return (
     <Link

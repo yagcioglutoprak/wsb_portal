@@ -239,6 +239,76 @@ export default function Roadmap() {
               </div>
             </RevealOnScroll>
           ))}
+
+          {/* Career Outcomes — real jobs */}
+          {fieldJobs.length > 0 && (
+            <RevealOnScroll delay={stageNums.length * 100}>
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-pencil/30 text-pencil font-sans text-base font-medium">
+                    <BriefcaseIcon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="block font-sans text-xs uppercase tracking-wide text-pencil">Your Goal</span>
+                    <span className="block font-sans text-xl font-semibold text-ink">Career Outcomes</span>
+                    <span className="block font-mono text-xs tracking-wide text-pencil">{fieldJobs.length} live positions</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 pl-4">
+                  {fieldJobs.slice(0, 6).map((job) => (
+                    <a
+                      key={job.id}
+                      href={job.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex items-center justify-between gap-4 rounded-xl border-[1.5px] border-ink/12 bg-card shadow-[0_2px_0_0_rgba(0,0,0,0.06)] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-sans text-base font-semibold text-ink group-hover:text-rust transition-colors truncate">
+                            {job.title}
+                          </h4>
+                          <span className={`shrink-0 inline-block border px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${job.type === "Working Student" ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>
+                            {job.type}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-sans text-sm text-pencil font-medium">{job.company}</span>
+                          <span className="text-ink/20">·</span>
+                          <span className="font-sans text-sm text-pencil">{job.location}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="font-mono text-sm font-bold text-ink">
+                          {(job.salaryMin / 1000).toFixed(1)}k–{(job.salaryMax / 1000).toFixed(1)}k
+                        </span>
+                        {job.source === "LinkedIn" && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2" className="shrink-0">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                          </svg>
+                        )}
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-pencil/40 group-hover:text-rust transition-colors">
+                          <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </a>
+                  ))}
+
+                  {fieldJobs.length > 6 && (
+                    <Link
+                      to="/jobs"
+                      className="mt-2 inline-flex items-center gap-2 font-sans text-sm font-bold transition-colors hover:opacity-80 ml-1"
+                      style={{ color: color.accent }}
+                    >
+                      View all {fieldJobs.length} positions
+                      <ArrowRightIcon className="w-4 h-4" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </RevealOnScroll>
+          )}
         </div>
       </div>
 
@@ -254,7 +324,8 @@ export default function Roadmap() {
         <div className="relative z-10">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center border-[1.5px] shadow-sm" style={{ backgroundColor: `${color.accent}10`, borderColor: `${color.accent}30`, color: color.accent }}>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+              <path d="M6 12v5c3 3 9 3 12 0v-5" />
             </svg>
           </div>
           <h2 className="font-sans text-3xl md:text-4xl font-bold text-ink tracking-tight mb-4">
@@ -264,13 +335,13 @@ export default function Roadmap() {
             Sign up to save your progress, track your certifications, and unlock personalized job matches tailored to your new skills.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button 
-              type="button" 
-              className="text-white rounded-xl px-8 py-3.5 font-sans text-sm font-bold hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] transition-all duration-200"
+            <Link
+              to="/onboarding"
+              className="text-white rounded-xl px-8 py-3.5 font-sans text-sm font-bold hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] transition-all duration-200 inline-block"
               style={{ backgroundColor: color.accent }}
             >
-              Create free account
-            </button>
+              Start your path
+            </Link>
             <Link 
               to="/onboarding" 
               className="font-sans text-sm font-bold px-8 py-3.5 rounded-xl border-[1.5px] border-ink/10 text-ink hover:bg-ink/[0.02] transition-colors"

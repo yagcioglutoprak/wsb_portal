@@ -1,5 +1,5 @@
-import { Navigate, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Navigate, Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { fields, certifications, skills, lessons, jobs, skillJobMap } from "../data/mock";
 import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
@@ -222,6 +222,157 @@ function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, ac
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
+   WELCOME OVERLAY — dopaminergic intro after onboarding
+   ═══════════════════════════════════════════════════════════════════════ */
+function WelcomeOverlay({ fieldName, accent, onDone }) {
+  const [phase, setPhase] = useState(0); // 0=enter, 1=show, 2=exit
+  const canvasRef = useRef(null);
+
+  // Particle confetti
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.scale(dpr, dpr);
+
+    const colors = [accent, "#FFB020", "#00C48C", "#FF505F", "#6366f1", "#f97316"];
+    const particles = Array.from({ length: 80 }, () => ({
+      x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+      y: window.innerHeight / 2,
+      vx: (Math.random() - 0.5) * 14,
+      vy: (Math.random() - 1) * 16 - 4,
+      size: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 12,
+      life: 1,
+    }));
+
+    let raf;
+    const animate = () => {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      let alive = false;
+      particles.forEach(p => {
+        if (p.life <= 0) return;
+        alive = true;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.3;
+        p.vx *= 0.99;
+        p.rotation += p.rotSpeed;
+        p.life -= 0.008;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+      });
+      if (alive) raf = requestAnimationFrame(animate);
+    };
+
+    const t = setTimeout(() => animate(), 400);
+    return () => { clearTimeout(t); cancelAnimationFrame(raf); };
+  }, [accent]);
+
+  // Phase timing
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase(1), 100);
+    const t2 = setTimeout(() => setPhase(2), 3200);
+    const t3 = setTimeout(() => onDone(), 4000);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, [onDone]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+      style={{
+        background: "#f5f3ef",
+        opacity: phase === 2 ? 0 : 1,
+        transition: "opacity 0.8s ease-out",
+      }}
+    >
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%" }} />
+
+      <div
+        className="relative z-10 flex flex-col items-center gap-6"
+        style={{
+          opacity: phase >= 1 ? 1 : 0,
+          transform: phase >= 1 ? "translateY(0) scale(1)" : "translateY(30px) scale(0.9)",
+          transition: "all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        }}
+      >
+        {/* Pulsing ring */}
+        <div className="relative">
+          <div
+            className="w-24 h-24 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: `${accent}15` }}
+          >
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: accent }}
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+          </div>
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              border: `2px solid ${accent}`,
+              animation: "welcomePulse 1.5s ease-out infinite",
+            }}
+          />
+        </div>
+
+        <div className="text-center">
+          <p className="font-sans text-sm font-bold uppercase tracking-widest text-pencil mb-2">Your path is set</p>
+          <h1
+            className="font-sans text-5xl lg:text-6xl font-bold tracking-tight leading-none"
+            style={{ color: accent }}
+          >
+            {fieldName}
+          </h1>
+          <p className="font-sans text-lg text-graphite mt-4 font-medium max-w-md">
+            Your personalized learning path, certifications, and job matches are ready.
+          </p>
+        </div>
+
+        {/* Loading dots */}
+        <div className="flex items-center gap-2 mt-4">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full"
+              style={{
+                backgroundColor: accent,
+                animation: `welcomeBounce 1.2s ease-in-out ${i * 0.15}s infinite`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes welcomePulse {
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
+        @keyframes welcomeBounce {
+          0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+          40% { transform: translateY(-8px); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════════════ */
 export default function DashboardGemini() {
@@ -230,13 +381,20 @@ export default function DashboardGemini() {
     getCurrentLesson, getSkillProgress, getLessonProgress,
   } = useProgress();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showWelcome, setShowWelcome] = useState(() => searchParams.get("welcome") === "1");
   const [streak, setStreak] = useState(0);
   const [weekDays, setWeekDays] = useState([]);
-  
-  useEffect(() => { 
-    recordVisit(); 
-    setStreak(computeStreak()); 
-    setWeekDays(getWeekVisits()); 
+
+  const dismissWelcome = useCallback(() => {
+    setShowWelcome(false);
+    setSearchParams({}, { replace: true });
+  }, [setSearchParams]);
+
+  useEffect(() => {
+    recordVisit();
+    setStreak(computeStreak());
+    setWeekDays(getWeekVisits());
   }, []);
 
   const { count: xpCount } = useCountUp(xp, 1000);
@@ -280,6 +438,7 @@ export default function DashboardGemini() {
 
   return (
     <div className="pb-24 bg-[#f5f3ef] min-h-screen font-sans selection:bg-ink selection:text-white">
+      {showWelcome && <WelcomeOverlay fieldName={fieldName} accent={accent} onDone={dismissWelcome} />}
       <style>{`
         @keyframes flameSway{0%,100%{transform:translateX(0) scaleY(1)}33%{transform:translateX(-1px) scaleY(1.04)}66%{transform:translateX(1px) scaleY(.97)}}
         @keyframes sIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}

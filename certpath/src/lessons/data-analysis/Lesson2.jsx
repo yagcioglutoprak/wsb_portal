@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { CheckIcon } from '../../components/Icons';
+import { sounds } from '../../hooks/useSound';
 
 // ============================================================================
 // SHARED COMPONENTS
@@ -84,7 +85,7 @@ const Scene1 = ({ onComplete }) => {
               <div key={i} className="px-3 py-2 bg-ink/5 rounded text-center">{score}</div>
             ))}
           </div>
-          <Button onClick={() => setShowChart(true)} className="bg-rust text-white border-transparent hover:bg-rust/90">
+          <Button onClick={() => { sounds.pop(); setShowChart(true); }} className="bg-rust text-white border-transparent hover:bg-rust/90">
             Show as chart
           </Button>
         </div>
@@ -114,15 +115,15 @@ const Scene1 = ({ onComplete }) => {
           <div className="w-full pt-8 border-t border-ink/10 flex flex-col items-center gap-4">
             <p className="font-medium text-ink">Which of these charts is WRONG for this data?</p>
             <div className="flex gap-4">
-              <div onClick={() => setWrongChart('bar')} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
+              <div onClick={() => { sounds.wrong(); setWrongChart('bar'); }} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
                 <svg width="40" height="40" viewBox="0 0 40 40"><rect x="5" y="15" width="8" height="25" fill="#DF5433"/><rect x="16" y="5" width="8" height="35" fill="#DF5433"/><rect x="27" y="20" width="8" height="20" fill="#DF5433"/></svg>
                 <span className="text-sm">Bar Chart</span>
               </div>
-              <div onClick={() => setWrongChart('line')} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
+              <div onClick={() => { sounds.wrong(); setWrongChart('line'); }} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
                 <svg width="40" height="40" viewBox="0 0 40 40"><polyline points="5,30 15,10 25,20 35,5" fill="none" stroke="#DF5433" strokeWidth="3"/></svg>
                 <span className="text-sm">Line Chart</span>
               </div>
-              <div onClick={() => setWrongChart('pie')} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
+              <div onClick={() => { sounds.correct(); setWrongChart('pie'); }} className="cursor-pointer bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 hover:border-rust/50 hover:shadow-md transition-all flex flex-col items-center gap-2 w-32">
                 <svg width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#DF5433" strokeWidth="8" strokeDasharray="25 75"/><circle cx="20" cy="20" r="16" fill="none" stroke="#2a9d8f" strokeWidth="8" strokeDasharray="40 60" strokeDashoffset="-25"/></svg>
                 <span className="text-sm">Pie Chart</span>
               </div>
@@ -137,10 +138,10 @@ const Scene1 = ({ onComplete }) => {
             <h3 className="font-bold text-error text-xl mb-2">Yes, the Pie Chart is wrong.</h3>
             <p className="text-ink/80 text-sm mb-4">Why is a pie chart a bad choice for exam scores?</p>
             <div className="flex flex-col gap-2">
-              <Button onClick={() => setReasonSelected(true)} active={reasonSelected} className="text-left text-sm">
+              <Button onClick={() => { sounds.correct(); setReasonSelected(true); }} active={reasonSelected} className="text-left text-sm">
                 Pie charts are for parts of a whole, not continuous scores.
               </Button>
-              <Button onClick={() => {}} disabled={reasonSelected} className="text-left text-sm">
+              <Button onClick={() => { sounds.wrong(); }} disabled={reasonSelected} className="text-left text-sm">
                 Pie charts can only show up to 3 values.
               </Button>
             </div>
@@ -168,6 +169,7 @@ const Scene2 = ({ onComplete }) => {
   const [quizState, setQuizState] = useState({});
 
   const handleTabChange = (tab) => {
+    sounds.pop();
     setActiveTab(tab);
     setExplored(prev => new Set([...prev, tab]));
   };
@@ -182,8 +184,11 @@ const Scene2 = ({ onComplete }) => {
   ];
 
   const handleQuizDrop = (qId, type) => {
+    sounds.snap();
+    const correct = quiz.find(q => q.id === qId);
+    if (correct && type === correct.a) { sounds.correct(); }
+    else { sounds.wrong(); }
     setQuizState(prev => {
-      const correct = quiz.find(q => q.id === qId);
       if (correct && prev[qId] === correct.a) return prev;
       return { ...prev, [qId]: type };
     });
@@ -222,7 +227,7 @@ const Scene2 = ({ onComplete }) => {
             <div className="w-full h-full flex flex-col items-center gap-4 animate-[fade-in_0.3s_ease-out]">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-sm font-medium text-pencil">Orientation:</span>
-                <Button onClick={() => setOrientation(o => o === 'vertical' ? 'horizontal' : 'vertical')} className="py-1 px-3 text-xs">
+                <Button onClick={() => { sounds.pop(); setOrientation(o => o === 'vertical' ? 'horizontal' : 'vertical'); }} className="py-1 px-3 text-xs">
                   Toggle {orientation === 'vertical' ? 'Horizontal' : 'Vertical'}
                 </Button>
               </div>
@@ -274,7 +279,7 @@ const Scene2 = ({ onComplete }) => {
 
           {activeTab === 'pie' && (
             <div className="w-full h-full flex flex-col items-center justify-center animate-[fade-in_0.3s_ease-out] relative">
-              <svg className="w-48 h-48 overflow-visible cursor-pointer" viewBox="-1 -1 2 2" onClick={() => setPiePulled(!piePulled)}>
+              <svg className="w-48 h-48 overflow-visible cursor-pointer" viewBox="-1 -1 2 2" onClick={() => { sounds.pop(); setPiePulled(!piePulled); }}>
                  {/* Slices calculated using basic trigonometry */}
                  <path d="M 0 0 L 1 0 A 1 1 0 0 1 0.309 0.951 Z" fill="#DF5433" transform={piePulled ? "translate(0.1, 0.05)" : ""} className="transition-transform duration-300" />
                  <path d="M 0 0 L 0.309 0.951 A 1 1 0 0 1 -0.809 0.587 Z" fill="#2a9d8f" />
@@ -374,8 +379,12 @@ const Scene3 = ({ onComplete }) => {
 
   const handleDrop = (id, e) => {
     const draggedId = e.dataTransfer.getData('id');
+    sounds.snap();
     if (draggedId === id) {
+      sounds.correct();
       setPlaced(prev => ({ ...prev, [id]: true }));
+    } else {
+      sounds.wrong();
     }
   };
 
@@ -492,7 +501,7 @@ const Scene4 = ({ onComplete }) => {
               type="range" min="0" max="94" value={yStart} 
               onChange={e => {
                 setYStart(Number(e.target.value));
-                if (Number(e.target.value) === 0) setFixed(true);
+                if (Number(e.target.value) === 0 && !fixed) { sounds.correct(); setFixed(true); }
               }}
               className="w-64 mt-4 accent-rust"
             />
@@ -521,7 +530,7 @@ const Scene4 = ({ onComplete }) => {
               type="range" min="20" max="100" value={timeRange} 
               onChange={e => {
                 setTimeRange(Number(e.target.value));
-                if (Number(e.target.value) === 100) setFixed(true);
+                if (Number(e.target.value) === 100 && !fixed) { sounds.correct(); setFixed(true); }
               }}
               className="w-64 accent-rust"
             />
@@ -538,7 +547,7 @@ const Scene4 = ({ onComplete }) => {
               <div className="absolute inset-0" style={{ background: 'conic-gradient(#DF5433 0% 40%, #2a9d8f 40% 70%, #d97706 70% 100%)' }}></div>
             </div>
             
-            <Button onClick={() => { setIs3D(false); setFixed(true); }}>Flatten to 2D</Button>
+            <Button onClick={() => { sounds.correct(); setIs3D(false); setFixed(true); }}>Flatten to 2D</Button>
             {!is3D && <p className="text-sm font-bold text-success animate-[fade-in_0.3s]">Red is 40%, Green is 30%!</p>}
           </div>
         )}
@@ -559,7 +568,7 @@ const Scene4 = ({ onComplete }) => {
             </div>
             
             {!showContext ? (
-              <Button onClick={() => { setShowContext(true); setFixed(true); }}>Reveal Competitors</Button>
+              <Button onClick={() => { sounds.correct(); setShowContext(true); setFixed(true); }}>Reveal Competitors</Button>
             ) : (
               <p className="text-sm font-bold text-success animate-[fade-in_0.3s]">#1 out of 3, by a tiny margin.</p>
             )}
@@ -568,7 +577,7 @@ const Scene4 = ({ onComplete }) => {
 
         <div className="mt-8 h-12">
           {fixed && (
-            <Button onClick={nextStep} className="bg-rust text-white border-transparent hover:bg-rust/90 animate-[fade-in_0.3s]">
+            <Button onClick={() => { sounds.pop(); nextStep(); }} className="bg-rust text-white border-transparent hover:bg-rust/90 animate-[fade-in_0.3s]">
               {step === 4 ? 'Finish' : 'Next Trick →'}
             </Button>
           )}
@@ -618,6 +627,7 @@ const Scene5 = ({ onComplete }) => {
 
   const handleVerify = () => {
     if (chartType === currentTask.type && xAxis === currentTask.x && yAxis === currentTask.y) {
+      sounds.correct();
       setError(null);
       if (task < 3) {
         setTask(t => t + 1);
@@ -626,6 +636,7 @@ const Scene5 = ({ onComplete }) => {
         onComplete();
       }
     } else {
+      sounds.wrong();
       setError("Not quite right. Check your chart type and axes.");
       if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
       errorTimerRef.current = setTimeout(() => setError(null), 2000);
@@ -650,7 +661,7 @@ const Scene5 = ({ onComplete }) => {
             <label className="text-xs font-bold text-pencil uppercase">Chart Type</label>
             <div className="flex gap-2">
               {['bar', 'scatter', 'pie'].map(t => (
-                <button key={t} onClick={() => setChartType(t)} className={`px-3 py-1.5 rounded text-sm capitalize border ${chartType === t ? 'bg-rust/10 border-rust text-rust font-bold' : 'border-ink/20 text-ink/80'}`}>{t}</button>
+                <button key={t} onClick={() => { sounds.pop(); setChartType(t); }} className={`px-3 py-1.5 rounded text-sm capitalize border ${chartType === t ? 'bg-rust/10 border-rust text-rust font-bold' : 'border-ink/20 text-ink/80'}`}>{t}</button>
               ))}
             </div>
           </div>
@@ -740,19 +751,19 @@ const ChartBuilder = ({ qId, title, isComplete, checkChart }) => {
   return (
     <div className="bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/12 shadow-sm flex flex-col gap-3">
       <div className="text-sm font-bold text-ink h-10 leading-tight">{title}</div>
-      <select value={t} onChange={e=>setT(e.target.value)} className="text-xs p-1.5 border rounded">
+      <select value={t} onChange={e=>{ sounds.pop(); setT(e.target.value); }} className="text-xs p-1.5 border rounded">
         <option value="">Chart Type...</option>
         <option value="bar">Vertical Bar</option>
         <option value="bar_h">Horizontal Bar</option>
         <option value="line">Line Chart</option>
       </select>
-      <select value={x} onChange={e=>setX(e.target.value)} className="text-xs p-1.5 border rounded">
+      <select value={x} onChange={e=>{ sounds.pop(); setX(e.target.value); }} className="text-xs p-1.5 border rounded">
         <option value="">X Axis...</option>
         <option value="category">Category</option>
         <option value="date">Date</option>
         <option value="orders">Total Orders</option>
       </select>
-      <select value={y} onChange={e=>setY(e.target.value)} className="text-xs p-1.5 border rounded">
+      <select value={y} onChange={e=>{ sounds.pop(); setY(e.target.value); }} className="text-xs p-1.5 border rounded">
         <option value="">Y Axis...</option>
         <option value="revenue">Revenue</option>
         <option value="region">Region</option>
@@ -765,9 +776,9 @@ const Scene6 = ({ onComplete }) => {
   const [charts, setCharts] = useState({ q1: false, q2: false, q3: false });
 
   const checkChart = useCallback((q, type, x, y) => {
-    if (q === 'q1' && type === 'bar' && x === 'category' && y === 'revenue') setCharts(prev => ({...prev, q1: true}));
-    if (q === 'q2' && type === 'line' && x === 'date' && y === 'revenue') setCharts(prev => ({...prev, q2: true}));
-    if (q === 'q3' && type === 'bar_h' && x === 'orders' && y === 'region') setCharts(prev => ({...prev, q3: true}));
+    if (q === 'q1' && type === 'bar' && x === 'category' && y === 'revenue') { sounds.correct(); setCharts(prev => ({...prev, q1: true})); }
+    if (q === 'q2' && type === 'line' && x === 'date' && y === 'revenue') { sounds.correct(); setCharts(prev => ({...prev, q2: true})); }
+    if (q === 'q3' && type === 'bar_h' && x === 'orders' && y === 'region') { sounds.correct(); setCharts(prev => ({...prev, q3: true})); }
   }, []);
 
   const allDone = charts.q1 && charts.q2 && charts.q3;

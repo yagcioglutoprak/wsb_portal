@@ -14,6 +14,7 @@ import LessonViewer from "./pages/LessonViewer";
 import NotFound from "./pages/NotFound";
 import DevLessons from "./pages/DevLessons";
 import Lessons from "./pages/Lessons";
+import Certificates from "./pages/Certificates";
 
 export default function App() {
   return (
@@ -35,9 +36,10 @@ export default function App() {
         <Route path="explore" element={<Explore />} />
         <Route path="fields/:slug" element={<Roadmap />} />
         <Route path="fields/:slug/certs/:certId" element={<CertDetail />} />
+        <Route path="certificates" element={<Certificates />} />
         <Route path="jobs" element={<Jobs />} />
         <Route path="jobs/:jobId" element={<JobDetail />} />
-        <Route path="dev/lessons" element={<DevLessons />} />
+        {import.meta.env.DEV && <Route path="dev/lessons" element={<DevLessons />} />}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

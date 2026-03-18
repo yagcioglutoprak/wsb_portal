@@ -178,7 +178,7 @@ export default function HeroShowcase() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden video-container bg-[#0B0F19] text-ink/70 font-sans flex flex-col relative">
+    <div className="w-full max-w-4xl mx-auto rounded-2xl overflow-hidden video-container bg-[#0B0F19] text-gray-300 font-sans flex flex-col relative">
       
       {/* Top Bar (Browser/OS Window feel) */}
       <div className="h-10 bg-[#111827] flex items-center px-4 border-b border-white/5 z-10">
@@ -208,7 +208,7 @@ export default function HeroShowcase() {
         {/* Editor Pane (Left) */}
         <div className="w-3/5 border-r border-white/5 flex flex-col relative z-0 code-font">
           <div className="flex text-xs uppercase tracking-wider text-pencil border-b border-white/5 bg-[#0B0F19]">
-            <div className="px-4 py-2 border-t-2 border-blue-500 bg-white/5 text-ink/70">hash_table.js</div>
+            <div className="px-4 py-2 border-t-2 border-blue-500 bg-white/5 text-gray-300">hash_table.js</div>
             <div className="px-4 py-2 opacity-50">data_structures.md</div>
           </div>
           <div className="p-2 overflow-hidden flex-1 relative">
@@ -275,7 +275,7 @@ export default function HeroShowcase() {
         {/* Caption */}
         <div className="absolute bottom-16 left-0 right-0 h-12 flex items-center justify-center pointer-events-none">
            <div className="glass-panel px-6 py-2 rounded-full border border-white/10 shadow-xl transform transition-all duration-300">
-             <span className="text-sm font-medium tracking-wide text-ink/70 glow-text">{state.caption}</span>
+             <span className="text-sm font-medium tracking-wide text-gray-300 glow-text">{state.caption}</span>
            </div>
         </div>
 
