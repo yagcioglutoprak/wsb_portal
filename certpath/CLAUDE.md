@@ -1,7 +1,7 @@
-# CertPath — Project Context
+# Clairy — Project Context
 
 ## What This Is
-CertPath is a career platform built for WSB Merito university students. It helps students find internships, earn certifications, discover student jobs, and plan their career path — all personalized for their year, program, and interests.
+Clairy is a career platform built for WSB Merito university students. It helps students find internships, earn certifications, discover student jobs, and plan their career path — all personalized for their year, program, and interests.
 
 ## Competition: EduTech Masters 2026 (2nd Edition)
 - **Organizer:** Innovation Center of WSB Merito University (Poznań)
@@ -53,7 +53,7 @@ CertPath is a career platform built for WSB Merito university students. It helps
 - **Buttons:** `bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold`
 - **Field accent colors:** Each of the 11 fields has a unique accent color (teal, sky, orange, violet, indigo, dark teal, rose, slate, amber, blue, emerald) — use `getFieldColor(slug)` from `src/data/fieldColors.js`
 - **Approach:** Product-oriented (Brilliant.org inspired), not editorial. Tactile cards with bottom-shadow depth. Human language, no jargon.
-- **WSB Merito logo** in nav header, separated from "CertPath" wordmark by a divider
+- **WSB Merito logo** in nav header, separated from "Clairy" wordmark by a divider
 
 ## Lesson Design Philosophy (Brilliant.org-inspired)
 Lessons are the core product. They must feel like Brilliant — interactive, tactile, game-like. Never passive text walls.

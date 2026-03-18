@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fields, certifications, jobs, skills, lessons } from "../data/mock";
 import { programs } from "../data/programs";
 import { getFieldColor } from "../data/fieldColors";
@@ -19,13 +20,17 @@ const fieldIcons = {
   "logistics-supply-chain": LogisticsIcon,
 };
 
-const years = [
-  { id: "1", label: "1st year" }, { id: "2", label: "2nd year" },
-  { id: "3", label: "3rd year" }, { id: "4", label: "4th year" },
-  { id: "5", label: "5th year" },
-];
+function getYears(t) {
+  return [
+    { id: "1", label: t("onboarding.1stYear") }, { id: "2", label: t("onboarding.2ndYear") },
+    { id: "3", label: t("onboarding.3rdYear") }, { id: "4", label: t("onboarding.4thYear") },
+    { id: "5", label: t("onboarding.5thYear") },
+  ];
+}
 
-const stageNames = { 1: "Foundation", 2: "Associate", 3: "Professional", 4: "Expert" };
+function getStageNames(t) {
+  return { 1: t("reveal.stageFoundation"), 2: t("reveal.stageAssociate"), 3: t("reveal.stageProfessional"), 4: t("reveal.stageExpert") };
+}
 
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Animated count-up                                                   */
@@ -50,7 +55,7 @@ function useCountUpLocal(target, duration = 900, shouldStart = true) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Animated hero SVG — abstract path visualization                     */
 /* ──────────────────────────────────────────────────────────────────── */
-function PathHeroSVG({ stageCount, fieldColor = "#DF5433" }) {
+function PathHeroSVG({ stageCount, fieldColor = "#DF5433", stageNames }) {
   // We align this with the "Roadmap" visual style from Dashboard
   return (
     <svg viewBox="0 0 800 160" className="w-full h-auto" style={{ maxWidth: 800 }}>
@@ -156,7 +161,7 @@ function SalaryBar({ min, max, show, accent = "#DF5433" }) {
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Stage card — clickable, rich                                        */
 /* ──────────────────────────────────────────────────────────────────── */
-function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
+function StageCard({ stageNum, certs, fieldSlug, delay, show, accent, stageNames, t }) {
   const name = stageNames[stageNum] || `Stage ${stageNum}`;
   const months = Math.round(certs.reduce((s, c) => s + c.durationWeeks, 0) / 4);
   const cost = certs.reduce((s, c) => s + c.costPln, 0);
@@ -186,7 +191,7 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
             {name}
           </span>
           <span className="block font-mono text-xs font-bold text-pencil uppercase tracking-wider mt-0.5">
-            ~{months} months
+            ~{months} {t("reveal.months_short")}
           </span>
         </div>
       </div>
@@ -199,7 +204,7 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
             <div className="min-w-0">
               <span className="block text-sm font-bold text-ink">{cert.name}</span>
               <span className="block font-sans text-xs font-medium text-pencil mt-1">
-                {cert.provider} <span className="mx-1 opacity-50">&middot;</span> {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : "Free"}
+                {cert.provider} <span className="mx-1 opacity-50">&middot;</span> {cert.costPln > 0 ? `${cert.costPln.toLocaleString("pl-PL")} PLN` : t("common.free")}
               </span>
             </div>
           </div>
@@ -209,10 +214,10 @@ function StageCard({ stageNum, certs, fieldSlug, delay, show, accent }) {
       {/* Footer */}
       <div className="mt-5 pt-4 border-t border-ink/8 flex items-center justify-between relative z-10">
         <span className="font-mono text-xs font-bold text-pencil uppercase tracking-wider">
-          {cost > 0 ? `~${cost.toLocaleString("pl-PL")} PLN` : "Free Overall"}
+          {cost > 0 ? `~${cost.toLocaleString("pl-PL")} PLN` : t("reveal.freeOverall")}
         </span>
         <span className="font-sans text-xs font-bold transition-all group-hover:opacity-100 flex items-center gap-1 opacity-0" style={{ color: accent }}>
-          View details <ArrowRightIcon className="w-3.5 h-3.5" />
+          {t("reveal.viewDetails")} <ArrowRightIcon className="w-3.5 h-3.5" />
         </span>
       </div>
     </Link>
@@ -258,12 +263,13 @@ function JobCard({ job, delay, show }) {
 /*  Loading phase                                                       */
 /* ──────────────────────────────────────────────────────────────────── */
 function LoadingPhase({ visible, fieldColor }) {
+  const { t } = useTranslation();
   const messages = [
-    "Analyzing your major...",
-    "Finding top certifications...",
-    "Matching entry-level roles...",
-    "Generating roadmap segments...",
-    "Finalizing your path..."
+    t("reveal.analyzingMajor"),
+    t("reveal.findingCerts"),
+    t("reveal.matchingRoles"),
+    t("reveal.generatingRoadmap"),
+    t("reveal.finalizingPath"),
   ];
   const [msgIdx, setMsgIdx] = useState(0);
 
@@ -297,7 +303,7 @@ function LoadingPhase({ visible, fieldColor }) {
          <div className="h-full bg-ink rounded-full" style={{ width: '100%', animation: "loadingBar 2s cubic-bezier(0.4, 0, 0.2, 1) infinite" }} />
       </div>
 
-      <h2 className="font-sans text-3xl font-bold text-ink mb-4 tracking-tight">Building your roadmap</h2>
+      <h2 className="font-sans text-3xl font-bold text-ink mb-4 tracking-tight">{t("reveal.buildingRoadmap")}</h2>
       <div className="overflow-hidden h-[24px]">
         <p className="text-base text-pencil font-medium font-sans text-center transition-transform duration-300"
            key={msgIdx} style={{ animation: "slideUpText 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both" }}>
@@ -320,9 +326,12 @@ function LoadingPhase({ visible, fieldColor }) {
 /*  Reveal page                                                         */
 /* ──────────────────────────────────────────────────────────────────── */
 export default function Reveal() {
+  const { t } = useTranslation();
   const { profile, isOnboarded } = useProgress();
   const navigate = useNavigate();
   const [phase, setPhase] = useState(1);
+  const years = getYears(t);
+  const stageNames = getStageNames(t);
 
   useEffect(() => {
     // Reveal length controls
@@ -379,14 +388,14 @@ export default function Reveal() {
           <div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-ink/10 bg-white/60 shadow-sm px-4 py-1.5 mb-6">
             {FieldIcon && <div className="w-5 h-5 flex items-center justify-center rounded-md" style={{ backgroundColor: `${accent}15`, color: accent }}><FieldIcon className="w-3.5 h-3.5" /></div>}
             <span className="font-sans text-xs uppercase tracking-widest font-bold text-ink">
-              Your personalized path
+              {t("reveal.yourPersonalizedPath")}
             </span>
           </div>
           <h1 className="font-serif text-5xl md:text-7xl lg:text-[80px] leading-[0.9] text-ink tracking-tight mb-6">
             {fieldObj?.name || "Your Path"}
           </h1>
           <p className="font-sans text-lg md:text-xl text-pencil font-medium max-w-2xl mx-auto">
-            Tailored for a <span className="text-ink font-bold">{profile.year}{ys} Year</span> studying <span className="text-ink font-bold">{programLabel}</span>. Here is how you bridge the gap to the industry.
+            {t("reveal.tailoredFor", { year: `${profile.year}${ys}`, program: programLabel })}
           </p>
         </div>
 
@@ -396,10 +405,10 @@ export default function Reveal() {
           style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both" : "none" }}
         >
           {[
-            { value: stagesCount, label: "Stages", suffix: "" },
-            { value: certsCount, label: "Certifications", suffix: "" },
-            { value: jobsCount, label: "Jobs in Poland", suffix: "+" },
-            { value: monthsCount, label: "Months", suffix: "mo" },
+            { value: stagesCount, label: t("reveal.stages"), suffix: "" },
+            { value: certsCount, label: t("reveal.certificationsLabel"), suffix: "" },
+            { value: jobsCount, label: t("reveal.jobsInPoland"), suffix: "+" },
+            { value: monthsCount, label: t("reveal.months"), suffix: "mo" },
           ].map((stat, i) => (
             <div key={i} className="bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-xl p-6 md:p-8 flex flex-col justify-center shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
               <span className="font-mono text-4xl md:text-5xl font-bold text-ink mb-2 tracking-tighter">
@@ -414,7 +423,7 @@ export default function Reveal() {
 
         {/* ═══════════════ ANIMATED PATH ═══════════════ */}
         <div className="mb-20 max-w-4xl mx-auto hidden md:block" style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both" : "none" }}>
-          <PathHeroSVG stageCount={stageNums.length} fieldColor={accent} />
+          <PathHeroSVG stageCount={stageNums.length} fieldColor={accent} stageNames={stageNames} />
         </div>
 
         {/* ═══════════════ TWO COLUMNS: ROADMAP & CAREER ═══════════════ */}
@@ -424,11 +433,11 @@ export default function Reveal() {
           <div style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s both" : "none" }}>
             <div className="flex items-end justify-between mb-8 pb-4 border-b border-ink/8">
               <div>
-                <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>Step-by-step</span>
-                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">The Roadmap</h2>
+                <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>{t("reveal.stepByStep")}</span>
+                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">{t("reveal.theRoadmap")}</h2>
               </div>
               <Link to={`/fields/${profile.field}`} className="font-sans text-sm font-bold transition-colors flex items-center gap-1.5" style={{ color: accent }}>
-                Full details <ArrowRightIcon className="w-4 h-4" />
+                {t("reveal.fullDetails")} <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-5">
@@ -441,6 +450,8 @@ export default function Reveal() {
                   delay={800 + idx * 100}
                   show={show}
                   accent={accent}
+                  stageNames={stageNames}
+                  t={t}
                 />
               ))}
             </div>
@@ -450,24 +461,24 @@ export default function Reveal() {
           <div style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s both" : "none" }}>
             <div className="flex items-end justify-between mb-8 pb-4 border-b border-ink/8">
               <div>
-                <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">Market realities</span>
-                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">Career Outlook</h2>
+                <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">{t("reveal.marketRealities")}</span>
+                <h2 className="font-sans text-3xl font-bold text-ink tracking-tight mt-2">{t("reveal.careerOutlook")}</h2>
               </div>
               <Link to="/jobs" className="font-sans text-sm font-bold text-rust hover:text-rust/80 transition-colors flex items-center gap-1.5">
-                All {fieldJobs.length} jobs <ArrowRightIcon className="w-4 h-4" />
+                {t("reveal.allJobs", { count: fieldJobs.length })} <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>
 
             {/* Salary Visualizer */}
             {salaryMin > 0 && (
               <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-8 mb-8" style={{ animation: show ? "fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1s both" : "none" }}>
-                <span className="block font-sans text-sm font-bold text-ink mb-1">Earning Potential</span>
-                <span className="block font-sans text-xs text-pencil mb-5">Based on entry-to-mid roles in {fieldObj?.name}</span>
+                <span className="block font-sans text-sm font-bold text-ink mb-1">{t("reveal.earningPotential")}</span>
+                <span className="block font-sans text-xs text-pencil mb-5">{t("reveal.basedOnRoles", { field: fieldObj?.name })}</span>
                 <div className="flex items-end gap-2 mb-2">
                   <span className="font-mono text-3xl font-bold text-ink tracking-tighter">
                     {salaryMin.toLocaleString("pl-PL")}–{salaryMax.toLocaleString("pl-PL")}
                   </span>
-                  <span className="font-sans text-sm font-semibold text-pencil pb-1">PLN / mo</span>
+                  <span className="font-sans text-sm font-semibold text-pencil pb-1">{t("reveal.plnMo")}</span>
                 </div>
                 <SalaryBar min={salaryMin} max={salaryMax} show={show} accent={accent} />
               </div>
@@ -497,9 +508,9 @@ export default function Reveal() {
           <div className="absolute top-1/2 -translate-y-1/2 -right-5 w-10 h-10 bg-[#f5f3ef] border-l-[2px] border-dashed border-ink/20 rounded-full" />
 
           <div className="relative z-10 text-center max-w-2xl mx-auto">
-            <h3 className="font-serif text-4xl md:text-5xl font-bold text-ink tracking-tight mb-5">Ready to begin?</h3>
+            <h3 className="font-serif text-4xl md:text-5xl font-bold text-ink tracking-tight mb-5">{t("reveal.readyToBegin")}</h3>
             <p className="font-sans text-lg text-pencil mb-10 leading-relaxed">
-              Your first interactive lesson is unlocked and waiting. Jump in and start building real-world {fieldObj?.name} skills today.
+              {t("reveal.firstLessonDesc", { field: fieldObj?.name })}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -508,14 +519,14 @@ export default function Reveal() {
                 className="w-full sm:w-auto text-white rounded-xl px-10 py-4 font-sans text-base font-bold inline-flex items-center justify-center gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 style={{ backgroundColor: accent, boxShadow: `0 8px 24px -6px ${accent}60` }}
               >
-                Start first lesson
+                {t("reveal.startFirstLesson")}
                 <ArrowRightIcon className="w-5 h-5" />
               </Link>
               <Link
                 to="/dashboard"
                 className="w-full sm:w-auto bg-[#fdfcfa] border border-ink/10 rounded-xl px-10 py-4 font-sans text-base font-bold text-ink hover:bg-ink/[0.02] transition-colors"
               >
-                Skip to dashboard
+                {t("reveal.skipToDashboard")}
               </Link>
             </div>
             
@@ -523,7 +534,7 @@ export default function Reveal() {
               onClick={() => navigate("/onboarding")}
               className="mt-8 font-sans text-sm font-semibold text-pencil underline underline-offset-4 hover:text-ink transition-colors"
             >
-              Wait, I want to try a different field
+              {t("reveal.tryDifferentField")}
             </button>
           </div>
         </div>

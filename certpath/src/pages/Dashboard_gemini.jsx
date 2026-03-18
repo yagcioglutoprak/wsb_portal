@@ -1,5 +1,6 @@
 import { Navigate, Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { fields, certifications, skills, lessons, jobs, skillJobMap } from "../data/mock";
 import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
@@ -44,13 +45,13 @@ function getWeekVisits() {
 function StreakFlame({ streak }) {
   const t = Math.min(streak / 7, 1);
   return (
-    <div className="relative w-14 h-16 shrink-0 flex items-center justify-center">
+    <div className="relative w-12 h-14 shrink-0 flex items-center justify-center">
       <svg viewBox="0 0 32 40" className="absolute inset-0 w-full h-full" aria-hidden="true">
-        <ellipse cx="16" cy="27" rx={11 + t * 2.5} ry="16" fill="#F0562E" opacity={0.45 + t * 0.15} style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
-        <ellipse cx="16" cy="29" rx={8.5 + t * 1.5} ry="13" fill="#f97316" opacity={0.65 + t * 0.2} style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
-        <ellipse cx="16" cy="31" rx={5.5 + t * 0.5} ry="10" fill="#FFB020" opacity={0.9 + t * 0.1} style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
+        <ellipse cx="16" cy="27" rx={10 + t * 2} ry="15" fill="#F0562E" opacity={0.45 + t * 0.15} style={{ transformOrigin: "16px 34px", animation: "flameSway 3s ease-in-out infinite" }} />
+        <ellipse cx="16" cy="29" rx={7.5 + t} ry="12" fill="#f97316" opacity={0.65 + t * 0.2} style={{ transformOrigin: "16px 34px", animation: "flameSway 2.2s ease-in-out infinite .3s" }} />
+        <ellipse cx="16" cy="31" rx={4.5 + t * 0.5} ry="9" fill="#FFB020" opacity={0.9 + t * 0.1} style={{ transformOrigin: "16px 34px", animation: "flameSway 1.6s ease-in-out infinite .1s" }} />
       </svg>
-      <span className="relative z-10 font-mono text-lg font-bold text-white mt-4" style={{ textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>{streak}</span>
+      <span className="relative z-10 font-mono text-base font-bold text-white mt-3.5" style={{ textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>{streak}</span>
     </div>
   );
 }
@@ -160,6 +161,7 @@ const SKILL_ILLUSTS = {
    SKILL PATH COMPONENT
    ═══════════════════════════════════════════════════════════════════════ */
 function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, accent }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2 overflow-x-auto py-4 no-scrollbar">
       {relevantSkills.map((skill, i) => {
@@ -201,7 +203,7 @@ function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, ac
               </div>
               <div className="flex flex-col items-center h-[32px] justify-start">
                 {active && (
-                  <span className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: accent }}>Active</span>
+                  <span className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: accent }}>{t("dashboard.active")}</span>
                 )}
                 <span className={`text-xs text-center leading-tight px-1 line-clamp-2 ${
                   active ? "font-bold text-ink" : done ? "font-semibold text-ink/80" : "font-medium text-pencil"
@@ -225,6 +227,7 @@ function SkillPath({ relevantSkills, progress, activeSkill, getSkillProgress, ac
    WELCOME OVERLAY — dopaminergic intro after onboarding
    ═══════════════════════════════════════════════════════════════════════ */
 function WelcomeOverlay({ fieldName, accent, onDone }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState(0); // 0=enter, 1=show, 2=exit
   const canvasRef = useRef(null);
 
@@ -331,7 +334,7 @@ function WelcomeOverlay({ fieldName, accent, onDone }) {
         </div>
 
         <div className="text-center">
-          <p className="font-sans text-sm font-bold uppercase tracking-widest text-pencil mb-2">Your path is set</p>
+          <p className="font-sans text-sm font-bold uppercase tracking-widest text-pencil mb-2">{t("dashboard.yourPathIsSet")}</p>
           <h1
             className="font-sans text-5xl lg:text-6xl font-bold tracking-tight leading-none"
             style={{ color: accent }}
@@ -339,7 +342,7 @@ function WelcomeOverlay({ fieldName, accent, onDone }) {
             {fieldName}
           </h1>
           <p className="font-sans text-lg text-graphite mt-4 font-medium max-w-md">
-            Your personalized learning path, certifications, and job matches are ready.
+            {t("dashboard.personalizedReady")}
           </p>
         </div>
 
@@ -376,6 +379,7 @@ function WelcomeOverlay({ fieldName, accent, onDone }) {
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════════════ */
 export default function DashboardGemini() {
+  const { t } = useTranslation();
   const {
     profile, isOnboarded, progress, xp, level,
     getCurrentLesson, getSkillProgress, getLessonProgress,
@@ -452,46 +456,49 @@ export default function DashboardGemini() {
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-ink/8" style={{ animation: "sIn .6s ease-out both" }}>
           <div>
             <p className="font-sans text-xs font-bold uppercase tracking-widest mb-3" style={{ color: accent }}>
-              Your Career Path
+              {t("dashboard.yourCareerPath")}
             </p>
             <h1 className="font-sans text-4xl lg:text-5xl font-bold text-ink leading-none tracking-tight">
               {fieldName}
             </h1>
             <p className="font-sans text-sm text-pencil mt-3 font-medium">
-              {profile.year}{ys} Year &middot; {profile.program}
+              {profile.year}{ys} {t("dashboard.year")} &middot; {profile.program}
             </p>
           </div>
 
-          <div className="flex items-center bg-[#fdfcfa] px-8 py-4 rounded-2xl border-[1.5px] border-ink/8 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] h-[96px]">
+          <div className="flex items-center bg-[#fdfcfa] px-6 py-3 rounded-2xl border-[1.5px] border-ink/8 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] h-[84px] justify-between sm:justify-start">
             {/* Inline Stats */}
-            <div className="flex items-center h-full">
-              <div className="flex flex-col items-center justify-center min-w-[4rem]">
-                <span className="font-sans text-4xl font-bold text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)] leading-none mb-2">{xpCount}</span>
-                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-arcade">XP</span>
+            <div className="flex items-center">
+              <div className="flex flex-col items-center justify-center min-w-[3.5rem]">
+                <span className="font-sans text-[32px] font-bold text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)] leading-none mb-1.5">{xpCount}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-arcade">{t("dashboard.xp")}</span>
               </div>
               
-              <div className="w-px h-12 bg-ink/10 mx-6 lg:mx-8" />
+              <div className="w-px h-10 bg-ink/10 mx-5 lg:mx-7" />
               
-              <div className="flex flex-col items-center justify-center min-w-[4rem]">
-                <span className="font-sans text-4xl font-bold leading-none mb-2" style={{ color: accent }}>{level}</span>
-                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">Level</span>
+              <div className="flex flex-col items-center justify-center min-w-[3.5rem]">
+                <span className="font-sans text-[32px] font-bold leading-none mb-1.5" style={{ color: accent }}>{level}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">{t("dashboard.level")}</span>
               </div>
               
-              <div className="w-px h-12 bg-ink/10 mx-6 lg:mx-8" />
+              <div className="w-px h-10 bg-ink/10 mx-5 lg:mx-7" />
               
-              <div className="flex flex-col items-center justify-center min-w-[6rem] pr-8 lg:pr-10 border-r-[1.5px] border-ink/8 h-full">
-                <span className="font-mono text-4xl font-bold text-ink leading-none mb-2 tracking-tight">{completedLessons}/{totalLessons}</span>
-                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">Lessons</span>
+              <div className="flex flex-col items-center justify-center min-w-[5.5rem]">
+                <span className="font-mono text-[32px] font-bold text-ink leading-none mb-1.5 tracking-tight">{completedLessons}/{totalLessons}</span>
+                <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-pencil">{t("dashboard.lessonsLabel")}</span>
               </div>
             </div>
 
+            {/* Divider between stats and streak */}
+            <div className="hidden sm:block w-px h-10 bg-ink/10 mx-5 lg:mx-8" />
+
             {/* Streak Tracker */}
-            <div className="hidden sm:flex items-center pl-8 lg:pl-10">
-              <div className="flex items-center gap-3 lg:gap-4">
+            <div className="hidden sm:flex items-center">
+              <div className="flex items-center gap-2 lg:gap-2.5">
                 {weekDays.map((day, i) => (
                   <div key={i}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center font-sans text-sm font-bold transition-colors ${
-                      day.visited ? "text-white shadow-sm" : day.isToday ? "border-[2px] text-ink" : "text-pencil bg-ink/[0.03]"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-sans text-sm font-bold transition-colors ${
+                      day.visited ? "text-white shadow-sm" : day.isToday ? "border-[2px] text-ink" : "text-pencil bg-ink/5"
                     }`}
                     style={{
                       backgroundColor: day.visited ? accent : undefined,
@@ -501,7 +508,7 @@ export default function DashboardGemini() {
                   </div>
                 ))}
               </div>
-              <div className="pl-6 lg:pl-8 flex items-center justify-center">
+              <div className="pl-5 lg:pl-6 flex items-center justify-center">
                 <StreakFlame streak={streak} />
               </div>
             </div>
@@ -525,7 +532,7 @@ export default function DashboardGemini() {
                     </div>
                     <h2 className="font-sans text-3xl font-bold text-ink leading-tight mb-3 tracking-tight">{currentLesson.title}</h2>
                     <p className="font-mono text-sm text-pencil font-medium">
-                      Lesson {currentLesson.number} of {skillLessons.length} <span className="mx-2 opacity-30">|</span> ~{currentLesson.estimatedMinutes}min
+                      {t("dashboard.lessonOf", { current: currentLesson.number, total: skillLessons.length })} <span className="mx-2 opacity-30">|</span> ~{currentLesson.estimatedMinutes}min
                     </p>
 
                     {/* Phase Indicator */}
@@ -546,7 +553,7 @@ export default function DashboardGemini() {
                             }} />
                             <span className={`block mt-2.5 text-xs font-bold uppercase tracking-widest text-center transition-colors ${
                               complete || isActive ? "text-ink" : "text-pencil"
-                            }`}>{phase}</span>
+                            }`}>{t(`dashboard.${phase}`)}</span>
                           </div>
                         );
                       })}
@@ -563,8 +570,8 @@ export default function DashboardGemini() {
                 <div className="border-t-[1.5px] border-ink/12 bg-ink/[0.015] p-6 flex items-center justify-between">
                   <div className="flex-1 max-w-[240px]">
                     <div className="flex items-center justify-between text-xs font-mono font-semibold text-pencil mb-2">
-                      <span>Progress</span>
-                      <span>{lessonProg.completed}/{lessonProg.total} steps</span>
+                      <span>{t("dashboard.progress")}</span>
+                      <span>{t("dashboard.steps", { completed: lessonProg.completed, total: lessonProg.total })}</span>
                     </div>
                     <div className="h-2 w-full rounded-full bg-ink/10 overflow-hidden">
                       <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{
@@ -578,7 +585,7 @@ export default function DashboardGemini() {
                     className="inline-flex items-center justify-center gap-2 text-white rounded-xl px-10 py-4 font-sans text-sm font-bold transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] focus:ring-2 focus:ring-offset-2"
                     style={{ backgroundColor: accent, outlineColor: accent }}
                   >
-                    Continue
+                    {t("dashboard.continue")}
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 3L11 8L5 13" />
                     </svg>
@@ -592,21 +599,21 @@ export default function DashboardGemini() {
                     <path d="M20 6L9 17l-5-5"/>
                   </svg>
                 </div>
-                <h2 className="font-sans text-3xl font-bold text-ink">All caught up!</h2>
-                <p className="font-sans text-base text-pencil mt-3">You have completed all available lessons for your field.</p>
+                <h2 className="font-sans text-3xl font-bold text-ink">{t("dashboard.allCaughtUp")}</h2>
+                <p className="font-sans text-base text-pencil mt-3">{t("dashboard.completedAllLessons")}</p>
               </div>
             )}
 
             {/* Your Skills Node Chain */}
             <div>
-              <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-4 ml-1">Your Skills</h3>
+              <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-4 ml-1">{t("dashboard.yourSkills")}</h3>
               <SkillPath relevantSkills={relevantSkills} progress={progress} activeSkill={activeSkill} getSkillProgress={getSkillProgress} accent={accent} />
             </div>
           </div>
 
           {/* RIGHT COLUMN: Certification Roadmap (~40%) */}
           <div className="flex flex-col w-full lg:w-[380px] shrink-0">
-            <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-4 ml-1">Certification Roadmap</h3>
+            <h3 className="font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-4 ml-1">{t("dashboard.certificationRoadmap")}</h3>
             <div className="flex flex-col gap-5">
               {stages.map((stg, si) => {
                 const isCurrent = si === 0;
@@ -647,7 +654,7 @@ export default function DashboardGemini() {
                           </div>
                           <div className="flex items-center justify-between mt-1">
                             <span className="font-sans text-xs text-pencil font-medium">
-                              {cert.provider} &middot; <span className="font-mono">{cert.costPln > 0 ? `${cert.costPln.toLocaleString()} PLN` : 'Free'}</span>
+                              {cert.provider} &middot; <span className="font-mono">{cert.costPln > 0 ? `${cert.costPln.toLocaleString()} PLN` : t("common.free")}</span>
                             </span>
                             <span className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${
                               cert.difficulty === "beginner" ? "bg-emerald-50 text-emerald-700" :
@@ -665,7 +672,7 @@ export default function DashboardGemini() {
                     {/* Current Stage Indicator */}
                     {isCurrent && (
                       <div className="bg-ink/[0.02] px-5 py-3 border-t border-ink/8 flex items-center justify-center">
-                        <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>In Progress</span>
+                        <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: accent }}>{t("dashboard.inProgress")}</span>
                       </div>
                     )}
                   </div>
@@ -687,10 +694,10 @@ export default function DashboardGemini() {
         >
           <div className="flex items-end mb-8 border-b border-ink/8 pb-5">
             <div className="flex items-center gap-4">
-              <h3 className="font-sans text-sm font-bold uppercase tracking-widest text-ink m-0">Career Opportunities</h3>
+              <h3 className="font-sans text-sm font-bold uppercase tracking-widest text-ink m-0">{t("dashboard.careerOpportunities")}</h3>
               {matchingJobs.length > 0 && (
                 <span className="font-mono text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: `${accent}15`, color: accent }}>
-                  {matchingJobs.length} matches
+                  {t("dashboard.matches", { count: matchingJobs.length })}
                 </span>
               )}
             </div>
@@ -728,7 +735,7 @@ export default function DashboardGemini() {
               </div>
               <div className="mt-10 flex justify-center">
                 <Link to="/jobs" className="group bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 transition-all duration-200 inline-flex items-center gap-2">
-                  Browse all jobs
+                  {t("dashboard.browseAllJobs")}
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="transition-transform group-hover:translate-x-1">
                     <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
@@ -737,8 +744,8 @@ export default function DashboardGemini() {
             </>
           ) : (
             <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 border-dashed rounded-xl p-10 text-center max-w-2xl mx-auto mt-10">
-              <p className="font-sans text-lg font-bold text-ink mb-2">Complete more skills to unlock job matches.</p>
-              <p className="font-sans text-sm text-pencil">Your skills connect directly to real job listings. Keep learning to see where your path leads.</p>
+              <p className="font-sans text-lg font-bold text-ink mb-2">{t("dashboard.completeMoreSkills")}</p>
+              <p className="font-sans text-sm text-pencil">{t("dashboard.skillsConnectJobs")}</p>
             </div>
           )}
         </section>

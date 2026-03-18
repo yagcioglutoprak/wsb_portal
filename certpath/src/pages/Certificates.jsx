@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fields, certifications } from "../data/mock";
 import { getFieldColor } from "../data/fieldColors";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -28,6 +29,7 @@ function RevealOnScroll({ children, delay = 0 }) {
 }
 
 export default function Certificates() {
+  const { t } = useTranslation();
   const [activeField, setActiveField] = useState("all");
 
   const allCerts = Object.values(certifications).flat();
@@ -36,7 +38,6 @@ export default function Certificates() {
     : fields.filter((f) => f.slug === activeField);
 
   const totalCerts = allCerts.length;
-  const freeCerts = allCerts.filter((c) => c.costPln === 0).length;
   const avgWeeks = Math.round(allCerts.reduce((s, c) => s + c.durationWeeks, 0) / totalCerts);
 
   return (
@@ -44,29 +45,28 @@ export default function Certificates() {
       {/* Header */}
       <div className="mb-12 animate-fade-in-up">
         <span className="inline-block bg-violet-100 text-violet-700 border border-violet-200 rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-widest mb-4">
-          Certification Hub
+          {t("certificates.certificationHub")}
         </span>
         <h1 className="font-sans text-4xl font-bold text-ink sm:text-5xl lg:text-6xl tracking-tight leading-none mb-4">
-          Certifications
+          {t("certificates.title")}
         </h1>
         <p className="max-w-2xl text-lg sm:text-xl leading-relaxed text-graphite font-medium">
-          Real certifications with verified prices, exam codes, and direct links
-          to official registration pages.
+          {t("certificates.subtitle")}
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
         <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5">
-          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">Total</span>
+          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">{t("certificates.total")}</span>
           <span className="font-mono text-2xl font-bold text-ink">{totalCerts}</span>
         </div>
         <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5">
-          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">Free</span>
-          <span className="font-mono text-2xl font-bold text-success">{freeCerts}</span>
+          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">{t("certificates.accessLabel")}</span>
+          <span className="font-mono text-lg font-bold text-arcade">{t("certificates.freeLimitedTime")}</span>
         </div>
         <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5">
-          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">Avg. Duration</span>
+          <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">{t("certificates.avgDuration")}</span>
           <span className="font-mono text-2xl font-bold text-ink">~{avgWeeks}<span className="text-sm text-pencil font-semibold ml-1">wk</span></span>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function Certificates() {
               : "border-ink/12 bg-card text-graphite shadow-[0_2px_0_0_rgba(0,0,0,0.04)] hover:border-pencil/30 hover:text-ink"
           }`}
         >
-          All fields
+          {t("certificates.allFields")}
         </button>
         {fields
           .filter((f) => (certifications[f.slug] || []).length > 0)
@@ -174,7 +174,7 @@ export default function Certificates() {
                                 <span className="font-mono text-sm font-bold text-ink">
                                   {cert.costPln > 0
                                     ? `${cert.costPln.toLocaleString("pl-PL")} PLN`
-                                    : "Free"}
+                                    : t("certificates.free")}
                                 </span>
                                 <span className="text-ink/20">·</span>
                                 <span className="font-mono text-sm text-pencil">

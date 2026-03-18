@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 /**
  * Single parent observer triggers sequential card reveals.
@@ -74,6 +75,7 @@ const IconBenchmark = () => <svg viewBox="0 0 24 24" fill="none" stroke="current
 const IconCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white"><path d="M20 6 9 17l-5-5"/></svg>;
 
 function LessonsCard({ revealed }) {
+  const { t } = useTranslation();
   const [isBroken, setIsBroken] = useState(false);
   const [placed, setPlaced] = useState([]);
   const [commitPos, setCommitPos] = useState(-1);
@@ -305,14 +307,14 @@ function LessonsCard({ revealed }) {
         {banner === 'success' && (
           <div className="absolute inset-0 bg-[#2a9d8f]/10 backdrop-blur-[1px] flex items-center justify-center z-30 animate-[fadeIn_0.3s_ease-out]">
             <div className="bg-[#2a9d8f] text-white px-5 py-3 rounded-xl font-bold text-sm shadow-xl flex items-center gap-2.5 animate-[bounceInUp_0.5s_cubic-bezier(0.34,1.56,0.64,1)]">
-              <IconParty /> Deploy successful!
+              <IconParty /> {t("bento.deploySuccessful")}
             </div>
           </div>
         )}
         {banner === 'error' && (
           <div className="absolute inset-0 bg-[#dc2626]/10 backdrop-blur-[1px] flex items-center justify-center z-30 animate-[fadeIn_0.3s_ease-out]">
             <div className="bg-[#dc2626] text-white px-5 py-3 rounded-xl font-bold text-sm shadow-xl flex items-center gap-2.5 animate-[shake_0.4s_ease-in-out]">
-              <IconBug className="w-5 h-5" /> Bug reached production!
+              <IconBug className="w-5 h-5" /> {t("bento.bugReachedProd")}
             </div>
           </div>
         )}
@@ -350,17 +352,17 @@ function LessonsCard({ revealed }) {
         </div>
 
         <div>
-          <span className="font-sans text-xs font-bold uppercase tracking-wider text-rust bg-rust/10 px-2.5 py-1 rounded-md">Interactive Lessons</span>
-          <h3 className="font-sans text-xl font-bold text-ink tracking-tight mt-4 mb-2">Learn by doing, not reading</h3>
+          <span className="font-sans text-xs font-bold uppercase tracking-wider text-rust bg-rust/10 px-2.5 py-1 rounded-md">{t("bento.interactiveLessons")}</span>
+          <h3 className="font-sans text-xl font-bold text-ink tracking-tight mt-4 mb-2">{t("bento.learnByDoing")}</h3>
           <p className="text-sm text-pencil leading-relaxed">
-            Every lesson is hands-on. Drag, build, and experiment — then see the results play out in real time. No passive videos. No walls of text.
+            {t("bento.lessonDesc")}
           </p>
         </div>
 
         <div className="mt-6 bg-[#f8f6f2] border-[1.5px] border-ink/10 rounded-xl p-3 shadow-inner overflow-hidden relative min-h-[250px] flex flex-col gap-2.5">
           {placed.length === 0 && (
              <div className="absolute inset-0 m-3 border-2 border-dashed border-ink/15 rounded-xl flex items-center justify-center bg-white/50">
-                <span className="text-ink/30 font-mono text-xs font-bold uppercase tracking-widest">Drop Blocks Here</span>
+                <span className="text-ink/30 font-mono text-xs font-bold uppercase tracking-widest">{t("bento.dropBlocksHere")}</span>
              </div>
           )}
 
@@ -445,6 +447,7 @@ function LessonsCard({ revealed }) {
 // CARD 2 — Certification Roadmap with stage-completing animation
 // ═══════════════════════════════════════════════════════════════════
 function CertRoadmapCard({ revealed }) {
+  const { t } = useTranslation();
   const [activeStage, setActiveStage] = useState(0);
 
   useEffect(() => {
@@ -471,8 +474,8 @@ function CertRoadmapCard({ revealed }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15l8.38-4.36a1 1 0 0 0 0-1.78L12 4.5 3.62 8.86a1 1 0 0 0 0 1.78L12 15z"></path><path d="m3.62 12.14 8.38 4.36 8.38-4.36"></path><path d="m3.62 16.14 8.38 4.36 8.38-4.36"></path></svg>
           </div>
           <div>
-             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Certification roadmap</h3>
-             <p className="text-xs text-pencil mt-1">Industry-recognized stages</p>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">{t("bento.certRoadmap")}</h3>
+             <p className="text-xs text-pencil mt-1">{t("bento.industryStages")}</p>
           </div>
         </div>
 
@@ -542,6 +545,7 @@ function CertRoadmapCard({ revealed }) {
 // CARD 3 — Job Opportunities
 // ═══════════════════════════════════════════════════════════════════
 function JobsCard({ revealed }) {
+  const { t } = useTranslation();
   const typeStyle = {
     emerald: "bg-emerald-50 text-emerald-700 border-emerald-200",
     sky: "bg-sky-50 text-sky-700 border-sky-200",
@@ -562,11 +566,11 @@ function JobsCard({ revealed }) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
             </div>
             <div>
-               <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Real opportunities</h3>
-               <p className="text-xs text-pencil mt-1">Student jobs in Poland</p>
+               <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">{t("bento.realOpportunities")}</h3>
+               <p className="text-xs text-pencil mt-1">{t("bento.studentJobs")}</p>
             </div>
           </div>
-          <span className="inline-flex items-center rounded-full bg-rust/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rust border border-rust/20 shrink-0">28+ Live</span>
+          <span className="inline-flex items-center rounded-full bg-rust/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rust border border-rust/20 shrink-0">{t("bento.live")}</span>
         </div>
 
         <div className="flex flex-col gap-3 flex-1 justify-center">
@@ -609,6 +613,7 @@ function JobsCard({ revealed }) {
 // CARD 4 — Personalized Path
 // ═══════════════════════════════════════════════════════════════════
 function PersonalizedPathCard({ revealed }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -627,8 +632,8 @@ function PersonalizedPathCard({ revealed }) {
              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
           </div>
           <div>
-             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Your path, personalized</h3>
-             <p className="text-xs text-pencil mt-1">Takes ~30 seconds to generate</p>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">{t("bento.yourPath")}</h3>
+             <p className="text-xs text-pencil mt-1">{t("bento.takes30s")}</p>
           </div>
         </div>
 
@@ -675,9 +680,9 @@ function PersonalizedPathCard({ revealed }) {
             <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white/10 to-transparent transform skew-x-12 animate-[shimmer_2.5s_infinite]" />
             <div className="flex justify-between items-center relative z-10">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">Path Generated</p>
-                <p className="text-base font-bold">Cybersecurity Analyst</p>
-                <p className="text-xs text-white/80 mt-1">4 stages &middot; 8 certs &middot; 12 jobs</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">{t("bento.pathGenerated")}</p>
+                <p className="text-base font-bold">{t("bento.cybersecurityAnalyst")}</p>
+                <p className="text-xs text-white/80 mt-1">{t("bento.pathStats")}</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3L11 8L5 13"/></svg>
@@ -694,6 +699,7 @@ function PersonalizedPathCard({ revealed }) {
 // CARD 5 — Track Progress
 // ═══════════════════════════════════════════════════════════════════
 function ProgressCard({ revealed }) {
+  const { t } = useTranslation();
   return (
     <Card revealed={revealed} className="flex flex-col">
       <div className="p-6 md:p-7 flex-1 flex flex-col">
@@ -702,8 +708,8 @@ function ProgressCard({ revealed }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
           </div>
           <div>
-             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">Track progress</h3>
-             <p className="text-xs text-pencil mt-1">Stay consistent</p>
+             <h3 className="font-sans text-xl font-bold text-ink tracking-tight leading-none">{t("bento.trackProgress")}</h3>
+             <p className="text-xs text-pencil mt-1">{t("bento.stayConsistent")}</p>
           </div>
         </div>
 
@@ -715,7 +721,7 @@ function ProgressCard({ revealed }) {
               <span className="font-sans text-sm font-bold uppercase tracking-wider text-arcade">XP</span>
             </div>
             <div className="bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl px-4 py-2 flex flex-col items-end">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-pencil">Current</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-pencil">{t("bento.current")}</span>
               <span className="text-base font-bold text-ink">Level 4</span>
             </div>
           </div>
@@ -757,8 +763,8 @@ function ProgressCard({ revealed }) {
                  <span className="relative z-10 text-white font-mono text-xs font-bold pt-2 drop-shadow-md">3</span>
               </div>
               <div>
-                <p className="text-sm font-bold text-ink leading-tight">3 Day Streak!</p>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-pencil mt-0.5">Keep it burning</p>
+                <p className="text-sm font-bold text-ink leading-tight">{t("bento.dayStreak")}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-pencil mt-0.5">{t("bento.keepBurning")}</p>
               </div>
             </div>
             <div className="flex gap-1.5">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from "react-i18next";
 
 const MAZE = [
   [0, 0, 0, 1, 0, 0, 0],
@@ -67,6 +68,7 @@ const ITEM_COLORS = {
 };
 
 function Scene1({ onComplete }) {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [exitingItem, setExitingItem] = useState(null);
 
@@ -94,11 +96,11 @@ function Scene1({ onComplete }) {
                  </div>
              ))}
          </div>
-         <div className="text-xs font-bold text-pencil uppercase tracking-wide">FIFO — First In, First Out</div>
+         <div className="text-xs font-bold text-pencil uppercase tracking-wide">{t("homepageLesson.fifo")}</div>
       </div>
       <div className="w-full lg:w-7/12 flex flex-col justify-center">
-         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">CONCEPT</span>
-         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">Meet the Queue</h3>
+         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">{t("homepageLesson.concept")}</span>
+         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">{t("homepageLesson.meetQueue")}</h3>
          <p className="text-base text-ink/70 leading-relaxed">
            A <strong className="text-[#f4a261] underline underline-offset-4 decoration-2">queue</strong> is first in, first out — just like a line at a coffee shop. The person who arrived first gets served first. BFS uses a queue to explore a maze layer by layer.
          </p>
@@ -108,6 +110,7 @@ function Scene1({ onComplete }) {
 }
 
 function Scene2({ onComplete }) {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [exitingItem, setExitingItem] = useState(null);
 
@@ -135,11 +138,11 @@ function Scene2({ onComplete }) {
                  </div>
              ))}
          </div>
-         <div className="text-xs font-bold text-pencil uppercase tracking-wide">LIFO — Last In, First Out</div>
+         <div className="text-xs font-bold text-pencil uppercase tracking-wide">{t("homepageLesson.lifo")}</div>
       </div>
       <div className="w-full lg:w-7/12 flex flex-col justify-center">
-         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">CONCEPT</span>
-         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">Now the Stack</h3>
+         <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider w-max mb-3">{t("homepageLesson.concept")}</span>
+         <h3 className="font-sans text-2xl font-bold text-ink tracking-tight mb-4">{t("homepageLesson.nowTheStack")}</h3>
          <p className="text-base text-ink/70 leading-relaxed">
            A <strong className="text-[#8338ec] underline underline-offset-4 decoration-2">stack</strong> is last in, first out — like a pile of plates. The most recent item added is the first one removed. DFS uses a stack to dive deep into one path before backtracking.
          </p>
@@ -149,6 +152,7 @@ function Scene2({ onComplete }) {
 }
 
 function Scene3({ runMode, onComplete }) {
+  const { t } = useTranslation();
   const [phase, setPhase] = useState("idle");
   const [visitedIndex, setVisitedIndex] = useState(-1);
   const [pathIndex, setPathIndex] = useState(-1);
@@ -434,15 +438,15 @@ function Scene3({ runMode, onComplete }) {
         {/* Status Line */}
         <div className="h-8 flex items-center justify-center w-full bg-[#fdfcfa] rounded-lg border border-[#e8ded1] shadow-sm">
           {["idle", "anim_pill_1", "anim_pill_2", "anim_pill_3", "reset"].includes(phase) ? (
-            <span className="text-xs text-pencil font-medium animate-pulse">Waiting for algorithm...</span>
+            <span className="text-xs text-pencil font-medium animate-pulse">{t("homepageLesson.waitingForAlgorithm")}</span>
           ) : phase === "done" || phase === "path" ? (
             <span className="text-xs text-[#2a9d8f] font-bold flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
-              Path found! {data.path.length} steps
+              {t("homepageLesson.pathFound", { steps: data.path.length })}
             </span>
           ) : (
             <span className={`text-xs font-medium ${runMode === 'bfs' ? 'text-[#e76f51]' : 'text-[#4ea8de]'}`}>
-              {runMode === 'bfs' ? "BFS — exploring layer by layer..." : "DFS — going deep..."}
+              {runMode === 'bfs' ? t("homepageLesson.bfsExploring") : t("homepageLesson.dfsExploring")}
             </span>
           )}
         </div>
@@ -497,7 +501,7 @@ function Scene3({ runMode, onComplete }) {
           
           <div className="flex justify-end">
             <button className={`bg-rust text-white rounded-xl px-5 py-2 font-sans text-sm font-semibold flex items-center gap-2 transition-all duration-200 ${phase === 'running' && visitedIndex < 2 ? 'scale-95 bg-rust/90' : 'scale-100'} ${phase === 'idle' ? 'animate-pulse' : ''}`}>
-              <span className="text-xs">▶</span> Run
+              <span className="text-xs">▶</span> {t("homepageLesson.run")}
             </button>
           </div>
         </div>
@@ -507,6 +511,7 @@ function Scene3({ runMode, onComplete }) {
 }
 
 function Scene4({ onComplete }) {
+  const { t } = useTranslation();
   const [answered, setAnswered] = useState(false);
 
   useEffect(() => {
@@ -518,19 +523,19 @@ function Scene4({ onComplete }) {
   return (
     <div className="flex flex-col p-6 gap-8 items-center justify-center bg-[#fdf8f5] min-h-[420px] w-full relative">
         <div className="w-full max-w-lg">
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider mb-4 block w-max mx-auto">QUICK CHECK</span>
-            <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-8 text-center">Which data structure explores neighbors level by level?</h3>
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider mb-4 block w-max mx-auto">{t("homepageLesson.quickCheck")}</span>
+            <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-8 text-center">{t("homepageLesson.quizQuestion")}</h3>
             
             <div className="flex flex-col gap-3">
                 {/* Option A */}
                 <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#e8ded1] bg-[#fdfcfa] opacity-40' : 'border-[#e8ded1] bg-[#fdfcfa] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
-                    <span className="font-medium text-ink">A. Stack (DFS)</span>
+                    <span className="font-medium text-ink">{t("homepageLesson.optionA")}</span>
                     <div className="w-5 h-5 rounded-full border border-ink/20" />
                 </div>
                 
                 {/* Option B */}
                 <div className={`border-[1.5px] rounded-xl p-4 flex items-center justify-between transition-all duration-300 ${answered ? 'border-[#10b981] bg-[#10b981]/10 shadow-[0_4px_20px_rgba(16,185,129,0.15)] scale-[1.02]' : 'border-[#e8ded1] bg-[#fdfcfa] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:border-ink/20'}`}>
-                    <span className={`font-medium transition-colors duration-300 ${answered ? 'text-[#10b981] font-bold' : 'text-ink'}`}>B. Queue (BFS)</span>
+                    <span className={`font-medium transition-colors duration-300 ${answered ? 'text-[#10b981] font-bold' : 'text-ink'}`}>{t("homepageLesson.optionB")}</span>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300 ${answered ? 'bg-[#10b981] border-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'border border-ink/20'}`}>
                         {answered && <svg className="w-3 h-3 text-white scale-in-center" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>}
                     </div>
@@ -539,7 +544,7 @@ function Scene4({ onComplete }) {
 
             <div className={`text-center mt-6 transition-all duration-300 ${answered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
                 <span className="text-[#10b981] font-bold text-sm flex items-center justify-center gap-1.5">
-                    Correct! Queue processes layer by layer.
+                    {t("homepageLesson.correctAnswer")}
                 </span>
             </div>
         </div>
@@ -618,6 +623,7 @@ function DemoCursor({ scene }) {
 }
 
 export default function HomepageLesson() {
+  const { t } = useTranslation();
   const [scene, setScene] = useState(1);
   const [animState, setAnimState] = useState('entered');
   const [loopCount, setLoopCount] = useState(0);
@@ -679,8 +685,8 @@ export default function HomepageLesson() {
       <div className="p-6 border-b border-[#e8ded1] relative bg-[#fdf8f5] z-10">
         <div className="flex items-center gap-3 mb-3">
           <div className="flex gap-2">
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">ALGORITHMS</span>
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">LVL 1</span>
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">{t("homepageLesson.algorithms")}</span>
+            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider">{t("homepageLesson.lvl1")}</span>
           </div>
           <div className="w-[1px] h-3 bg-amber-900/10" />
           <div className="flex gap-1.5 items-center">
@@ -689,9 +695,9 @@ export default function HomepageLesson() {
               ))}
           </div>
         </div>
-        <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-2">Maze Pathfinder</h3>
+        <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-2">{t("homepageLesson.mazePathfinder")}</h3>
         <p className="text-sm text-ink/60 leading-relaxed max-w-lg">
-          Learn how queues and stacks power two different search strategies — then use one to navigate a maze.
+          {t("homepageLesson.mazeDesc")}
         </p>
       </div>
 

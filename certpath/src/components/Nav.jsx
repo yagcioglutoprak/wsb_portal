@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import useProgress from "../hooks/useProgress";
 import { useAuth } from "../contexts/AuthContext";
+import LangSwitcher from "./LangSwitcher";
 
 const linkClass = ({ isActive }) =>
   [
@@ -32,6 +34,7 @@ function UserAvatar({ email, onClick }) {
 }
 
 export default function Nav() {
+  const { t } = useTranslation();
   const { isOnboarded, xp, level } = useProgress();
   const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -79,20 +82,20 @@ export default function Nav() {
         <nav className="hidden md:flex items-center gap-6 sm:gap-8">
           {isOnboarded && (
             <NavLink to="/dashboard" className={linkClass}>
-              Dashboard
+              {t("nav.dashboard")}
             </NavLink>
           )}
           <NavLink to="/lessons" className={linkClass}>
-            Lessons
+            {t("nav.lessons")}
           </NavLink>
           <NavLink to="/explore" className={linkClass}>
-            Explore
+            {t("nav.explore")}
           </NavLink>
           <NavLink to="/certificates" className={linkClass}>
-            Certificates
+            {t("nav.certificates")}
           </NavLink>
           <NavLink to="/jobs" className={linkClass}>
-            Opportunities
+            {t("nav.opportunities")}
           </NavLink>
 
           {isOnboarded && (
@@ -106,7 +109,7 @@ export default function Nav() {
               to="/onboarding"
               className="ml-2 bg-rust text-white rounded-xl px-6 py-2.5 font-sans text-sm font-semibold hover:bg-rust/90 transition-all duration-200"
             >
-              Get Started
+              {t("nav.getStarted")}
             </Link>
           )}
 
@@ -117,7 +120,7 @@ export default function Nav() {
               onClick={signInWithGoogle}
               className="font-sans text-sm tracking-wide text-graphite hover:text-ink transition-colors duration-200"
             >
-              Sign in
+              {t("nav.signIn")}
             </button>
           )}
 
@@ -142,12 +145,14 @@ export default function Nav() {
                     }}
                     className="w-full text-left px-4 py-2.5 font-sans text-sm text-graphite hover:text-ink hover:bg-ink/5 transition-colors duration-200"
                   >
-                    Sign out
+                    {t("nav.signOut")}
                   </button>
                 </div>
               )}
             </div>
           )}
+
+          <LangSwitcher />
 
           {/* Dev: clear localStorage */}
           {import.meta.env.DEV && (
@@ -157,7 +162,7 @@ export default function Nav() {
               className="ml-2 text-xs text-pencil/50 hover:text-red-500 transition-colors"
               title="Clear localStorage (dev only)"
             >
-              Reset
+              {t("nav.reset")}
             </button>
           )}
         </nav>
@@ -221,21 +226,23 @@ export default function Nav() {
             <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 flex flex-col gap-1">
               {isOnboarded && (
                 <NavLink to="/dashboard" className={mobileLinkClass} onClick={closeMenu}>
-                  Dashboard
+                  {t("nav.dashboard")}
                 </NavLink>
               )}
               <NavLink to="/lessons" className={mobileLinkClass} onClick={closeMenu}>
-                Lessons
+                {t("nav.lessons")}
               </NavLink>
               <NavLink to="/explore" className={mobileLinkClass} onClick={closeMenu}>
-                Explore
+                {t("nav.explore")}
               </NavLink>
               <NavLink to="/certificates" className={mobileLinkClass} onClick={closeMenu}>
-                Certificates
+                {t("nav.certificates")}
               </NavLink>
               <NavLink to="/jobs" className={mobileLinkClass} onClick={closeMenu}>
-                Opportunities
+                {t("nav.opportunities")}
               </NavLink>
+
+              <LangSwitcher />
 
               {/* Divider */}
               <div className="my-2 h-px bg-faint" />
@@ -254,7 +261,7 @@ export default function Nav() {
                   className="mt-2 block text-center bg-rust text-white rounded-xl px-6 py-3 font-sans text-sm font-semibold hover:bg-rust/90 transition-all duration-200"
                   onClick={closeMenu}
                 >
-                  Get Started
+                  {t("nav.getStarted")}
                 </Link>
               )}
 
@@ -268,7 +275,7 @@ export default function Nav() {
                   }}
                   className="block w-full font-sans text-lg font-medium tracking-wide py-3 px-2 rounded-lg text-graphite hover:text-ink hover:bg-ink/5 transition-colors duration-200 text-left"
                 >
-                  Sign in
+                  {t("nav.signIn")}
                 </button>
               )}
 
@@ -290,7 +297,7 @@ export default function Nav() {
                     }}
                     className="block w-full font-sans text-lg font-medium tracking-wide py-3 px-2 rounded-lg text-graphite hover:text-ink hover:bg-ink/5 transition-colors duration-200 text-left"
                   >
-                    Sign out
+                    {t("nav.signOut")}
                   </button>
                 </>
               )}
@@ -303,7 +310,7 @@ export default function Nav() {
                   className="mt-1 text-xs text-pencil/50 hover:text-red-500 transition-colors text-left px-2 py-2"
                   title="Clear localStorage (dev only)"
                 >
-                  Reset localStorage
+                  {t("nav.resetLocalStorage")}
                 </button>
               )}
             </div>

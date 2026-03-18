@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Clairy — EduTech Masters 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* ================================================================
+       RESET
+       ================================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: 'DM Sans', sans-serif;
+      background: #e8e4dc;
+      color: #1a1a2e;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       PRINT
+       ================================================================ */
+    @page {
+      size: 1280px 720px landscape;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        background: none;
+      }
+      section {
+        margin: 0 !important;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* ================================================================
+       SLIDE BASE
+       ================================================================ */
+    section {
+      width: 1280px;
+      height: 720px;
+      background: #f5f3ef;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+      margin: 0 auto 2px;
+    }
+
+    section:last-child {
+      page-break-after: auto;
+    }
+
+    /* ================================================================
+       VERTICAL RUST LINE (slides 2-9)
+       ================================================================ */
+    .rust-line::before {
+      content: '';
+      position: absolute;
+      left: 64px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #DF5433;
+    }
+
+    /* ================================================================
+       WATERMARK & SLIDE NUMBER
+       ================================================================ */
+    .watermark {
+      position: absolute;
+      bottom: 24px;
+      left: 88px;
+      font-family: 'Instrument Serif', serif;
+      font-size: 10px;
+      color: #1a1a2e;
+      opacity: 0.15;
+      letter-spacing: 0.02em;
+    }
+
+    .slide-num {
+      position: absolute;
+      bottom: 24px;
+      right: 48px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      color: #1a1a2e;
+      opacity: 0.15;
+    }
+
+    /* ================================================================
+       TYPOGRAPHY
+       ================================================================ */
+    .t-title {
+      font-family: 'Instrument Serif', serif;
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .t-body {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .t-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #3a3a4a;
+    }
+
+    .t-stat {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: #DF5433;
+    }
+
+    .t-muted {
+      color: #3a3a4a;
+    }
+
+    /* ================================================================
+       SCREENSHOT PLACEHOLDER
+       ================================================================ */
+    .screenshot {
+      background: #eceae6;
+      border: 1px dashed rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a3a4a;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      text-align: center;
+      padding: 16px;
+      line-height: 1.4;
+    }
+
+    /* ================================================================
+       UTILITY
+       ================================================================ */
+    .border-b-thin {
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     SLIDE 1 — TITLE
+     ================================================================ -->
+<section style="display: flex; flex-direction: column; justify-content: space-between; padding: 96px 80px 48px 96px;">
+  <!-- Diagonal rust line decoration -->
+  <svg width="320" height="720" style="position: absolute; top: 0; right: 80px; opacity: 0.12;" viewBox="0 0 320 720" fill="none">
+    <line x1="320" y1="0" x2="0" y2="720" stroke="#DF5433" stroke-width="1.5"/>
+  </svg>
+
+  <div>
+    <div class="t-label" style="margin-bottom: 32px;">EduTech Masters 2026</div>
+    <h1 class="t-title" style="font-size: 120px; color: #1a1a2e; letter-spacing: -0.03em;">Clairy</h1>
+    <p class="t-body" style="font-size: 24px; font-weight: 300; color: #3a3a4a; margin-top: 16px; letter-spacing: -0.01em;">Twoja kariera, wyjasniona.</p>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+      <span class="t-label" style="display: block;">EduTech Masters 2026</span>
+      <span class="t-body" style="font-size: 36px; font-weight: 700; color: #DF5433; display: block; margin-top: 12px; letter-spacing: -0.01em;">clairy.vercel.app</span>
+    </div>
+    <div style="text-align: right;">
+      <span class="t-body" style="font-size: 15px; color: #3a3a4a; display: block;">Toprak Yagcioglu & Mert Ural</span>
+      <span class="t-body" style="font-size: 13px; color: #3a3a4a; display: block; margin-top: 4px;">yagcioglutoprak@gmail.com</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SLIDE 2 — PROBLEM
+     ================================================================ -->
+<section class="rust-line" style="padding: 64px 80px 48px 96px;">
+  <div style="display: flex; gap: 48px; height: 100%;">
+    <!-- Left column: 60% -->
+    <div style="flex: 0 0 58%; display: flex; flex-direction: column; justify-content: center;">
+      <h2 class="t-title" style="font-size: 48px; margin-bottom: 48px;">Problem</h2>
+
+      <!-- Stat 1 -->
+      <div style="margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <span class="t-stat" style="font-size: 64px; line-height: 1; color: #DF5433;">0,8%</span>
+        <p class="t-body" style="font-size: 16px; color: #3a3a4a; margin-top: 8px; max-width: 380px;">ofert pracy w IT to stanowiska entry-level</p>
+      </div>
+
+      <!-- Stat 2 -->
+      <div style="margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <span class="t-stat" style="font-size: 64px; line-height: 1; color: #2856a6;">55%</span>
+        <p class="t-body" style="font-size: 16px; color: #3a3a4a; margin-top: 8px; max-width: 380px;">polskich firm IT nie moze znalezc kandydatow z kompetencjami</p>
+      </div>
+
+      <!-- Stat 3 -->
+      <div>
+        <span class="t-stat" style="font-size: 64px; line-height: 1; color: #1a1a2e;">0</span>
+        <p class="t-body" style="font-size: 16px; color: #3a3a4a; margin-top: 8px; max-width: 380px;">narzedzi pomagajacych studentom nawigowac certyfikaty</p>
+      </div>
+    </div>
+
+    <!-- Right column: image fills entire right side -->
+    <div style="position: absolute; top: 0; right: 0; width: 45%; height: 100%; overflow: hidden;">
+      <img src="presentation_phoots/problem.png" style="width: 100%; height: 100%; object-fit: cover; object-position: center;" />
+    </div>
+  </div>
+
+  <p class="t-body" style="position: absolute; bottom: 48px; left: 96px; font-size: 15px; color: #3a3a4a; max-width: 600px;">Studenci traca setki godzin na certyfikaty, ktore nie pomagaja im znalezc pracy.</p>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">02</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 3 — SOLUTION
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 48px;">Rozwiazanie</h2>
+  <p class="t-body" style="font-size: 18px; color: #3a3a4a; margin-top: 12px; max-width: 600px;">Clairy to platforma kariery, ktora uczy, prowadzi i laczy studentow z rynkiem pracy.</p>
+
+  <!-- 2x2 feature grid -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px 48px; margin-top: 36px;">
+    <!-- Feature 1: Interaktywne lekcje -->
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0; margin-top: 2px;">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 7h8M8 11h5" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <p class="t-body" style="font-size: 17px; font-weight: 600; margin-bottom: 4px;">Interaktywne lekcje</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Drag-and-drop, symulacje i quizy. Nauka przez dzialanie, nie czytanie.</p>
+      </div>
+    </div>
+
+    <!-- Feature 2: Sciezki certyfikacyjne -->
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0; margin-top: 2px;">
+        <circle cx="5" cy="6" r="2.5" stroke="#DF5433" stroke-width="1.5"/>
+        <circle cx="19" cy="12" r="2.5" stroke="#DF5433" stroke-width="1.5"/>
+        <circle cx="5" cy="18" r="2.5" stroke="#DF5433" stroke-width="1.5"/>
+        <path d="M7.5 6h4a4 4 0 0 1 4 4v2M7.5 18h4a4 4 0 0 0 4-4v-2" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <p class="t-body" style="font-size: 17px; font-weight: 600; margin-bottom: 4px;">Sciezki certyfikacyjne</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Roadmapy dopasowane do kierunku studiow i poziomu zaawansowania.</p>
+      </div>
+    </div>
+
+    <!-- Feature 3: Oferty pracy -->
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0; margin-top: 2px;">
+        <rect x="2" y="7" width="20" height="14" rx="0" stroke="#DF5433" stroke-width="1.5"/>
+        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M2 13h20" stroke="#DF5433" stroke-width="1.5"/>
+        <circle cx="12" cy="13" r="1.5" fill="#DF5433"/>
+      </svg>
+      <div>
+        <p class="t-body" style="font-size: 17px; font-weight: 600; margin-bottom: 4px;">Oferty pracy</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Staze i prace junior filtrowane wg certyfikatow studenta.</p>
+      </div>
+    </div>
+
+    <!-- Feature 4: Grywalizacja -->
+    <div style="display: flex; gap: 16px; align-items: flex-start;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0; margin-top: 2px;">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <p class="t-body" style="font-size: 17px; font-weight: 600; margin-bottom: 4px;">Grywalizacja</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a;">XP, serie i odznaki. Sprawdzone mechaniki zaangazowania.</p>
+      </div>
+    </div>
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">03</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 4 — PLATFORM SHOWCASE (NEW)
+     ================================================================ -->
+<section class="rust-line" style="padding: 48px 80px 0 96px;">
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+    <div>
+      <span class="t-label">Platforma</span>
+      <h2 class="t-title" style="font-size: 40px; margin-top: 8px;">clairy.vercel.app</h2>
+    </div>
+    <p class="t-body" style="font-size: 15px; color: #3a3a4a; max-width: 400px; text-align: right;">Dzialajaca aplikacja webowa. Nie mockup, nie wireframe. Wyprobuj teraz.</p>
+  </div>
+  <div style="position: absolute; bottom: 0; left: 64px; right: 0; top: 130px; overflow: hidden; border-top: 1px solid rgba(0,0,0,0.1); box-shadow: 0 -2px 20px rgba(0,0,0,0.06);">
+    <img src="presentation_phoots/hero_pl.png" style="width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;" />
+  </div>
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">04</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 5 — PRODUCT METRICS
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 44px; margin-bottom: 32px;">Dzialajacy produkt</h2>
+
+  <div style="display: flex; gap: 48px; height: calc(100% - 140px);">
+    <!-- Left: metrics 3x2 grid -->
+    <div style="flex: 0 0 42%; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px 24px; align-content: start;">
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #DF5433;">27</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">lekcji</span>
+      </div>
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #2856a6;">41</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">certyfikatow</span>
+      </div>
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #0d7c66;">113</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">ofert pracy</span>
+      </div>
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #7c3aed;">11</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">dziedzin</span>
+      </div>
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #1a1a2e;">162</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">krokow</span>
+      </div>
+      <div>
+        <span class="t-stat" style="font-size: 42px; display: block; line-height: 1.1; color: #d97706;">8,6h</span>
+        <span class="t-body" style="font-size: 14px; color: #3a3a4a;">tresci</span>
+      </div>
+    </div>
+
+    <!-- Right: single large screenshot -->
+    <div style="position: absolute; top: 24px; right: 0; bottom: 60px; width: 55%; overflow: hidden; border-left: 1px solid rgba(0,0,0,0.1); box-shadow: -4px 0 20px rgba(0,0,0,0.06);">
+      <img src="presentation_phoots/lesson_pl.png" style="width: 100%; height: 100%; object-fit: cover; object-position: center left; display: block;" />
+    </div>
+  </div>
+
+  <!-- Bottom right link -->
+  <div style="position: absolute; bottom: 48px; right: 80px; display: flex; align-items: center; gap: 6px;">
+    <span class="t-body" style="font-size: 22px; font-weight: 700; color: #DF5433; letter-spacing: 0.01em; border-bottom: 2px solid #DF5433; padding-bottom: 2px;">clairy.vercel.app</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M5 12h14M13 6l6 6-6 6" stroke="#DF5433" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">05</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 5 — HOW IT WORKS
+     ================================================================ -->
+<section class="rust-line" style="padding: 28px 80px 20px 96px;">
+  <h2 class="t-title" style="font-size: 36px; margin-bottom: 16px;">Jak to dziala?</h2>
+
+  <!-- 4-step horizontal flow -->
+  <div style="display: flex; align-items: flex-start; gap: 0; position: relative; margin-bottom: 12px; padding: 0 24px;">
+    <!-- Connecting line -->
+    <div style="position: absolute; top: 18px; left: 42px; right: 42px; height: 1px; background: rgba(0,0,0,0.12);"></div>
+
+    <!-- Step 1 -->
+    <div style="flex: 1; text-align: center; position: relative;">
+      <div style="width: 36px; height: 36px; background: #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; position: relative; z-index: 1;">
+        <span style="font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: #fff;">1</span>
+      </div>
+      <p class="t-body" style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Onboarding</p>
+      <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Rok, kierunek, zainteresowania</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div style="flex: 1; text-align: center; position: relative;">
+      <div style="width: 36px; height: 36px; background: #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; position: relative; z-index: 1;">
+        <span style="font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: #fff;">2</span>
+      </div>
+      <p class="t-body" style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Lekcje</p>
+      <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Interaktywna nauka krok po kroku</p>
+    </div>
+
+    <!-- Step 3 -->
+    <div style="flex: 1; text-align: center; position: relative;">
+      <div style="width: 36px; height: 36px; background: #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; position: relative; z-index: 1;">
+        <span style="font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: #fff;">3</span>
+      </div>
+      <p class="t-body" style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Certyfikaty</p>
+      <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Roadmapy i przygotowanie do egzaminow</p>
+    </div>
+
+    <!-- Step 4 -->
+    <div style="flex: 1; text-align: center; position: relative;">
+      <div style="width: 36px; height: 36px; background: #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; position: relative; z-index: 1;">
+        <span style="font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: #fff;">4</span>
+      </div>
+      <p class="t-body" style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Praca</p>
+      <p class="t-body" style="font-size: 14px; color: #3a3a4a;">Oferty dopasowane do kompetencji</p>
+    </div>
+  </div>
+
+  <!-- Dashboard screenshot -->
+  <div style="position: absolute; bottom: 20px; left: 96px; right: 48px; top: 240px; display: flex; align-items: center; justify-content: center;">
+    <img src="presentation_phoots/dashbaord_PL.png" style="max-width: 85%; max-height: 100%; object-fit: contain; display: block; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">06</span>
+</section>
+
+<!-- SLIDE 7 — Onboarding -->
+<section style="padding: 40px 48px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+  <span style="position: absolute; top: 20px; left: 24px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #DF5433;">1 / Onboarding</span>
+  <img src="presentation_phoots/onboarding_pl.png" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
+</section>
+
+<!-- SLIDE 8 — Lekcja -->
+<section style="padding: 40px 48px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+  <span style="position: absolute; top: 20px; left: 24px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #2856a6;">2 / Lekcja interaktywna</span>
+  <img src="presentation_phoots/lesson_pl.png" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
+</section>
+
+<!-- SLIDE 9 — Roadmapa -->
+<section style="padding: 40px 48px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+  <span style="position: absolute; top: 20px; left: 24px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #0d7c66;">3 / Roadmapa certyfikatow</span>
+  <img src="presentation_phoots/roadmap_pl.png" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
+</section>
+
+<!-- SLIDE 10 — Oferty pracy -->
+<section style="padding: 40px 48px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+  <span style="position: absolute; top: 20px; left: 24px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #7c3aed;">4 / Oferty pracy</span>
+  <img src="presentation_phoots/jobs_pl.png" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 24px rgba(0,0,0,0.08);" />
+</section>
+
+<!-- ================================================================
+     SLIDE 8 — MARKET
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 48px; margin-bottom: 48px;">Rynek</h2>
+
+  <div style="display: flex; gap: 64px; height: calc(100% - 200px);">
+    <!-- Left: TAM/SAM/SOM nested rectangles -->
+    <div style="flex: 0 0 52%; position: relative;">
+      <!-- TAM outer -->
+      <div style="border: 1px solid rgba(0,0,0,0.12); padding: 20px; height: 100%; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <span class="t-label" style="font-size: 9px;">TAM</span>
+          <span class="t-body" style="font-size: 15px; color: #3a3a4a;">20M+ studentow UE</span>
+        </div>
+        <!-- SAM middle -->
+        <div style="border: 1px solid rgba(0,0,0,0.12); padding: 20px; margin-top: 20px; height: calc(100% - 64px); position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <span class="t-label" style="font-size: 9px;">SAM</span>
+            <span class="t-body" style="font-size: 15px; color: #3a3a4a;">1,2M studentow w Polsce</span>
+          </div>
+          <!-- SOM inner -->
+          <div style="background: #DF5433; padding: 20px; margin-top: 20px; height: calc(100% - 64px); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.18em; color: rgba(255,255,255,0.7);">SOM</span>
+            <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 42px; color: #fff; margin-top: 4px;">100K+</span>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 15px; color: rgba(255,255,255,0.85); margin-top: 4px;">WSB Merito</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Customer segments -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+      <div class="t-label" style="margin-bottom: 24px;">Segmenty klientow</div>
+
+      <div style="padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <p class="t-body" style="font-size: 16px; font-weight: 600;">Studenci</p>
+        <p class="t-body" style="font-size: 15px; color: #3a3a4a; margin-top: 4px;">1,2M w Polsce</p>
+      </div>
+
+      <div style="padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <p class="t-body" style="font-size: 16px; font-weight: 600;">Uczelnie</p>
+        <p class="t-body" style="font-size: 15px; color: #3a3a4a; margin-top: 4px;">~400 w Polsce</p>
+      </div>
+
+      <div style="padding: 20px 0;">
+        <p class="t-body" style="font-size: 16px; font-weight: 600;">Dostawcy certyfikatow</p>
+        <p class="t-body" style="font-size: 15px; color: #3a3a4a; margin-top: 4px;">AWS, Google, CompTIA</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="t-body" style="position: absolute; bottom: 48px; left: 96px; font-size: 14px; color: #1a1a2e;">Budujemy <strong>DLA</strong> studentow WSB Merito. <strong>SAMI</strong> jestesmy studentami.</p>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">08</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 7 — BUSINESS MODEL
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 48px; margin-bottom: 44px;">Model biznesowy</h2>
+
+  <div style="display: flex; gap: 64px;">
+    <!-- Left: Revenue streams -->
+    <div style="flex: 0 0 50%;">
+      <div class="t-label" style="margin-bottom: 20px;">Zrodla przychodu</div>
+
+      <!-- Stream 1 — highlighted -->
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <div style="flex: 1; background: #DF5433; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="font-family: 'DM Sans', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.7);">Licencja uczelniana (B2B)</span>
+          </div>
+          <span style="font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: #fff;">2-5K PLN/mies./kampus</span>
+        </div>
+      </div>
+
+      <!-- Stream 2 -->
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-family: 'DM Sans', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a;">Freemium (B2C)</span>
+          <span class="t-body" style="font-size: 15px; font-weight: 500;">29 PLN/mies. premium</span>
+        </div>
+      </div>
+
+      <!-- Stream 3 -->
+      <div style="display: flex; align-items: center; margin-bottom: 12px;">
+        <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-family: 'DM Sans', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a;">Partnerzy certyfikacyjni</span>
+          <span class="t-body" style="font-size: 15px; font-weight: 500;">Prowizje AWS, Google</span>
+        </div>
+      </div>
+
+      <!-- Stream 4 -->
+      <div style="display: flex; align-items: center;">
+        <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-family: 'DM Sans', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a;">Tablica ogloszen</span>
+          <span class="t-body" style="font-size: 15px; font-weight: 500;">500-2K PLN/mies.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Projection table -->
+    <div style="flex: 1;">
+      <div class="t-label" style="margin-bottom: 20px;">Projekcja 3-letnia</div>
+
+      <table style="width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;"></th>
+            <th style="text-align: right; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;">Rok 1</th>
+            <th style="text-align: right; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;">Rok 2</th>
+            <th style="text-align: right; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;">Rok 3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; font-weight: 500;">Przychody</td>
+            <td style="padding: 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right;">50K PLN</td>
+            <td style="padding: 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right;">1,5M PLN</td>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right; font-weight: 600; color: #DF5433;">6M PLN</td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; font-weight: 500;">Uczelnie</td>
+            <td style="padding: 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right;">2</td>
+            <td style="padding: 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right;">10</td>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; text-align: right;">40</td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 0; font-size: 15px; font-weight: 500;">Uzytkownicy</td>
+            <td style="padding: 16px 16px; font-size: 15px; text-align: right;">5K</td>
+            <td style="padding: 16px 16px; font-size: 15px; text-align: right;">50K</td>
+            <td style="padding: 16px 0; font-size: 15px; text-align: right;">300K</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">09</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 8 — TEAM & IP
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 48px; margin-bottom: 48px;">Zespol i ochrona IP</h2>
+
+  <div style="display: flex; gap: 64px; height: calc(100% - 180px);">
+    <!-- Left: Team -->
+    <div style="flex: 0 0 45%; display: flex; flex-direction: column;">
+      <div class="t-label" style="margin-bottom: 20px;">Zespol</div>
+
+      <div style="margin-bottom: 16px; margin-top: 16px;">
+        <p class="t-body" style="font-size: 18px; font-weight: 700;">Toprak Yagcioglu</p>
+        <p class="t-body" style="font-size: 14px; color: #DF5433; font-weight: 600; margin-top: 2px;">Co-founder & Developer</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">Full-stack, architektura, UI/UX, backend</p>
+      </div>
+      <div>
+        <p class="t-body" style="font-size: 18px; font-weight: 700;">Mert Ural</p>
+        <p class="t-body" style="font-size: 14px; color: #2856a6; font-weight: 600; margin-top: 2px;">Co-founder & Developer</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">Frontend, interaktywne lekcje, integracje</p>
+      </div>
+    </div>
+
+    <!-- Right: IP table -->
+    <div style="flex: 1; display: flex; flex-direction: column;">
+      <div class="t-label" style="margin-bottom: 20px;">Ochrona wlasnosci intelektualnej</div>
+
+      <table style="width: 100%; border-collapse: collapse; font-family: 'DM Sans', sans-serif;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;">Zasob</th>
+            <th style="text-align: left; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.12); font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: #3a3a4a; font-weight: 500;">Ochrona</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 14px; font-weight: 500;">Marka "Clairy"</td>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; color: #3a3a4a;">Znak towarowy UPRP</td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 14px; font-weight: 500;">Silnik lekcji</td>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; color: #3a3a4a;">Tajemnica handlowa + Copyright</td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 14px; font-weight: 500;">Baza certyfikatow</td>
+            <td style="padding: 16px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 15px; color: #3a3a4a;">Prawo sui generis UE</td>
+          </tr>
+          <tr>
+            <td style="padding: 16px 0; font-size: 14px; font-weight: 500;">60+ scen interaktywnych</td>
+            <td style="padding: 16px 0; font-size: 15px; color: #3a3a4a;">Copyright</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">10</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 9 — FINANCES & ROADMAP
+     ================================================================ -->
+<section class="rust-line" style="padding: 56px 80px 48px 96px;">
+  <h2 class="t-title" style="font-size: 48px; margin-bottom: 48px;">Finanse i plan</h2>
+
+  <!-- Funding timeline -->
+  <div style="margin-bottom: 56px;">
+    <div class="t-label" style="margin-bottom: 24px;">Finansowanie</div>
+    <div style="position: relative; padding: 0 32px;">
+      <!-- Connecting line -->
+      <div style="position: absolute; top: 16px; left: 48px; right: 48px; height: 1px; background: rgba(0,0,0,0.12);"></div>
+
+      <div style="display: flex; justify-content: space-between;">
+        <!-- Node 1 -->
+        <div style="text-align: center; position: relative;">
+          <div style="width: 32px; height: 32px; background: #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; z-index: 1;">
+            <div style="width: 8px; height: 8px; background: #fff;"></div>
+          </div>
+          <p class="t-body" style="font-size: 15px; font-weight: 600;">Teraz</p>
+          <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 2px;">5K PLN</p>
+        </div>
+
+        <!-- Node 2 -->
+        <div style="text-align: center; position: relative;">
+          <div style="width: 32px; height: 32px; border: 1.5px solid #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; z-index: 1; background: #f5f3ef;">
+            <div style="width: 8px; height: 8px; background: #DF5433;"></div>
+          </div>
+          <p class="t-body" style="font-size: 15px; font-weight: 600;">Q3 2026</p>
+          <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 2px;">PARP 200-500K</p>
+        </div>
+
+        <!-- Node 3 -->
+        <div style="text-align: center; position: relative;">
+          <div style="width: 32px; height: 32px; border: 1.5px solid #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; z-index: 1; background: #f5f3ef;">
+            <div style="width: 8px; height: 8px; background: #DF5433;"></div>
+          </div>
+          <p class="t-body" style="font-size: 15px; font-weight: 600;">Q4 2026</p>
+          <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 2px;">Aniol 500K-1M</p>
+        </div>
+
+        <!-- Node 4 -->
+        <div style="text-align: center; position: relative;">
+          <div style="width: 32px; height: 32px; border: 1.5px solid #DF5433; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; position: relative; z-index: 1; background: #f5f3ef;">
+            <div style="width: 8px; height: 8px; background: #DF5433;"></div>
+          </div>
+          <p class="t-body" style="font-size: 15px; font-weight: 600;">2027</p>
+          <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 2px;">Break-even</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roadmap phases -->
+  <div>
+    <div class="t-label" style="margin-bottom: 20px;">Plan rozwoju</div>
+    <div style="display: flex; gap: 0;">
+      <!-- Phase 1 -->
+      <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); border-right: none; padding: 20px;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; color: #DF5433;">1</span>
+          <span class="t-label" style="font-size: 9px;">0-6 mies.</span>
+        </div>
+        <p class="t-body" style="font-size: 15px; font-weight: 600;">Pilot WSB Merito</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">1 kampus, walidacja produktu</p>
+      </div>
+
+      <!-- Phase 2 -->
+      <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); border-right: none; padding: 20px;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; color: #DF5433;">2</span>
+          <span class="t-label" style="font-size: 9px;">6-12 mies.</span>
+        </div>
+        <p class="t-body" style="font-size: 15px; font-weight: 600;">Grupa Merito</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">14 uczelni, skalowanie</p>
+      </div>
+
+      <!-- Phase 3 -->
+      <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); border-right: none; padding: 20px;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; color: #DF5433;">3</span>
+          <span class="t-label" style="font-size: 9px;">12-24 mies.</span>
+        </div>
+        <p class="t-body" style="font-size: 15px; font-weight: 600;">Rynek polski</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">Publiczne i prywatne uczelnie</p>
+      </div>
+
+      <!-- Phase 4 -->
+      <div style="flex: 1; border: 1px solid rgba(0,0,0,0.08); padding: 20px;">
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 24px; color: #DF5433;">4</span>
+          <span class="t-label" style="font-size: 9px;">24-36 mies.</span>
+        </div>
+        <p class="t-body" style="font-size: 15px; font-weight: 600;">Europa</p>
+        <p class="t-body" style="font-size: 14px; color: #3a3a4a; margin-top: 4px;">Ekspansja miedzynarodowa</p>
+      </div>
+    </div>
+  </div>
+
+  <span class="watermark">Clairy</span>
+  <span class="slide-num">11</span>
+</section>
+
+<!-- ================================================================
+     SLIDE 10 — ASK / CLOSING
+     ================================================================ -->
+<section style="padding: 96px 80px 48px 96px; display: flex; flex-direction: column; justify-content: space-between;">
+  <div>
+    <h2 class="t-title" style="font-size: 48px; margin-bottom: 56px;">Czego potrzebujemy?</h2>
+
+    <div style="max-width: 560px;">
+      <!-- Ask 1 -->
+      <div style="padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <div style="display: flex; align-items: baseline; gap: 16px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; color: #DF5433;">1</span>
+          <p class="t-body" style="font-size: 18px; font-weight: 500;">Pilot w WSB Merito</p>
+        </div>
+      </div>
+
+      <!-- Ask 2 -->
+      <div style="padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <div style="display: flex; align-items: baseline; gap: 16px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; color: #DF5433;">2</span>
+          <p class="t-body" style="font-size: 18px; font-weight: 500;">Nagroda konkursowa</p>
+        </div>
+      </div>
+
+      <!-- Ask 3 -->
+      <div style="padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.08);">
+        <div style="display: flex; align-items: baseline; gap: 16px;">
+          <span style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 28px; color: #DF5433;">3</span>
+          <p class="t-body" style="font-size: 18px; font-weight: 500;">Mentoring Centrum Innowacji</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+      <p style="font-family: 'Instrument Serif', serif; font-size: 56px; color: #1a1a2e; letter-spacing: -0.02em; line-height: 1;">clairy.vercel.app</p>
+      <p class="t-body" style="font-size: 36px; font-weight: 300; color: #3a3a4a; margin-top: 16px;">Dziekujemy.</p>
+    </div>
+
+    <div style="text-align: center;">
+      <span class="t-body" style="font-size: 14px; font-weight: 600; color: #DF5433;">clairy.vercel.app</span>
+      <span class="t-body" style="font-size: 13px; color: #3a3a4a; display: block; margin-top: 4px;">yagcioglutoprak@gmail.com</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

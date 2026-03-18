@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fields, certifications, jobs } from "../data/mock";
 import { getFieldColor } from "../data/fieldColors";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -41,6 +42,7 @@ function RevealOnScroll({ children, delay = 0 }) {
 }
 
 export default function Explore() {
+  const { t } = useTranslation();
   return (
     <div className="py-8 md:py-12 selection:bg-rust selection:text-white">
       {/* Header Section */}
@@ -49,30 +51,30 @@ export default function Explore() {
         <nav className="mb-6">
           <ol className="flex items-center gap-2 font-sans text-xs font-bold uppercase tracking-widest text-pencil">
             <li>
-              <Link to="/" className="transition-colors hover:text-rust">Home</Link>
+              <Link to="/" className="transition-colors hover:text-rust">{t("explore.home")}</Link>
             </li>
             <li className="opacity-40">/</li>
-            <li className="text-rust">Explore Fields</li>
+            <li className="text-rust">{t("explore.exploreFields")}</li>
           </ol>
         </nav>
 
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-ink/8">
           <div className="max-w-2xl">
             <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[1.1]">
-              Find the path that fits your ambition.
+              {t("explore.findPath")}
             </h1>
             <p className="mt-4 text-base md:text-lg text-pencil leading-relaxed font-medium">
-              Each field comes with a curated roadmap of certifications, interactive lessons, and real job opportunities. Choose a direction to see how far you can go.
+              {t("explore.eachField")}
             </p>
           </div>
           <div className="shrink-0 flex gap-4 sm:gap-6 md:text-right font-sans text-xs font-semibold uppercase tracking-wider text-pencil">
             <div>
               <strong className="block text-2xl font-bold text-ink mb-1">{fields.length}</strong>
-              Fields
+              {t("explore.fields")}
             </div>
             <div>
               <strong className="block text-2xl font-bold text-ink mb-1">{jobs.length}</strong>
-              Active Jobs
+              {t("explore.activeJobs")}
             </div>
           </div>
         </div>
@@ -116,7 +118,7 @@ export default function Explore() {
                     <div className="flex items-center gap-2 mt-1.5">
                       <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color.accent, opacity: 0.6 }} />
                       <span className="font-mono text-xs md:text-xs font-semibold text-pencil uppercase tracking-wider">
-                        {fieldJobs.length > 0 ? `${fieldJobs.length} jobs available` : "Emerging field"}
+                        {fieldJobs.length > 0 ? t("explore.jobsAvailable", { count: fieldJobs.length }) : t("explore.emergingField")}
                       </span>
                     </div>
                   </div>
@@ -131,12 +133,12 @@ export default function Explore() {
                 <div className="pt-5 border-t border-ink/8 flex items-center justify-between mt-auto">
                   <div className="flex items-center gap-5 text-xs font-medium text-pencil">
                     <div className="flex flex-col">
-                      <span className="uppercase tracking-wider opacity-60 text-xs mb-0.5">Certs</span>
+                      <span className="uppercase tracking-wider opacity-60 text-xs mb-0.5">{t("explore.certsLabel")}</span>
                       <strong className="text-ink font-mono text-sm">{fieldCerts.length}</strong>
                     </div>
                     <div className="w-px h-6 bg-ink/10" />
                     <div className="flex flex-col">
-                      <span className="uppercase tracking-wider opacity-60 text-xs mb-0.5">Timeline</span>
+                      <span className="uppercase tracking-wider opacity-60 text-xs mb-0.5">{t("explore.timeline")}</span>
                       <strong className="text-ink font-mono text-sm">{months > 0 ? `~${months}mo` : 'TBD'}</strong>
                     </div>
                   </div>
@@ -161,7 +163,7 @@ export default function Explore() {
       >
         <p className="font-sans text-sm font-medium text-pencil bg-[#fdfcfa] inline-flex items-center gap-3 px-6 py-3 rounded-full border-[1.5px] border-ink/10 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-rust animate-pulse" />
-          No sign-up required. Choose a path to preview real outcomes.
+          {t("explore.noSignUp")}
         </p>
       </div>
     </div>

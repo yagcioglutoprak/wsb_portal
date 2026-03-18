@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fields } from "../data/mock";
 import { programs } from "../data/programs";
 import { getFieldColor } from "../data/fieldColors";
@@ -21,13 +22,15 @@ import {
 const TOTAL_STEPS = 3;
 const AUTO_ADVANCE_MS = 500;
 
-const years = [
-  { id: "1", label: "1st year" },
-  { id: "2", label: "2nd year" },
-  { id: "3", label: "3rd year" },
-  { id: "4", label: "4th year" },
-  { id: "5", label: "5th year" },
-];
+function getYears(t) {
+  return [
+    { id: "1", label: t("onboarding.1stYear") },
+    { id: "2", label: t("onboarding.2ndYear") },
+    { id: "3", label: t("onboarding.3rdYear") },
+    { id: "4", label: t("onboarding.4thYear") },
+    { id: "5", label: t("onboarding.5thYear") },
+  ];
+}
 
 /* ──────────────────────────────────────────────────────────────────── */
 /*  Field icon mapping (reused from FieldCard pattern)                  */
@@ -562,8 +565,10 @@ function StepWrapper({ visible, direction, children }) {
 /* ──────────────────────────────────────────────────────────────────── */
 
 export default function Onboarding() {
+  const { t } = useTranslation();
   const { saveProfile } = useProgress();
   const navigate = useNavigate();
+  const years = getYears(t);
 
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState("forward");
@@ -632,7 +637,7 @@ export default function Onboarding() {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </div>
-            Back
+            {t("onboarding.back")}
           </button>
         ) : (
           <Link
@@ -644,7 +649,7 @@ export default function Onboarding() {
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </div>
-            Home
+            {t("onboarding.home")}
           </Link>
         )}
 
@@ -662,13 +667,13 @@ export default function Onboarding() {
             <div className="w-full max-w-[900px]">
               <div className="max-w-[600px] mb-12 mx-auto text-center">
                 <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
-                  Step 01
+                  {t("onboarding.step01")}
                 </span>
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
-                  What <span className="text-rust italic pr-2">year</span> are you in?
+                  {t("onboarding.heading1Pre")}<span className="text-rust italic pr-2">{t("onboarding.heading1Accent")}</span>{t("onboarding.heading1Post")}
                 </h1>
                 <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-md mx-auto">
-                  This helps us tailor everything to where you are. Your roadmap will adjust to your current level.
+                  {t("onboarding.yearDesc")}
                 </p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
@@ -691,13 +696,13 @@ export default function Onboarding() {
             <div className="w-full max-w-[1000px]">
               <div className="max-w-[600px] mb-12 mx-auto text-center">
                 <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
-                  Step 02
+                  {t("onboarding.step02")}
                 </span>
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
-                  What are you <span className="text-rust italic pr-2">studying?</span>
+                  {t("onboarding.heading2Pre")}<span className="text-rust italic pr-2">{t("onboarding.heading2Accent")}</span>{t("onboarding.heading2Post")}
                 </h1>
                 <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-lg mx-auto">
-                  Your program helps us recommend the right certifications and opportunities tailored for your exact degree.
+                  {t("onboarding.programDesc")}
                 </p>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4">
@@ -720,13 +725,13 @@ export default function Onboarding() {
             <div className="w-full max-w-[1000px]">
                <div className="max-w-[600px] mb-12 mx-auto text-center">
                 <span className="inline-block font-sans text-xs font-bold uppercase tracking-widest text-rust mb-4">
-                  Step 03
+                  {t("onboarding.step03")}
                 </span>
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-ink tracking-tight leading-[1.1]">
-                  What <span className="text-rust italic pr-2">excites</span> you most?
+                  {t("onboarding.heading3Pre")}<span className="text-rust italic pr-2">{t("onboarding.heading3Accent")}</span>{t("onboarding.heading3Post")}
                 </h1>
                 <p className="mt-5 text-base sm:text-lg text-pencil font-medium leading-relaxed max-w-lg mx-auto">
-                  Go with what excites you right now &mdash; you can always explore other fields and pivot later on.
+                  {t("onboarding.fieldDesc")}
                 </p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { skills, lessons } from "../data/mock";
 import { lessonRegistry } from "../lessons/registry";
 import useProgress from "../hooks/useProgress";
@@ -23,6 +24,7 @@ function RevealOnScroll({ children, delay = 0 }) {
 }
 
 export default function Lessons() {
+  const { t } = useTranslation();
   const { progress, isLessonCompleted, getLessonProgress } = useProgress();
 
   return (
@@ -30,13 +32,13 @@ export default function Lessons() {
       {/* Header */}
       <div className="mb-10 animate-fade-in-up" style={{ animationDelay: "0ms" }}>
         <span className="inline-block bg-rust/8 text-rust border border-rust/15 rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-widest mb-4">
-          Interactive
+          {t("lessons.interactive")}
         </span>
         <h1 className="font-sans text-3xl font-bold text-ink sm:text-4xl tracking-tight leading-tight mb-2">
-          Lessons
+          {t("lessons.title")}
         </h1>
         <p className="max-w-lg text-base leading-relaxed text-pencil">
-          Bite-sized, interactive lessons to build real skills. Learn by doing — not watching.
+          {t("lessons.subtitle")}
         </p>
       </div>
 
@@ -58,7 +60,7 @@ export default function Lessons() {
                     {skill.name}
                   </h2>
                   <span className="rounded-full bg-ink/5 px-2.5 py-0.5 text-xs font-semibold text-pencil">
-                    {skillLessons.length} lessons
+                    {t("lessons.lessonsCount", { count: skillLessons.length })}
                   </span>
                 </Link>
 
@@ -92,7 +94,7 @@ export default function Lessons() {
                               {done && (
                                 <span className="shrink-0 flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-semibold text-success">
                                   <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                                  Done
+                                  {t("lessons.done")}
                                 </span>
                               )}
                               {!unlocked && (
@@ -102,7 +104,7 @@ export default function Lessons() {
                               )}
                               {!hasContent && unlocked && !done && (
                                 <span className="shrink-0 rounded-full bg-arcade/10 px-2.5 py-0.5 text-xs font-semibold text-arcade">
-                                  Coming soon
+                                  {t("lessons.comingSoon")}
                                 </span>
                               )}
                             </div>
@@ -120,7 +122,7 @@ export default function Lessons() {
                             )}
                             {!hasContent && (
                               <p className="mt-1.5 text-xs text-pencil/60">
-                                ~{lesson.estimatedMinutes} min
+                                ~{lesson.estimatedMinutes} {t("lessons.min")}
                               </p>
                             )}
                           </div>
@@ -135,12 +137,12 @@ export default function Lessons() {
                               ].join(" ")}
                             >
                               {done
-                                ? "Review"
+                                ? t("lessons.review")
                                 : hasContent
                                   ? lessonProgress.completed > 0
-                                    ? "Continue"
-                                    : "Start"
-                                  : "Preview"}
+                                    ? t("dashboard.continue")
+                                    : t("lessons.start")
+                                  : t("lessons.preview")}
                             </Link>
                           )}
                         </div>

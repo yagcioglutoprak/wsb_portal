@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-black text-white pt-20 pb-10">
       <div className="mx-auto max-w-[1400px] px-6 md:px-12 lg:px-24">
@@ -21,36 +23,36 @@ export default function Footer() {
             {/* Column 1 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                Platform
+                {t("footer.platform")}
               </h4>
               <ul className="space-y-4">
-                <li><Link to="/lessons" className="text-[15px] text-white hover:text-white/80 transition-colors">Lessons</Link></li>
-                <li><Link to="/explore" className="text-[15px] text-white hover:text-white/80 transition-colors">Certifications</Link></li>
-                <li><Link to="/jobs" className="text-[15px] text-white hover:text-white/80 transition-colors">Jobs & Internships</Link></li>
-                <li><Link to="/dashboard" className="text-[15px] text-white hover:text-white/80 transition-colors">Dashboard</Link></li>
+                <li><Link to="/lessons" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.lessons")}</Link></li>
+                <li><Link to="/explore" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.certifications")}</Link></li>
+                <li><Link to="/jobs" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.jobsInternships")}</Link></li>
+                <li><Link to="/dashboard" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.dashboard")}</Link></li>
               </ul>
             </div>
 
             {/* Column 2 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                University
+                {t("footer.university")}
               </h4>
               <ul className="space-y-4">
-                <li><a href="https://www.merito.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">WSB Merito</a></li>
-                <li><a href="https://www.merito.pl/warszawa" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">Campus Warsaw</a></li>
-                <li><a href="https://www.meritogroup.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">Grupa Merito</a></li>
+                <li><a href="https://www.merito.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.wsbMerito")}</a></li>
+                <li><a href="https://www.merito.pl/warszawa" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.campusWarsaw")}</a></li>
+                <li><a href="https://www.meritogroup.pl" target="_blank" rel="noopener noreferrer" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.grupaMerito")}</a></li>
               </ul>
             </div>
 
             {/* Column 3 */}
             <div>
               <h4 className="font-sans text-[15px] text-white/50 mb-5">
-                Resources
+                {t("footer.resources")}
               </h4>
               <ul className="space-y-4">
-                <li><a href="mailto:centruminnowacji@warszawa.merito.pl" className="text-[15px] text-white hover:text-white/80 transition-colors">Contact Us</a></li>
-                <li><a href="mailto:centruminnowacji@warszawa.merito.pl" className="text-[15px] text-white hover:text-white/80 transition-colors">Feedback</a></li>
+                <li><a href="mailto:centruminnowacji@warszawa.merito.pl" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.contactUs")}</a></li>
+                <li><a href="mailto:centruminnowacji@warszawa.merito.pl" className="text-[15px] text-white hover:text-white/80 transition-colors">{t("footer.feedback")}</a></li>
               </ul>
             </div>
 
@@ -77,11 +79,11 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-28 pt-8 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 pb-4">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <Link to="/terms" className="text-[13px] text-white/50 hover:text-white transition-colors">Terms of Service</Link>
-            <Link to="/privacy" className="text-[13px] text-white/50 hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-[13px] text-white/50 hover:text-white transition-colors">{t("footer.terms")}</Link>
+            <Link to="/privacy" className="text-[13px] text-white/50 hover:text-white transition-colors">{t("footer.privacy")}</Link>
           </div>
           <div className="text-[13px] text-white/50">
-            © 2026 Clairy — Built for university students
+            {t("footer.copyright")}
           </div>
         </div>
       </div>

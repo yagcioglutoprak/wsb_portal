@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fields, certifications, jobs, skills, lessons } from "../data/mock";
 import { getFieldColor } from "../data/fieldColors";
 import useProgress from "../hooks/useProgress";
@@ -23,6 +24,7 @@ const fieldIcons = {
 };
 
 export default function Home() {
+  const { t } = useTranslation();
   const [activeSlug, setActiveSlug] = useState("cybersecurity");
   const { isOnboarded, profile, xp, level } = useProgress();
 
@@ -62,38 +64,38 @@ export default function Home() {
             {isOnboarded ? (
               <>
                 <div className="flex items-center gap-4 mb-8">
-                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">Welcome back</span>
+                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">{t("home.welcomeBack")}</span>
                   <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">LVL {level}</span>
                 </div>
                 <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[0.9] text-ink tracking-tight">
-                  Keep building <br />
-                  <span className="text-rust">your {fieldName} path.</span>
+                  {t("home.keepBuilding")} <br />
+                  <span className="text-rust">{t("home.yourPath", { field: fieldName })}</span>
                 </h1>
                 <div className="mt-10 flex items-center gap-8">
                   <Link to="/dashboard" className="bg-rust text-white rounded-xl px-5 py-3 sm:px-8 sm:py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
-                    Go to dashboard <ArrowRightIcon className="w-4 h-4" />
+                    {t("home.goToDashboard")} <ArrowRightIcon className="w-4 h-4" />
                   </Link>
-                  <p className="font-sans text-sm text-pencil"><strong className="text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)]">{xp} XP</strong> earned</p>
+                  <p className="font-sans text-sm text-pencil"><strong className="text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)]">{xp} XP</strong> {t("home.xpEarned")}</p>
                 </div>
               </>
             ) : (
               <>
                 <div className="flex items-center gap-4 mb-8">
-                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">WSB Merito Students</span>
-                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">Edition 2026</span>
+                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-rust">{t("home.wsbStudents")}</span>
+                  <span className="font-sans text-xs font-semibold uppercase tracking-wide text-pencil">{t("home.edition2026")}</span>
                 </div>
                 <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[0.9] text-ink tracking-tight">
-                  From classroom <br />
-                  <span className="text-rust">to industry.</span>
+                  {t("home.fromClassroom")} <br />
+                  <span className="text-rust">{t("home.toIndustry")}</span>
                 </h1>
                 <p className="mt-8 max-w-lg text-base md:text-lg text-pencil font-normal leading-relaxed">
-                  Tell us your major and semester. We'll build you a personalized path with interactive lessons, certifications, and real job opportunities.
+                  {t("home.heroParagraph")}
                 </p>
                 <div className="mt-10 flex items-center gap-8">
                   <Link to="/onboarding" className="bg-rust text-white rounded-xl px-5 py-3 sm:px-8 sm:py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 hover:-translate-y-px transition-all duration-200 inline-flex items-center gap-3">
-                    Start your path <ArrowRightIcon className="w-4 h-4" />
+                    {t("home.startYourPath")} <ArrowRightIcon className="w-4 h-4" />
                   </Link>
-                  <div className="font-sans text-sm text-pencil">Takes ~30 seconds. No account needed.</div>
+                  <div className="font-sans text-sm text-pencil">{t("home.takesSeconds")}</div>
                 </div>
               </>
             )}
@@ -109,10 +111,10 @@ export default function Home() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24 py-14 lg:py-20">
           <div className="text-center mb-10 lg:mb-14">
             <h2 className="font-sans text-3xl lg:text-4xl font-bold text-ink tracking-tight">
-              Everything you need to launch your career
+              {t("home.everythingYouNeed")}
             </h2>
             <p className="mt-3 text-base text-pencil max-w-xl mx-auto">
-              Interactive lessons, real certifications, and student jobs — all in one platform.
+              {t("home.interactiveLessons")}
             </p>
           </div>
           <BentoGrid />
@@ -124,12 +126,12 @@ export default function Home() {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24">
           <div className="flex flex-col md:flex-row justify-between items-end mb-10 lg:mb-14 gap-8 border-b border-ink/8 pb-8">
             <div>
-              <h2 className="font-sans text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[0.9]">Find your field</h2>
-              <p className="mt-4 text-pencil max-w-md text-sm md:text-base">Explore learning paths designed for the most in-demand careers in tech and business.</p>
+              <h2 className="font-sans text-4xl lg:text-5xl font-bold text-ink tracking-tight leading-[0.9]">{t("home.findYourField")}</h2>
+              <p className="mt-4 text-pencil max-w-md text-sm md:text-base">{t("home.explorePathsDesc")}</p>
             </div>
             <div className="flex gap-8 font-sans text-xs font-semibold uppercase tracking-wide text-pencil text-right shrink-0">
-              <div><strong className="block text-2xl font-bold text-ink mb-1">{fields.length}</strong> Fields</div>
-              <div><strong className="block text-2xl font-bold text-ink mb-1">{totalCerts}</strong> Certifications</div>
+              <div><strong className="block text-2xl font-bold text-ink mb-1">{fields.length}</strong> {t("home.fields")}</div>
+              <div><strong className="block text-2xl font-bold text-ink mb-1">{totalCerts}</strong> {t("home.certifications")}</div>
             </div>
           </div>
 
@@ -186,20 +188,20 @@ export default function Home() {
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeColor.accent }} />
                         <span className="font-sans text-xs font-bold uppercase tracking-widest" style={{ color: activeColor.accent }}>{activeField.name}</span>
                       </div>
-                      <h3 className="font-sans text-2xl font-bold text-ink mb-3 leading-tight tracking-tight">The Roadmap</h3>
+                      <h3 className="font-sans text-2xl font-bold text-ink mb-3 leading-tight tracking-tight">{t("home.theRoadmap")}</h3>
                       <p className="text-sm text-pencil max-w-[280px] leading-relaxed mb-6">{activeField.description}</p>
                       <Link to={`/fields/${activeSlug}`} className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-sans text-sm font-bold transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.15)] focus:ring-2 focus:ring-offset-2"
                         style={{ backgroundColor: activeColor.accent, outlineColor: activeColor.accent }}>
-                        Explore roadmap
+                        {t("home.exploreRoadmap")}
                         <ArrowRightIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
                     <div className="text-right shrink-0 bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl p-4">
-                      <span className="block font-sans text-xs font-bold uppercase tracking-wider text-pencil mb-1">Market Value</span>
+                      <span className="block font-sans text-xs font-bold uppercase tracking-wider text-pencil mb-1">{t("home.marketValue")}</span>
                       <span className="font-mono text-xl font-bold text-ink">
                         {salaryMax > 0 ? `${(salaryMin / 1000).toFixed(0)}k–${(salaryMax / 1000).toFixed(0)}k` : 'Var'}
                       </span>
-                      <span className="block font-sans text-xs text-pencil mt-1">PLN / month</span>
+                      <span className="block font-sans text-xs text-pencil mt-1">{t("home.plnMonth")}</span>
                     </div>
                   </div>
 
@@ -213,7 +215,7 @@ export default function Home() {
                           <div className="absolute -left-[23px] top-1 w-3 h-3 rounded-full bg-[#fdfcfa] border-[2px]" style={{ borderColor: activeColor.accent }} />
 
                           <div className="pl-6">
-                            <span className="font-sans text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: activeColor.accent }}>{stageName} Stage</span>
+                            <span className="font-sans text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: activeColor.accent }}>{t("home.stage", { name: stageName })}</span>
 
                             <div className="space-y-3">
                               {certStages[stageName].slice(0, 2).map((cert) => (
@@ -221,7 +223,7 @@ export default function Home() {
                                   <div className="flex justify-between items-start gap-4">
                                     <div>
                                       <h4 className="font-sans text-sm font-bold text-ink leading-tight group-hover:text-rust transition-colors">{cert.name}</h4>
-                                      <p className="font-sans text-xs text-pencil mt-1">{cert.provider} · <span className="font-mono">{cert.costPln > 0 ? `${cert.costPln.toLocaleString()} PLN` : 'Free'}</span></p>
+                                      <p className="font-sans text-xs text-pencil mt-1">{cert.provider} · <span className="font-mono">{cert.costPln > 0 ? `${cert.costPln.toLocaleString()} PLN` : t("home.free")}</span></p>
                                     </div>
                                     <div className="flex flex-col items-end gap-1.5 shrink-0">
                                       <div className="flex items-center gap-1.5">
@@ -249,7 +251,7 @@ export default function Home() {
                                     </div>
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2">
-                                        <span className="font-sans text-xs font-bold uppercase tracking-wider text-pencil">Interactive Lesson</span>
+                                        <span className="font-sans text-xs font-bold uppercase tracking-wider text-pencil">{t("home.interactiveLesson")}</span>
                                       </div>
                                       <h4 className="font-sans text-xs font-bold text-ink mt-0.5 group-hover:text-rust transition-colors">{fieldLessons[stageIdx].title}</h4>
                                     </div>
@@ -266,7 +268,7 @@ export default function Home() {
                       <div className="relative pt-2">
                         <div className="absolute -left-[23px] top-4 w-3 h-3 rounded-full bg-[#fdfcfa] border-[2px]" style={{ borderColor: activeColor.accent }} />
                         <div className="pl-6">
-                          <span className="font-sans text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: activeColor.accent }}>Career Outcomes</span>
+                          <span className="font-sans text-xs font-bold uppercase tracking-widest mb-3 block" style={{ color: activeColor.accent }}>{t("home.careerOutcomes")}</span>
                           <div className="flex flex-wrap gap-2">
                             {activeJobs.slice(0, 3).map(job => (
                               <a key={job.id} href={job.sourceUrl} target="_blank" rel="noopener noreferrer" className="group bg-[#fdfcfa] border-[1.5px] border-ink/12 rounded-lg px-3 py-2 flex items-center gap-2 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] hover:border-ink/20 hover:-translate-y-0.5 transition-all duration-200">
@@ -290,7 +292,7 @@ export default function Home() {
                 {/* Footer / CTA */}
                 <div className="mt-8 pt-6 border-t border-ink/8 flex justify-center items-center">
                   <div className="font-sans text-xs font-medium text-pencil">
-                    <strong className="text-ink">{activeCerts.length}</strong> certs <span className="mx-1.5 opacity-40">&middot;</span> <strong className="text-ink">{fieldLessons.length}</strong> lessons <span className="mx-1.5 opacity-40">&middot;</span> <strong className="text-ink">{activeJobs.length}</strong> jobs
+                    <strong className="text-ink">{activeCerts.length}</strong> {t("home.certs")} <span className="mx-1.5 opacity-40">&middot;</span> <strong className="text-ink">{fieldLessons.length}</strong> {t("home.lessons")} <span className="mx-1.5 opacity-40">&middot;</span> <strong className="text-ink">{activeJobs.length}</strong> {t("home.jobs")}
                   </div>
                 </div>
               </div>
@@ -305,11 +307,11 @@ export default function Home() {
           <div className={`max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24 transition-all duration-[1.2s] ease-[cubic-bezier(0.19,1,0.22,1)] ${jobsReveal.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-24'}`}>
             <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6 pb-8 border-b border-ink/8">
               <div>
-                <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">Hiring now</span>
-                <h2 className="mt-3 font-sans text-3xl lg:text-4xl font-bold text-ink tracking-tight leading-none">Jobs for students</h2>
+                <span className="font-sans text-xs font-bold uppercase tracking-widest text-rust">{t("home.hiringNow")}</span>
+                <h2 className="mt-3 font-sans text-3xl lg:text-4xl font-bold text-ink tracking-tight leading-none">{t("home.jobsForStudents")}</h2>
               </div>
               <Link to="/jobs" className="font-sans text-sm font-bold text-rust hover:text-rust/80 transition-colors flex items-center gap-2">
-                View all {jobs.length} jobs <ArrowRightIcon className="w-4 h-4" />
+                {t("home.viewAllJobs", { count: jobs.length })} <ArrowRightIcon className="w-4 h-4" />
               </Link>
             </div>
 
@@ -379,14 +381,14 @@ export default function Home() {
                 </svg>
               </div>
               <h2 className="font-sans text-4xl md:text-5xl font-bold text-ink tracking-tight mb-5">
-                Ready to start your path?
+                {t("home.readyToStart")}
               </h2>
               <p className="font-sans text-base md:text-lg text-pencil max-w-md mx-auto mb-10 leading-relaxed">
-                Join WSB Merito students building real skills, earning industry certifications, and landing top jobs.
+                {t("home.joinStudents")}
               </p>
 
               <Link to={isOnboarded ? "/dashboard" : "/onboarding"} className="bg-rust text-white rounded-xl px-10 py-4 font-sans text-sm md:text-base font-bold inline-flex items-center gap-3 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(240,86,46,0.25)] transition-all duration-300">
-                {isOnboarded ? "Continue learning" : "Enroll now — it's free"}
+                {isOnboarded ? t("home.continueLearning") : t("home.enrollNow")}
                 <ArrowRightIcon className="w-5 h-5" />
               </Link>
             </div>
@@ -394,16 +396,16 @@ export default function Home() {
             {/* Stats Footer */}
             <div className="mt-14 pt-6 border-t-[2px] border-dashed border-ink/10 flex items-center justify-between text-left font-mono text-xs text-pencil">
               <div>
-                <span className="block font-bold text-pencil mb-1">CERTIFICATIONS</span>
-                <span className="font-semibold text-ink">{totalCerts} across {fields.length} fields</span>
+                <span className="block font-bold text-pencil mb-1">{t("home.certificationsLabel")}</span>
+                <span className="font-semibold text-ink">{t("home.acrossFields", { certs: totalCerts, fields: fields.length })}</span>
               </div>
               <div>
-                <span className="block font-bold text-pencil mb-1">LIVE JOBS</span>
-                <span className="font-semibold text-ink">{jobs.length} internships in Poland</span>
+                <span className="block font-bold text-pencil mb-1">{t("home.liveJobs")}</span>
+                <span className="font-semibold text-ink">{t("home.internshipsInPoland", { count: jobs.length })}</span>
               </div>
               <div className="hidden sm:block text-right">
-                <span className="block font-bold text-pencil mb-1">COST</span>
-                <span className="font-semibold text-success">100% Free</span>
+                <span className="block font-bold text-pencil mb-1">{t("home.access")}</span>
+                <span className="font-semibold text-arcade">{t("home.freeLimitedTime")}</span>
               </div>
             </div>
 

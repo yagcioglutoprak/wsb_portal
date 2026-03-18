@@ -1,13 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fields, jobs } from "../data/mock";
 import useProgress from "../hooks/useProgress";
 import useScrollReveal from "../hooks/useScrollReveal";
-
-const jobTypes = [
-  { value: "all", label: "All types" },
-  { value: "Internship", label: "Internship" },
-  { value: "Working Student", label: "Working Student" },
-];
 
 function RevealOnScroll({ children, delay = 0 }) {
   const { ref, isVisible } = useScrollReveal();
@@ -56,11 +51,18 @@ function FilterGroup({ title, children }) {
 }
 
 export default function Jobs() {
+  const { t } = useTranslation();
   const { profile, isOnboarded } = useProgress();
   const [activeField, setActiveField] = useState(() =>
     isOnboarded && profile?.field ? profile.field : "all"
   );
   const [activeType, setActiveType] = useState("all");
+
+  const jobTypes = [
+    { value: "all", label: t("jobs.allTypes") },
+    { value: "Internship", label: t("jobs.internship") },
+    { value: "Working Student", label: t("jobs.workingStudent") },
+  ];
 
   const filtered = jobs.filter((job) => {
     if (activeField !== "all" && job.fieldId !== activeField) return false;
@@ -76,14 +78,13 @@ export default function Jobs() {
         style={{ animationDelay: "0ms" }}
       >
         <span className="inline-block bg-[#2a9d8f]/10 text-[#2a9d8f] border border-[#2a9d8f]/20 rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-widest mb-4">
-          Hiring Now
+          {t("jobs.hiringNow")}
         </span>
         <h1 className="font-sans text-2xl font-bold text-ink sm:text-4xl md:text-5xl lg:text-6xl tracking-tight leading-none mb-4">
-          Opportunities for students
+          {t("jobs.title")}
         </h1>
         <p className="max-w-2xl text-lg sm:text-xl leading-relaxed text-graphite font-medium">
-          Real internships and working student positions in Poland.
-          Curated from LinkedIn — March 2026.
+          {t("jobs.subtitle")}
         </p>
       </div>
 
@@ -91,12 +92,12 @@ export default function Jobs() {
       <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-2xl p-6 sm:p-8 mb-12 animate-fade-in-up" style={{ animationDelay: "80ms" }}>
         <div className="flex flex-col gap-8">
           {/* Field filter */}
-          <FilterGroup title="Field of Interest">
+          <FilterGroup title={t("jobs.fieldOfInterest")}>
             <FilterPill
               active={activeField === "all"}
               onClick={() => setActiveField("all")}
             >
-              All fields
+              {t("jobs.allFields")}
             </FilterPill>
             {fields.map((f) => (
               <FilterPill
@@ -110,7 +111,7 @@ export default function Jobs() {
           </FilterGroup>
 
           {/* Job type filter */}
-          <FilterGroup title="Position Type">
+          <FilterGroup title={t("jobs.positionType")}>
             {jobTypes.map((jt) => (
               <FilterPill
                 key={jt.value}
@@ -130,14 +131,14 @@ export default function Jobs() {
         style={{ animationDelay: "160ms" }}
       >
         <div className="flex items-center gap-3">
-          <h2 className="font-sans text-2xl font-bold text-ink tracking-tight">Available Positions</h2>
+          <h2 className="font-sans text-2xl font-bold text-ink tracking-tight">{t("jobs.availablePositions")}</h2>
           <span className="bg-rust/10 text-rust border border-rust/20 rounded-full px-3 py-0.5 font-mono text-sm font-bold">
             {filtered.length}
           </span>
         </div>
         {filtered.length > 0 && (
           <p className="font-sans text-sm font-medium text-pencil">
-            Showing {filtered.length} of {jobs.length} jobs
+            {t("jobs.showingOf", { filtered: filtered.length, total: jobs.length })}
           </p>
         )}
       </div>
@@ -199,9 +200,9 @@ export default function Jobs() {
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </div>
-          <h3 className="font-sans text-2xl font-bold text-ink mb-3">No matching positions</h3>
+          <h3 className="font-sans text-2xl font-bold text-ink mb-3">{t("jobs.noMatching")}</h3>
           <p className="font-sans text-lg font-medium text-pencil max-w-md mx-auto mb-8">
-            We couldn't find any jobs matching your current filters. Try broadening your search.
+            {t("jobs.noMatchingDesc")}
           </p>
           <button
             type="button"
@@ -211,7 +212,7 @@ export default function Jobs() {
             }}
             className="bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.1)] inline-flex items-center gap-2"
           >
-            Clear all filters
+            {t("jobs.clearFilters")}
           </button>
         </div>
       )}
