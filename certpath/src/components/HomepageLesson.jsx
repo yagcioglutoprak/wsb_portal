@@ -730,8 +730,8 @@ export default function HomepageLesson() {
         </p>
       </div>
 
-      {/* Scene Container — fixed height to prevent layout shifts between scenes */}
-      <div className={`w-full overflow-hidden flex items-stretch bg-[#fdf8f5] h-[320px] sm:h-[420px]`}>
+      {/* Scene Container */}
+      <div className={`w-full overflow-hidden flex items-stretch bg-[#fdf8f5]`}>
         <div className={`w-full flex-shrink-0 ${getTransitionClass()}`}>
             {scene === 1 && <Scene1 onComplete={advanceScene} />}
             {scene === 2 && <Scene2 onComplete={advanceScene} />}
