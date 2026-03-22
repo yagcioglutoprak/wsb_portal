@@ -765,7 +765,7 @@ const Scene6 = ({ onComplete }) => {
   }, []);
 
   const codePhase1 = (
-    <div className="flex flex-col">
+    <div className="flex flex-col text-gray-300">
        <div className="opacity-70">username = <span className="text-amber-300">"admin"</span></div>
        <div className="opacity-70 mb-4">password = <span className="text-amber-300">"secure123"</span></div>
 
@@ -773,12 +773,12 @@ const Scene6 = ({ onComplete }) => {
        <div className="opacity-70 mb-4">entered_pass = <span className="text-amber-300">"wrong"</span></div>
 
        <div className="flex items-center relative">
-         <span className="text-[#2a9d8f] font-bold mr-2">if</span> 
-         
+         <span className="text-[#2a9d8f] font-bold mr-2">if</span>
+
          {!bug1Fixed ? (
-           <button 
+           <button
              onClick={() => { sounds.pop(); setShowOptions(!showOptions); }}
-             className={`px-1 rounded border-b-2 border-red-500/50 hover:bg-red-500/10 transition-colors relative ${showOptions ? 'bg-red-500/20' : ''}`}
+             className={`text-gray-300 px-1 rounded border-b-2 border-red-500/50 hover:bg-red-500/10 transition-colors relative ${showOptions ? 'bg-red-500/20' : ''}`}
            >
              entered_user <span className="text-red-400 font-bold">=</span> username:
            </button>
@@ -803,18 +803,18 @@ const Scene6 = ({ onComplete }) => {
          {bug1Fixed && <CheckIcon className="w-5 h-5 text-success ml-3 animate-[pop_0.3s_ease-out]" />}
        </div>
 
-       <div className="pl-6"><span className="text-[#2a9d8f] font-bold">if</span> entered_pass == password:</div>
-       <div className="pl-12">print(<span className="text-amber-300">"Welcome!"</span>)</div>
-       <div className="pl-6"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
-       <div className="pl-12">print(<span className="text-amber-300">"Wrong password"</span>)</div>
-       
-       <div className="mt-1"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
-       <div className="pl-6">print(<span className="text-amber-300">"User not found"</span>)</div>
+       <div className="pl-6 text-gray-300"><span className="text-[#2a9d8f] font-bold">if</span> entered_pass == password:</div>
+       <div className="pl-12 text-gray-300">print(<span className="text-amber-300">"Welcome!"</span>)</div>
+       <div className="pl-6 text-gray-300"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
+       <div className="pl-12 text-gray-300">print(<span className="text-amber-300">"Wrong password"</span>)</div>
+
+       <div className="mt-1 text-gray-300"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
+       <div className="pl-6 text-gray-300">print(<span className="text-amber-300">"User not found"</span>)</div>
     </div>
   );
 
   const codePhase2 = (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col relative text-gray-300">
        <div className="opacity-70">attempts = <span className="text-blue-300">3</span></div>
        <div className="opacity-70 mb-4">...</div>
 
@@ -836,11 +836,11 @@ const Scene6 = ({ onComplete }) => {
        )}
 
        <div className={`transition-all duration-500 ${loopAdded ? 'pl-6 border-l-2 border-white/10' : ''}`}>
-         <div className="opacity-70"><span className="text-[#2a9d8f] font-bold mr-2">if</span> entered_user == username:</div>
-         <div className="opacity-70 pl-6"><span className="text-[#2a9d8f] font-bold">if</span> entered_pass == password:</div>
-         <div className="opacity-70 pl-12">print(<span className="text-amber-300">"Welcome!"</span>)</div>
-         <div className="opacity-70 pl-6"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
-         <div className="opacity-70 pl-12">print(<span className="text-amber-300">"Wrong"</span>)</div>
+         <div className="opacity-70 text-gray-300"><span className="text-[#2a9d8f] font-bold mr-2">if</span> entered_user == username:</div>
+         <div className="opacity-70 pl-6 text-gray-300"><span className="text-[#2a9d8f] font-bold">if</span> entered_pass == password:</div>
+         <div className="opacity-70 pl-12 text-gray-300">print(<span className="text-amber-300">"Welcome!"</span>)</div>
+         <div className="opacity-70 pl-6 text-gray-300"><span className="text-[#2a9d8f] font-bold">else</span>:</div>
+         <div className="opacity-70 pl-12 text-gray-300">print(<span className="text-amber-300">"Wrong"</span>)</div>
          {loopAdded && (
            <div className="text-green-300 pl-12 mt-1 animate-[pop_0.3s_ease-out] delay-100">
              attempts = attempts - <span className="text-blue-300">1</span>
