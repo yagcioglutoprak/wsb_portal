@@ -556,9 +556,9 @@ const Scene5 = ({ onComplete }) => {
   blanksRef.current = blanks;
 
   const isComplete = Object.values(blanks).every(v => v !== null);
+  const correctAnswers = { A: '90', B: '80', C: '70', D: '60' };
 
   useEffect(() => {
-    // Only complete if they are placed correctly (descending order)
     if (isComplete) {
       if (blanks.A === '90' && blanks.B === '80' && blanks.C === '70' && blanks.D === '60') {
         sounds.correct();
@@ -568,15 +568,40 @@ const Scene5 = ({ onComplete }) => {
     }
   }, [isComplete, blanks, onComplete]);
 
+  // Remove a value from a blank back to available pool
+  const handleRemoveFromBlank = (gradeLevel) => {
+    const val = blanks[gradeLevel];
+    if (!val) return;
+    sounds.snap();
+    setAvailableValues(prev => [...prev, { id: `t${val}`, val }]);
+    setBlanks(prev => ({ ...prev, [gradeLevel]: null }));
+  };
+
   const handleDrop = (gradeLevel, valId) => {
+    // Support dragging from another blank (valId starts with 'blank_')
+    if (valId.startsWith('blank_')) {
+      const sourceGrade = valId.replace('blank_', '');
+      const sourceVal = blanks[sourceGrade];
+      if (!sourceVal) return;
+
+      sounds.snap();
+      const targetVal = blanks[gradeLevel];
+      // Swap values between blanks
+      setBlanks(prev => ({
+        ...prev,
+        [sourceGrade]: targetVal,
+        [gradeLevel]: sourceVal,
+      }));
+      return;
+    }
+
     const item = availableValues.find(v => v.id === valId);
     if (!item) return;
 
     const currentBlanks = blanksRef.current;
 
-    // Check if slot is taken
+    // Check if slot is taken — put existing back to available
     if (currentBlanks[gradeLevel]) {
-      // Put existing back to available
       setAvailableValues(prev => [...prev, { id: `t${currentBlanks[gradeLevel]}`, val: currentBlanks[gradeLevel] }]);
     }
 
@@ -619,10 +644,20 @@ const Scene5 = ({ onComplete }) => {
                   <div className={`flex items-center gap-2 px-2 py-0.5 rounded transition-colors ${activeBranch === grade ? 'bg-rust/20 border-l-2 border-rust' : 'border-l-2 border-transparent'}`}>
                     <span className="text-[#2a9d8f] font-bold">{grade === 'A' ? 'if' : 'elif'}</span>
                     <span>score &gt;=</span>
-                    <div 
+                    <div
                       onDragOver={e => e.preventDefault()}
                       onDrop={e => handleDrop(grade, e.dataTransfer.getData('valId'))}
-                      className={`inline-flex items-center justify-center min-w-[3rem] h-6 rounded px-2 transition-all ${blanks[grade] ? 'bg-[#fdfcfa] text-ink font-bold shadow' : 'bg-[#2d2d2d] border border-[#444] border-dashed text-ink'}`}
+                      draggable={!!blanks[grade]}
+                      onDragStart={e => { if (blanks[grade]) e.dataTransfer.setData('valId', `blank_${grade}`); }}
+                      onClick={() => { if (blanks[grade]) handleRemoveFromBlank(grade); }}
+                      className={`inline-flex items-center justify-center min-w-[3rem] h-6 rounded px-2 transition-all ${
+                        blanks[grade]
+                          ? isComplete && blanks[grade] !== correctAnswers[grade]
+                            ? 'bg-error/20 text-error font-bold shadow ring-2 ring-error/40 cursor-grab active:cursor-grabbing'
+                            : 'bg-[#fdfcfa] text-ink font-bold shadow cursor-grab active:cursor-grabbing'
+                          : 'bg-[#2d2d2d] border border-[#444] border-dashed text-ink'
+                      }`}
+                      title={blanks[grade] ? 'Click to remove or drag to swap' : ''}
                     >
                       {blanks[grade] || '___'}
                     </div>
