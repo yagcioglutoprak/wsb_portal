@@ -466,9 +466,9 @@ export default function DashboardGemini() {
             </p>
           </div>
 
-          <div className="flex items-center bg-[#fdfcfa] px-6 py-3 rounded-2xl border-[1.5px] border-ink/8 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] h-[84px] justify-between sm:justify-start">
+          <div className="flex items-center bg-[#fdfcfa] px-4 sm:px-6 py-3 rounded-2xl border-[1.5px] border-ink/8 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] h-auto sm:h-[84px] justify-between sm:justify-start">
             {/* Inline Stats */}
-            <div className="flex items-center">
+            <div className="flex items-center flex-wrap gap-3 sm:gap-0">
               <div className="flex flex-col items-center justify-center min-w-[3.5rem]">
                 <span className="font-sans text-[32px] font-bold text-arcade drop-shadow-[0_2px_8px_rgba(255,176,32,0.3)] leading-none mb-1.5">{xpCount}</span>
                 <span className="font-sans text-[11px] font-bold uppercase tracking-widest text-arcade">{t("dashboard.xp")}</span>
@@ -567,7 +567,7 @@ export default function DashboardGemini() {
                 </div>
 
                 {/* Card Footer */}
-                <div className="border-t-[1.5px] border-ink/12 bg-ink/[0.015] p-6 flex items-center justify-between">
+                <div className="border-t-[1.5px] border-ink/12 bg-ink/[0.015] p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                   <div className="flex-1 max-w-[240px]">
                     <div className="flex items-center justify-between text-xs font-mono font-semibold text-pencil mb-2">
                       <span>{t("dashboard.progress")}</span>
@@ -582,7 +582,7 @@ export default function DashboardGemini() {
                     </div>
                   </div>
                   <Link to={`/skills/${activeSkill.slug}/${currentLesson.id}`}
-                    className="inline-flex items-center justify-center gap-2 text-white rounded-xl px-10 py-4 font-sans text-sm font-bold transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] focus:ring-2 focus:ring-offset-2"
+                    className="inline-flex items-center justify-center gap-2 text-white rounded-xl px-6 sm:px-10 py-4 font-sans text-sm font-bold transition-all hover:-translate-y-0.5 hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)] focus:ring-2 focus:ring-offset-2 text-center w-full sm:w-auto"
                     style={{ backgroundColor: accent, outlineColor: accent }}
                   >
                     {t("dashboard.continue")}

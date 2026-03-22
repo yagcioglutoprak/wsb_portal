@@ -177,12 +177,12 @@ export default function Home() {
             {/* Right Side: Interactive Node Map */}
             <div className="lg:col-span-7 relative">
               <div
-                className="bg-[#fdfcfa] rounded-2xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] p-8 lg:p-10 flex flex-col min-h-[520px] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.06)]"
+                className="bg-[#fdfcfa] rounded-2xl border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] p-8 lg:p-10 flex flex-col min-h-[400px] sm:min-h-[520px] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.06)]"
               >
                 <div key={activeSlug} className="animate-fade-in-up flex-1 flex flex-col">
 
                   {/* Header */}
-                  <div className="flex justify-between items-start mb-10 pb-8 border-b border-ink/8">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 pb-8 border-b border-ink/8">
                     <div>
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeColor.accent }} />
@@ -196,7 +196,7 @@ export default function Home() {
                         <ArrowRightIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </div>
-                    <div className="text-right shrink-0 bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl p-4">
+                    <div className="sm:text-right shrink-0 bg-[#fdfcfa] border-[1.5px] border-ink/10 shadow-sm rounded-xl p-4">
                       <span className="block font-sans text-xs font-bold uppercase tracking-wider text-pencil mb-1">{t("home.marketValue")}</span>
                       <span className="font-mono text-xl font-bold text-ink">
                         {salaryMax > 0 ? `${(salaryMin / 1000).toFixed(0)}k–${(salaryMax / 1000).toFixed(0)}k` : 'Var'}
@@ -394,7 +394,7 @@ export default function Home() {
             </div>
 
             {/* Stats Footer */}
-            <div className="mt-14 pt-6 border-t-[2px] border-dashed border-ink/10 flex items-center justify-between text-left font-mono text-xs text-pencil">
+            <div className="mt-14 pt-6 border-t-[2px] border-dashed border-ink/10 grid grid-cols-2 sm:flex sm:items-center sm:justify-between text-left font-mono text-xs text-pencil gap-4">
               <div>
                 <span className="block font-bold text-pencil mb-1">{t("home.certificationsLabel")}</span>
                 <span className="font-semibold text-ink">{t("home.acrossFields", { certs: totalCerts, fields: fields.length })}</span>
@@ -403,7 +403,7 @@ export default function Home() {
                 <span className="block font-bold text-pencil mb-1">{t("home.liveJobs")}</span>
                 <span className="font-semibold text-ink">{t("home.internshipsInPoland", { count: jobs.length })}</span>
               </div>
-              <div className="hidden sm:block text-right">
+              <div className="text-right">
                 <span className="block font-bold text-pencil mb-1">{t("home.access")}</span>
                 <span className="font-semibold text-arcade">{t("home.freeLimitedTime")}</span>
               </div>

@@ -287,7 +287,7 @@ function LoadingPhase({ visible, fieldColor }) {
       visible ? "opacity-100 scale-100" : "opacity-0 scale-[0.98] pointer-events-none",
     ].join(" ")}>
       {/* Animated geometric builder */}
-      <div className="relative w-32 h-32 mb-10 flex items-center justify-center">
+      <div className="relative w-24 h-24 mb-8 sm:w-32 sm:h-32 sm:mb-10 flex items-center justify-center">
         <div className="absolute inset-0 rounded-full border-[1.5px] border-dashed border-ink/20" style={{ animation: "spinSlow 12s linear infinite" }} />
         <div className="absolute inset-4 rounded-full border-[1.5px] border-ink/10" style={{ animation: "spinSlow 8s linear infinite reverse" }} />
         <div className="absolute inset-8 rounded-full border-[1px] border-ink/15" style={{ animation: "spinSlow 4s linear infinite" }} />
@@ -391,7 +391,7 @@ export default function Reveal() {
               {t("reveal.yourPersonalizedPath")}
             </span>
           </div>
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-[80px] leading-[0.9] text-ink tracking-tight mb-6">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-7xl lg:text-[80px] leading-[0.9] text-ink tracking-tight mb-6">
             {fieldObj?.name || "Your Path"}
           </h1>
           <p className="font-sans text-lg md:text-xl text-pencil font-medium max-w-2xl mx-auto">
@@ -496,7 +496,7 @@ export default function Reveal() {
 
         {/* ═══════════════ CTA TICKET ═══════════════ */}
         <div
-          className="relative bg-[#fdfcfa] border-[2px] border-dashed border-ink/20 rounded-2xl p-10 md:p-16 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden"
+          className="relative bg-[#fdfcfa] border-[2px] border-dashed border-ink/20 rounded-2xl p-6 sm:p-10 md:p-16 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden"
           style={{
             opacity: show ? 1 : 0,
             transform: show ? "translateY(0)" : "translateY(24px)",

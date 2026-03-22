@@ -56,7 +56,7 @@ export default function Certificates() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
         <div className="bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] rounded-xl p-5">
           <span className="block font-sans text-xs font-bold uppercase tracking-widest text-pencil mb-1">{t("certificates.total")}</span>
           <span className="font-mono text-2xl font-bold text-ink">{totalCerts}</span>

@@ -87,7 +87,7 @@ function Scene1({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[320px] sm:min-h-[420px] w-full relative">
       <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-[#fdfcfa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
          <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-[#e8ded1] p-2 bg-[#fdf8f5]">
              {items.map(id => (
@@ -129,7 +129,7 @@ function Scene2({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[320px] sm:min-h-[420px] w-full relative">
       <div className="w-full lg:w-5/12 flex flex-col items-center justify-center gap-4 bg-[#fdfcfa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-[#e8ded1] p-6">
          <div className="relative h-48 w-24 flex flex-col justify-end gap-2 overflow-hidden items-center border-x-2 border-b-2 border-[#e8ded1] rounded-b-xl p-2 bg-[#fdf8f5]">
              {items.map(id => (
@@ -376,7 +376,7 @@ function Scene3({ runMode, onComplete }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[420px] w-full relative">
+    <div className="flex flex-col lg:flex-row p-6 gap-8 items-stretch bg-[#fdf8f5] min-h-[320px] sm:min-h-[420px] w-full relative">
       {/* Moving Pill Overlay */}
       <div ref={movingPillContainerRef} className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
         <div 
@@ -521,7 +521,7 @@ function Scene4({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-col p-6 gap-8 items-center justify-center bg-[#fdf8f5] min-h-[420px] w-full relative">
+    <div className="flex flex-col p-6 gap-8 items-center justify-center bg-[#fdf8f5] min-h-[320px] sm:min-h-[420px] w-full relative">
         <div className="w-full max-w-lg">
             <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-md tracking-wider mb-4 block w-max mx-auto">{t("homepageLesson.quickCheck")}</span>
             <h3 className="font-sans text-xl font-bold text-ink tracking-tight mb-8 text-center">{t("homepageLesson.quizQuestion")}</h3>
