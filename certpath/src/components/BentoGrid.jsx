@@ -360,7 +360,7 @@ function LessonsCard({ revealed }) {
           </p>
         </div>
 
-        <div className="mt-6 bg-[#f8f6f2] border-[1.5px] border-ink/10 rounded-xl p-3 shadow-inner overflow-hidden relative h-[250px] flex flex-col gap-2.5">
+        <div className="mt-6 bg-[#f8f6f2] border-[1.5px] border-ink/10 rounded-xl p-3 shadow-inner overflow-hidden relative h-[290px] flex flex-col gap-2.5">
           {placed.length === 0 && (
              <div className="absolute inset-0 m-3 border-2 border-dashed border-ink/15 rounded-xl flex items-center justify-center bg-white/50">
                 <span className="text-ink/30 font-mono text-xs font-bold uppercase tracking-widest">{t("bento.dropBlocksHere")}</span>
