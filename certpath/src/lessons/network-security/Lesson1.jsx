@@ -5,6 +5,74 @@ import Quiz from "../../components/widgets/Quiz";
 import { sounds } from "../../hooks/useSound";
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SVGs for Network Devices
+// ─────────────────────────────────────────────────────────────────────────────
+const LaptopSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="3" y="14" width="18" height="4" rx="1" />
+    <path d="M5 14l1-10h12l1 10" strokeLinejoin="round"/>
+  </svg>
+);
+
+const PhoneSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="6" y="2" width="12" height="20" rx="2"/>
+    <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
+  </svg>
+);
+
+const RouterSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="4" y="14" width="16" height="6" rx="1"/>
+    <path d="M8 14V8m8 6V6M12 14v-4" strokeLinecap="round"/>
+    <circle cx="12" cy="6" r="1"/>
+    <circle cx="8" cy="4" r="1"/>
+    <circle cx="16" cy="2" r="1"/>
+  </svg>
+);
+
+const ServerSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="4" y="2" width="16" height="6" rx="1"/>
+    <rect x="4" y="9" width="16" height="6" rx="1"/>
+    <rect x="4" y="16" width="16" height="6" rx="1"/>
+    <circle cx="8" cy="5" r="1" fill="currentColor"/>
+    <circle cx="8" cy="12" r="1" fill="currentColor"/>
+    <circle cx="8" cy="19" r="1" fill="currentColor"/>
+  </svg>
+);
+
+const IspSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="6" y="10" width="12" height="12" />
+    <path d="M12 10V3M9 6h6" />
+    <circle cx="12" cy="3" r="1" fill="currentColor"/>
+    <rect x="8" y="14" width="2" height="2" fill="currentColor"/>
+    <rect x="14" y="14" width="2" height="2" fill="currentColor"/>
+    <rect x="8" y="18" width="2" height="2" fill="currentColor"/>
+    <rect x="14" y="18" width="2" height="2" fill="currentColor"/>
+  </svg>
+);
+
+const FirewallSvg = ({ className="w-8 h-8" }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <path d="M8 11l3 3 5-5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+function Switch({ checked, onChange }) {
+  return (
+    <div 
+      className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors ${checked ? 'bg-success' : 'bg-ink/20'}`}
+      onClick={onChange}
+    >
+      <div className={`w-4 h-4 rounded-full bg-white transition-transform shadow-sm ${checked ? 'translate-x-6' : 'translate-x-0'}`} />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // UI Components
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -21,77 +89,139 @@ function SectionHeader({ title, subtitle }) {
 // SCENE 1: Your digital neighborhood
 // ─────────────────────────────────────────────────────────────────────────────
 function Scene1({ onComplete }) {
-  const [clicked, setClicked] = useState([]);
+  const [links, setLinks] = useState({ laptop: false, phone: false, server: false });
   const [done, setDone] = useState(false);
   const completeTimerRef = useRef(null);
 
-  // Bug 7 fix: cleanup setTimeout(onComplete) on unmount
   useEffect(() => {
-    return () => {
-      if (completeTimerRef.current) clearTimeout(completeTimerRef.current);
-    };
+    return () => clearTimeout(completeTimerRef.current);
   }, []);
 
-  const nodes = [
-    { id: "laptop", label: "Laptop", desc: "Your personal computer. Requests web pages and sends emails.", x: 15, y: 15 },
-    { id: "phone", label: "Phone", desc: "Your mobile device. Constantly syncing apps and messages.", x: 85, y: 15 },
-    { id: "router", label: "Router", desc: "The traffic director. Connects all your devices to the internet.", x: 50, y: 45 },
-    { id: "server", label: "Server", desc: "Stores websites and sends them to your browser when you ask.", x: 50, y: 82 },
-  ];
-
-  const handleClick = (id) => {
-    if (!clicked.includes(id)) {
-      sounds.pop();
-      const newClicked = [...clicked, id];
-      setClicked(newClicked);
-      if (newClicked.length === nodes.length) {
+  const toggleLink = (key) => {
+    if (done) return;
+    sounds.pop();
+    setLinks(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      if (next.laptop && next.phone && next.server) {
         setDone(true);
-        completeTimerRef.current = setTimeout(onComplete, 1500);
+        sounds.correct();
+        completeTimerRef.current = setTimeout(onComplete, 2000);
       }
-    }
+      return next;
+    });
   };
 
   return (
     <div className="w-full flex flex-col items-center">
-      <SectionHeader
-        title="Your Digital Neighborhood"
-        subtitle="Every time you open a website, send a message, or stream a video — your device is talking to other devices across a network."
+      <SectionHeader 
+        title="Your Digital Neighborhood" 
+        subtitle="Before devices can talk, they need a path. Turn on the connections to build a local network and link it to the internet."
       />
-      <div className="relative w-full max-w-2xl h-[480px] bg-[#fdfcfa] rounded-2xl p-6 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] overflow-hidden">
-        {/* Connections */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <line x1="15%" y1="15%" x2="50%" y2="45%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" />
-          <line x1="85%" y1="15%" x2="50%" y2="45%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" style={{ animationDelay: "0.2s" }} />
-          <line x1="50%" y1="45%" x2="50%" y2="82%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" style={{ animationDelay: "0.4s" }} />
-        </svg>
 
-        {nodes.map((node) => {
-          const isClicked = clicked.includes(node.id);
-          return (
-            <div
-              key={node.id}
-              className="absolute transform -translate-x-1/2 flex flex-col items-center group cursor-pointer"
-              style={{ left: `${node.x}%`, top: `${node.y}%` }}
-              onClick={() => handleClick(node.id)}
-            >
-              {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success | Bug 8 fix: font-mono → font-sans */}
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white border-[1.5px] border-ink/12 shadow-sm hover:border-ink/20 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:-translate-y-0.5 hover:scale-110'}`}>
-                {isClicked && <CheckIcon className="w-6 h-6 text-white" />}
-                {!isClicked && <span className="text-ink font-sans text-xs font-semibold">{node.label}</span>}
+      <style>{`
+        @keyframes flow {
+          to { stroke-dashoffset: -20; }
+        }
+        .flow-anim {
+          animation: flow 0.5s linear infinite;
+        }
+      `}</style>
+
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 items-stretch mt-4">
+        {/* Control Panel */}
+        <div className="w-full md:w-80 flex flex-col justify-center">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-4 bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/10 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+              <div className="w-10 h-10 bg-rust/10 text-rust rounded-lg flex items-center justify-center">
+                <LaptopSvg className="w-6 h-6" />
               </div>
-              <div className={`mt-2 w-40 text-center transition-all duration-500 ${isClicked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <p className="text-ink text-xs font-bold bg-[#fdfcfa] border-[1.5px] border-ink/10 px-2 py-1 rounded shadow-sm">{node.label}</p>
-                <p className="text-graphite text-[11px] mt-1 leading-tight bg-[#fdfcfa] border-[1.5px] border-ink/10 p-1.5 rounded-lg shadow-sm">{node.desc}</p>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-ink">Laptop</div>
+                <div className="text-xs text-graphite">Personal computer</div>
               </div>
+              <Switch checked={links.laptop} onChange={() => toggleLink('laptop')} />
             </div>
-          );
-        })}
-      </div>
-      {done && (
-        <div className="mt-6 text-success font-bold animate-bounce flex items-center gap-2">
-          <CheckIcon className="w-5 h-5" /> Got it! Network established.
+
+            <div className="flex items-center gap-4 bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/10 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+              <div className="w-10 h-10 bg-rust/10 text-rust rounded-lg flex items-center justify-center">
+                <PhoneSvg className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-ink">Phone</div>
+                <div className="text-xs text-graphite">Mobile device</div>
+              </div>
+              <Switch checked={links.phone} onChange={() => toggleLink('phone')} />
+            </div>
+
+            <div className="flex items-center gap-4 bg-[#fdfcfa] p-4 rounded-xl border-[1.5px] border-ink/10 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+              <div className="w-10 h-10 bg-[#1a1a2e] text-white rounded-lg flex items-center justify-center">
+                <ServerSvg className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-ink">Internet Server</div>
+                <div className="text-xs text-graphite">External websites</div>
+              </div>
+              <Switch checked={links.server} onChange={() => toggleLink('server')} />
+            </div>
+          </div>
+
+          {done && (
+            <div className="mt-6 p-4 bg-success/10 border border-success/30 rounded-xl text-success font-bold text-center animate-slide-up flex items-center justify-center gap-2">
+              <CheckIcon className="w-5 h-5" /> Network Online!
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Visualizer */}
+        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 relative min-h-[400px] border-[1.5px] border-ink/10 shadow-xl flex items-center justify-center overflow-hidden">
+          <svg viewBox="0 0 400 400" className="w-full h-full max-h-[400px] absolute inset-0 pointer-events-none">
+            {/* Base lines (unconnected) */}
+            <line x1="80" y1="100" x2="200" y2="200" stroke="rgba(255,255,255,0.05)" strokeWidth="4" strokeLinecap="round" />
+            <line x1="80" y1="300" x2="200" y2="200" stroke="rgba(255,255,255,0.05)" strokeWidth="4" strokeLinecap="round" />
+            <line x1="200" y1="200" x2="320" y2="200" stroke="rgba(255,255,255,0.05)" strokeWidth="4" strokeLinecap="round" />
+
+            {/* Connected lines */}
+            {links.laptop && (
+              <line x1="80" y1="100" x2="200" y2="200" stroke="#2a9d8f" strokeWidth="4" strokeDasharray="8 12" strokeLinecap="round" className="flow-anim" />
+            )}
+            {links.phone && (
+              <line x1="80" y1="300" x2="200" y2="200" stroke="#2a9d8f" strokeWidth="4" strokeDasharray="8 12" strokeLinecap="round" className="flow-anim" />
+            )}
+            {links.server && (
+              <line x1="200" y1="200" x2="320" y2="200" stroke="#2a9d8f" strokeWidth="4" strokeDasharray="8 12" strokeLinecap="round" className="flow-anim" />
+            )}
+          </svg>
+
+          {/* Nodes */}
+          <div className={`absolute top-[25%] left-[20%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition-all duration-500 ${links.laptop ? 'scale-110' : 'opacity-70 grayscale'}`}>
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors shadow-lg border-2 ${links.laptop ? 'bg-success/20 border-success text-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/5 border-white/20 text-white/50'}`}>
+              <LaptopSvg className="w-8 h-8" />
+            </div>
+            <span className="text-white font-sans text-xs font-bold mt-2 bg-ink/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10">Laptop</span>
+          </div>
+
+          <div className={`absolute top-[75%] left-[20%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition-all duration-500 ${links.phone ? 'scale-110' : 'opacity-70 grayscale'}`}>
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors shadow-lg border-2 ${links.phone ? 'bg-success/20 border-success text-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/5 border-white/20 text-white/50'}`}>
+              <PhoneSvg className="w-8 h-8" />
+            </div>
+            <span className="text-white font-sans text-xs font-bold mt-2 bg-ink/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10">Phone</span>
+          </div>
+
+          <div className={`absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition-all duration-500 ${links.laptop || links.phone || links.server ? 'scale-110' : 'opacity-70'}`}>
+            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-xl border-2 ${links.laptop || links.phone || links.server ? 'bg-rust/20 border-rust text-rust shadow-[0_0_20px_theme(colors.rust)]' : 'bg-white/10 border-white/20 text-white/60'}`}>
+              <RouterSvg className="w-10 h-10" />
+            </div>
+            <span className="text-white font-sans text-sm font-bold mt-3 bg-ink/80 px-3 py-1.5 rounded-lg border border-white/10 backdrop-blur-sm">Home Router</span>
+          </div>
+
+          <div className={`absolute top-[50%] left-[80%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center transition-all duration-500 ${links.server ? 'scale-110' : 'opacity-70 grayscale'}`}>
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors shadow-lg border-2 ${links.server ? 'bg-success/20 border-success text-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/5 border-white/20 text-white/50'}`}>
+              <ServerSvg className="w-8 h-8" />
+            </div>
+            <span className="text-white font-sans text-xs font-bold mt-2 bg-ink/50 px-2 py-1 rounded backdrop-blur-sm border border-white/10">Internet</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -100,115 +230,213 @@ function Scene1({ onComplete }) {
 // SCENE 2: How data travels
 // ─────────────────────────────────────────────────────────────────────────────
 function Scene2({ onComplete }) {
-  const [packetPos, setPacketPos] = useState(-1);
+  const [filled, setFilled] = useState([]);
+  const [running, setRunning] = useState(false);
+  const [activeNode, setActiveNode] = useState(-2); // -2: not started, -1: laptop, 0..3: nodes
   const [done, setDone] = useState(false);
+  const [shake, setShake] = useState(false);
+  const completeTimerRef = useRef(null);
 
-  // Bug 1 fix: store all timer IDs in refs, use ref for animation state
-  const sendingRef = useRef(false);
-  const doneRef = useRef(false);
-  const timersRef = useRef([]);
+  const keywords = ["server", "firewall", "router", "isp"];
+  const correctOrder = ["router", "isp", "firewall", "server"];
 
-  const path = [
-    { label: "Laptop", desc: "Sends request", icon: "💻" },
-    { label: "Router", desc: "Routes traffic", icon: "📡" },
-    { label: "ISP", desc: "Internet Provider", icon: "🏢" },
-    { label: "Firewall", desc: "Checks rules", icon: "🛡️" },
-    { label: "Server", desc: "Returns site", icon: "🗄️" }
+  const pathNodes = [
+    { id: -1, label: "Laptop", icon: <LaptopSvg className="w-7 h-7"/> },
+    { id: 0, label: "Router", icon: <RouterSvg className="w-7 h-7"/> },
+    { id: 1, label: "ISP", icon: <IspSvg className="w-7 h-7"/> },
+    { id: 2, label: "Firewall", icon: <FirewallSvg className="w-7 h-7"/> },
+    { id: 3, label: "Server", icon: <ServerSvg className="w-7 h-7"/> }
   ];
 
-  // Bug 1 fix: cleanup all timers on unmount
   useEffect(() => {
-    return () => {
-      timersRef.current.forEach(id => {
-        clearInterval(id);
-        clearTimeout(id);
-      });
-    };
+    return () => clearTimeout(completeTimerRef.current);
   }, []);
 
-  const addTimer = (id) => {
-    timersRef.current.push(id);
-    return id;
-  };
-
-  const sendRequest = () => {
-    if (sendingRef.current || doneRef.current) return;
+  const handleKeywordClick = (word) => {
+    if (running || done || filled.includes(word)) return;
     sounds.pop();
-    sendingRef.current = true;
-    setPacketPos(0);
-
-    let currentStep = 0;
-    const maxStep = path.length - 1;
-
-    const timer = addTimer(setInterval(() => {
-      currentStep++;
-      if (currentStep > maxStep) {
-        clearInterval(timer);
-        const pauseTimer = addTimer(setTimeout(() => {
-          // Bug 5 fix: Start return journey AT the server (maxStep), then decrement
-          let backStep = maxStep;
-          setPacketPos(backStep);
-          const backTimer = addTimer(setInterval(() => {
-            backStep--;
-            setPacketPos(backStep);
-            if (backStep === 0) {
-              clearInterval(backTimer);
-              sendingRef.current = false;
-              doneRef.current = true;
-              setDone(true);
-              addTimer(setTimeout(onComplete, 1000));
-            }
-          }, 400));
-        }, 500));
-      } else {
-        setPacketPos(currentStep);
-      }
-    }, 800));
+    setFilled([...filled, word]);
   };
 
-  const sending = sendingRef.current || (packetPos >= 0 && !done);
+  const handleRun = () => {
+    if (filled.length < 4 || running || done) return;
+    
+    const isCorrect = filled.every((val, i) => val === correctOrder[i]);
+    if (!isCorrect) {
+      sounds.wrong();
+      setShake(true);
+      setTimeout(() => {
+        setShake(false);
+        setFilled([]);
+      }, 500);
+      return;
+    }
+
+    sounds.correct();
+    setRunning(true);
+    
+    let current = -1;
+    const max = 3;
+    
+    const tick = () => {
+      current++;
+      setActiveNode(current);
+      if (current < max) {
+        sounds.pop();
+        setTimeout(tick, 1000);
+      } else {
+        setDone(true);
+        sounds.correct();
+        completeTimerRef.current = setTimeout(onComplete, 2000);
+      }
+    };
+    
+    setActiveNode(-1);
+    setTimeout(tick, 1000);
+  };
+
+  const renderBlank = (index) => {
+    const isFilled = filled.length > index;
+    const word = isFilled ? filled[index] : "______";
+    const isActive = running && activeNode === index;
+    
+    return (
+      <span 
+        className={`inline-block px-2 py-0.5 rounded transition-all ${
+          isFilled ? 'bg-success/20 text-success border border-success/30 cursor-pointer' 
+                   : 'bg-white/10 text-white/40 border border-white/20 border-dashed'
+        } ${isActive ? 'ring-2 ring-white scale-110 shadow-[0_0_10px_theme(colors.success)]' : ''}`}
+        onClick={() => {
+          if (!running && !done && isFilled) {
+            sounds.pop();
+            setFilled(filled.slice(0, index));
+          }
+        }}
+      >
+        {word}
+      </span>
+    );
+  };
 
   return (
     <div className="w-full flex flex-col items-center">
       <SectionHeader
         title="How Data Travels"
-        subtitle="When you visit a website, your request doesn't teleport — it travels through multiple stops, like a letter going through sorting offices."
+        subtitle="When you visit a website, your request travels through multiple stops. Assemble the routing logic to fetch the website."
       />
-      <div className="w-full max-w-3xl bg-[#fdfcfa] rounded-2xl p-10 relative mt-4 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
-        <div className="flex justify-between items-center relative z-10">
-          {/* Connection line */}
-          <div className="absolute top-1/2 left-[5%] right-[5%] h-1 bg-ink/10 -translate-y-1/2 -z-10" />
+      
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8 mt-4 items-stretch">
+        
+        {/* Left Side: IDE */}
+        <div className="w-full md:w-[60%] flex flex-col">
+          <div className={`bg-[#1a1a2e] rounded-2xl p-6 font-mono text-[13px] sm:text-sm shadow-xl border border-white/10 transition-transform ${shake ? 'animate-shake border-error' : ''}`}>
+            <div className="flex gap-2 mb-4 border-b border-white/10 pb-4">
+              <div className="w-3 h-3 rounded-full bg-error" />
+              <div className="w-3 h-3 rounded-full bg-warning" />
+              <div className="w-3 h-3 rounded-full bg-success" />
+            </div>
+            
+            <div className="text-[#a6accd] leading-relaxed">
+              <span className="text-[#c792ea]">function</span> <span className="text-[#82aaff]">fetchWebsite</span>() {"{"}
+              <div className="pl-4 mt-3 space-y-4">
+                <div>
+                  <span className="text-[#5c6370] italic">// 1. Leave the local network</span><br/>
+                  <span className="text-[#c792ea]">let</span> req = laptop.<span className="text-[#82aaff]">sendTo</span>(
+                  {renderBlank(0)}
+                  );
+                </div>
 
-          {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success */}
-          {packetPos >= 0 && (
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-success rounded-full shadow-[0_0_15px_theme(colors.success)] transition-all duration-500 ease-in-out z-20"
-              style={{ left: `${(packetPos / (path.length - 1)) * 90 + 5}%`, transform: 'translate(-50%, -50%)' }}
+                <div>
+                  <span className="text-[#5c6370] italic">// 2. Enter the internet backbone</span><br/>
+                  <span className="text-[#c792ea]">let</span> traffic = req.<span className="text-[#82aaff]">forwardTo</span>(
+                  {renderBlank(1)}
+                  );
+                </div>
+
+                <div>
+                  <span className="text-[#5c6370] italic">// 3. Inspect for threats</span><br/>
+                  <span className="text-[#c792ea]">if</span> ({renderBlank(2)}.<span className="text-[#82aaff]">isSafe</span>(traffic)) {"{"}<br/>
+                  <div className="pl-4 mt-1">
+                    <span className="text-[#5c6370] italic">// 4. Return the website data</span><br/>
+                    <span className="text-[#89ddff]">return</span> {renderBlank(3)}.<span className="text-[#82aaff]">respond</span>();
+                  </div>
+                  {"}"}
+                </div>
+              </div>
+              <div className="mt-2">{"}"}</div>
+            </div>
+          </div>
+
+          {/* Keywords tray */}
+          <div className="flex gap-2 mt-6 flex-wrap">
+            {keywords.map(kw => {
+              const used = filled.includes(kw);
+              return (
+                <button 
+                  key={kw}
+                  disabled={used || running || done}
+                  onClick={() => handleKeywordClick(kw)}
+                  className={`px-4 py-2 font-mono text-sm rounded-xl border-[1.5px] transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.06)] ${
+                    used ? 'bg-paper text-ink/30 border-ink/10 shadow-none scale-95 cursor-not-allowed' 
+                         : 'bg-[#fdfcfa] text-ink border-ink/20 hover:border-rust hover:-translate-y-0.5'
+                  }`}
+                >
+                  {kw}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={handleRun}
+            disabled={filled.length < 4 || running || done}
+            className="mt-6 w-full bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 disabled:opacity-50 disabled:hover:translate-y-0 transition-all flex items-center justify-center gap-2 shadow-[0_2px_0_0_rgba(0,0,0,0.12)]"
+          >
+            {running ? "Executing..." : done ? "Success!" : "Run Code ▶"}
+          </button>
+        </div>
+
+        {/* Right Side: Visual Path */}
+        <div className="flex-1 bg-[#1a1a2e] rounded-2xl p-6 relative border-[1.5px] border-ink/10 shadow-xl min-h-[450px] overflow-hidden">
+          {/* The central connecting line */}
+          <div className="absolute top-[10%] bottom-[10%] left-1/2 -translate-x-1/2 w-1.5 bg-white/10 rounded-full" />
+          
+          {/* The moving packet */}
+          {activeNode >= -1 && (
+            <div 
+              className="absolute left-1/2 w-4 h-4 bg-success rounded-full shadow-[0_0_15px_theme(colors.success)] transition-all duration-1000 ease-in-out z-20"
+              style={{ 
+                transform: 'translate(-50%, -50%)',
+                top: `${((activeNode + 1) / 4) * 80 + 10}%` 
+              }}
             />
           )}
 
-          {path.map((node, i) => (
-            <div key={i} className="flex flex-col items-center w-24">
-              {/* Bug 6 fix: border-[#2a9d8f] → border-success */}
-              <div className={`text-4xl bg-white w-16 h-16 flex items-center justify-center rounded-xl border-[1.5px] shadow-sm transition-colors ${packetPos === i ? 'border-success bg-success/10' : 'border-ink/12'}`}>
-                {node.icon}
+          {pathNodes.map((node, i) => {
+            const isActive = activeNode === node.id || activeNode > node.id || done;
+            const isCurrent = activeNode === node.id;
+            const topPercent = (i / 4) * 80 + 10; 
+
+            return (
+              <div 
+                key={node.id} 
+                className="absolute left-1/2 w-full max-w-[280px] flex items-center -translate-x-1/2 -translate-y-1/2 z-10"
+                style={{ top: `${topPercent}%` }}
+              >
+                {/* Label on left */}
+                <div className={`flex-1 text-right pr-6 font-bold text-sm transition-all duration-500 ${isCurrent ? 'text-success' : isActive ? 'text-white' : 'text-white/40'}`}>
+                  {node.label}
+                </div>
+                {/* Node Icon */}
+                <div className={`w-12 h-12 shrink-0 rounded-xl flex items-center justify-center transition-all duration-500 border-2 bg-[#1a1a2e] ${isCurrent ? 'border-success text-success shadow-[0_0_20px_theme(colors.success)] scale-110' : isActive ? 'border-white/40 text-white/80' : 'border-white/10 text-white/30'}`}>
+                  {node.icon}
+                </div>
+                {/* Empty right area for balance */}
+                <div className="flex-1" />
               </div>
-              <span className="text-ink font-bold mt-3 text-sm">{node.label}</span>
-              <span className={`text-graphite text-xs text-center transition-opacity duration-300 ${packetPos >= i || done ? 'opacity-100' : 'opacity-0'}`}>
-                {node.desc}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </div>
-      <div className="mt-8">
-        <button
-          onClick={sendRequest}
-          disabled={sending || done}
-          className="bg-rust text-white rounded-xl px-8 py-3.5 font-sans text-sm font-semibold hover:bg-rust/90 disabled:opacity-50 transition-all flex items-center gap-2"
-        >
-          {sending ? "Sending..." : done ? "Delivered!" : "Send Request ▶"}
-        </button>
       </div>
     </div>
   );
@@ -253,16 +481,16 @@ function Scene3({ onComplete }) {
         subtitle="Every stop along the way is a potential target. Find all the vulnerable points to secure the path."
       />
 
-      <div className="w-full max-w-4xl bg-[#fdfcfa] rounded-2xl p-12 relative mt-4 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
+      <div className="w-full max-w-4xl bg-[#1a1a2e] rounded-2xl p-12 relative mt-4">
         {/* Background Path */}
-        <div className="absolute top-[40%] left-12 right-12 h-2 bg-ink/10 -translate-y-1/2 rounded-full" />
+        <div className="absolute top-[40%] left-12 right-12 h-2 bg-white/5 -translate-y-1/2 rounded-full" />
 
         {/* Network devices row */}
         <div className="flex justify-between items-center relative z-10 mb-4">
           {["💻", "📡", "🏢", "🧱", "🗄️"].map((icon, i) => (
             <div key={i} className="flex flex-col items-center w-20">
               <div className="text-4xl mb-1">{icon}</div>
-              <span className="text-ink/70 text-xs font-semibold">{["Laptop", "Router", "ISP", "Firewall", "Server"][i]}</span>
+              <span className="text-white/70 text-xs font-semibold">{["Laptop", "Router", "ISP", "Firewall", "Server"][i]}</span>
             </div>
           ))}
         </div>
@@ -275,12 +503,12 @@ function Scene3({ onComplete }) {
               <div key={spot.id} className="flex flex-col items-center">
                 <button
                   onClick={() => handleClick(spot.id)}
-                  className={`w-10 h-10 rounded-full border-[1.5px] flex items-center justify-center transition-all text-sm font-bold shadow-sm ${isFound ? 'bg-error border-error text-white' : 'bg-white border-ink/20 text-ink/60 hover:bg-ink/5 animate-pulse'}`}
+                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${isFound ? 'bg-error border-error text-white' : 'bg-white/10 border-white/30 text-white/60 hover:bg-white/20 animate-pulse'}`}
                 >
                   {isFound ? "⚠️" : "?"}
                 </button>
                 {isFound && (
-                  <div className="mt-2 bg-[#fdfcfa] rounded-xl p-3 w-44 text-center shadow-lg border-[1.5px] border-error animate-slide-up">
+                  <div className="mt-2 bg-[#fdfcfa] rounded-xl p-3 w-44 text-center shadow-lg border-2 border-error animate-slide-up">
                     <h4 className="font-bold text-ink text-sm">{spot.title}</h4>
                     <p className="text-xs text-graphite mt-1">{spot.desc}</p>
                   </div>
