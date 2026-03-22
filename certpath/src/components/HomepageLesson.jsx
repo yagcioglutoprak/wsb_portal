@@ -627,8 +627,37 @@ export default function HomepageLesson() {
   const [scene, setScene] = useState(1);
   const [animState, setAnimState] = useState('entered');
   const [loopCount, setLoopCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef(null);
+  const pendingAdvance = useRef(false);
+
+  // Pause scene cycling when scrolled out of view
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // If we became visible again and there's a pending advance, fire it
+  useEffect(() => {
+    if (isVisible && pendingAdvance.current) {
+      pendingAdvance.current = false;
+      advanceScene();
+    }
+  }, [isVisible]);
 
   const advanceScene = () => {
+    if (!isVisible) {
+      pendingAdvance.current = true;
+      return;
+    }
     setAnimState('exiting');
     setTimeout(() => {
       setScene(prev => {
@@ -639,7 +668,7 @@ export default function HomepageLesson() {
         return prev + 1;
       });
       setAnimState('entering');
-      
+
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             setAnimState('entered');
@@ -656,7 +685,7 @@ export default function HomepageLesson() {
   };
 
   return (
-    <div className="bg-[#fdfcfa] rounded-2xl border-[1.5px] border-ink/12 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col w-full relative">
+    <div ref={containerRef} className="bg-[#fdfcfa] rounded-2xl border-[1.5px] border-ink/12 shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col w-full relative">
       <style>{`
         @keyframes popIn {
           0% { transform: scale(0.5); opacity: 0; }
@@ -701,8 +730,8 @@ export default function HomepageLesson() {
         </p>
       </div>
 
-      {/* Scene Container */}
-      <div className={`w-full overflow-hidden flex items-stretch bg-[#fdf8f5]`}>
+      {/* Scene Container — fixed height to prevent layout shifts between scenes */}
+      <div className={`w-full overflow-hidden flex items-stretch bg-[#fdf8f5] h-[320px] sm:h-[420px]`}>
         <div className={`w-full flex-shrink-0 ${getTransitionClass()}`}>
             {scene === 1 && <Scene1 onComplete={advanceScene} />}
             {scene === 2 && <Scene2 onComplete={advanceScene} />}
