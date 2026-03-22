@@ -244,7 +244,10 @@
     "stayConsistent": "Stay consistent",
     "current": "Current",
     "dayStreak": "3 Day Streak!",
-    "keepBurning": "Keep it burning"
+    "keepBurning": "Keep it burning",
+    "stages": "Stages",
+    "certifications": "Certs",
+    "browseCerts": "Browse all"
   },
   "common": {
     "free": "Free",

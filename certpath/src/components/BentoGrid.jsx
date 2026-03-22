@@ -513,6 +513,25 @@ function CertRoadmapCard({ revealed }) {
           })}
           </div>
         </div>
+
+        {/* Footer stats to fill remaining space */}
+        <div className="mt-auto pt-6 border-t border-ink/5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex flex-col">
+              <span className="font-mono text-lg font-bold text-ink">4</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-pencil">{t("bento.stages")}</span>
+            </div>
+            <div className="w-px h-8 bg-ink/8" />
+            <div className="flex flex-col">
+              <span className="font-mono text-lg font-bold text-ink">60+</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-pencil">{t("bento.certifications")}</span>
+            </div>
+          </div>
+          <Link to="/certificates" className="font-sans text-xs font-bold text-violet hover:text-violet/80 transition-colors flex items-center gap-1">
+            {t("bento.browseCerts")}
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3L11 8L6 13"/></svg>
+          </Link>
+        </div>
       </div>
     </Card>
   );

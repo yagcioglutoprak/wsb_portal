@@ -244,7 +244,10 @@
     "stayConsistent": "Bądź systematyczny",
     "current": "Aktualny",
     "dayStreak": "3 dni serii!",
-    "keepBurning": "Nie przerywaj"
+    "keepBurning": "Nie przerywaj",
+    "stages": "Etapy",
+    "certifications": "Cert.",
+    "browseCerts": "Zobacz wszystkie"
   },
   "common": {
     "free": "Bezpłatne",
