@@ -57,12 +57,12 @@ function Scene1({ onComplete }) {
         title="Your Digital Neighborhood"
         subtitle="Every time you open a website, send a message, or stream a video — your device is talking to other devices across a network."
       />
-      <div className="relative w-full max-w-2xl h-[480px] bg-[#1a1a2e] rounded-2xl p-6 border-2 border-ink/10 shadow-lg overflow-hidden">
+      <div className="relative w-full max-w-2xl h-[480px] bg-[#fdfcfa] rounded-2xl p-6 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)] overflow-hidden">
         {/* Connections */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <line x1="15%" y1="15%" x2="50%" y2="45%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" />
-          <line x1="85%" y1="15%" x2="50%" y2="45%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.2s" }} />
-          <line x1="50%" y1="45%" x2="50%" y2="82%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.4s" }} />
+          <line x1="15%" y1="15%" x2="50%" y2="45%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" />
+          <line x1="85%" y1="15%" x2="50%" y2="45%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" style={{ animationDelay: "0.2s" }} />
+          <line x1="50%" y1="45%" x2="50%" y2="82%" stroke="currentColor" className="text-ink/20 animate-pulse" strokeWidth="2" strokeDasharray="4 4" style={{ animationDelay: "0.4s" }} />
         </svg>
 
         {nodes.map((node) => {
@@ -75,13 +75,13 @@ function Scene1({ onComplete }) {
               onClick={() => handleClick(node.id)}
             >
               {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success | Bug 8 fix: font-mono → font-sans */}
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:scale-110'}`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white border-[1.5px] border-ink/12 shadow-sm hover:border-ink/20 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.06)] hover:-translate-y-0.5 hover:scale-110'}`}>
                 {isClicked && <CheckIcon className="w-6 h-6 text-white" />}
-                {!isClicked && <span className="text-white font-sans text-xs font-semibold">{node.label}</span>}
+                {!isClicked && <span className="text-ink font-sans text-xs font-semibold">{node.label}</span>}
               </div>
               <div className={`mt-2 w-40 text-center transition-all duration-500 ${isClicked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <p className="text-white text-xs font-bold bg-ink/50 px-2 py-1 rounded">{node.label}</p>
-                <p className="text-white/60 text-[11px] mt-1 leading-tight bg-ink/50 p-1.5 rounded-lg">{node.desc}</p>
+                <p className="text-ink text-xs font-bold bg-[#fdfcfa] border-[1.5px] border-ink/10 px-2 py-1 rounded shadow-sm">{node.label}</p>
+                <p className="text-graphite text-[11px] mt-1 leading-tight bg-[#fdfcfa] border-[1.5px] border-ink/10 p-1.5 rounded-lg shadow-sm">{node.desc}</p>
               </div>
             </div>
           );
@@ -174,10 +174,10 @@ function Scene2({ onComplete }) {
         title="How Data Travels"
         subtitle="When you visit a website, your request doesn't teleport — it travels through multiple stops, like a letter going through sorting offices."
       />
-      <div className="w-full max-w-3xl bg-[#1a1a2e] rounded-2xl p-10 relative mt-4">
+      <div className="w-full max-w-3xl bg-[#fdfcfa] rounded-2xl p-10 relative mt-4 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
         <div className="flex justify-between items-center relative z-10">
           {/* Connection line */}
-          <div className="absolute top-1/2 left-[5%] right-[5%] h-1 bg-white/10 -translate-y-1/2 -z-10" />
+          <div className="absolute top-1/2 left-[5%] right-[5%] h-1 bg-ink/10 -translate-y-1/2 -z-10" />
 
           {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success */}
           {packetPos >= 0 && (
@@ -190,11 +190,11 @@ function Scene2({ onComplete }) {
           {path.map((node, i) => (
             <div key={i} className="flex flex-col items-center w-24">
               {/* Bug 6 fix: border-[#2a9d8f] → border-success */}
-              <div className={`text-4xl bg-white/5 w-16 h-16 flex items-center justify-center rounded-xl border-2 transition-colors ${packetPos === i ? 'border-success bg-white/20' : 'border-white/10'}`}>
+              <div className={`text-4xl bg-white w-16 h-16 flex items-center justify-center rounded-xl border-[1.5px] shadow-sm transition-colors ${packetPos === i ? 'border-success bg-success/10' : 'border-ink/12'}`}>
                 {node.icon}
               </div>
-              <span className="text-white font-bold mt-3 text-sm">{node.label}</span>
-              <span className={`text-white/60 text-xs text-center transition-opacity duration-300 ${packetPos >= i || done ? 'opacity-100' : 'opacity-0'}`}>
+              <span className="text-ink font-bold mt-3 text-sm">{node.label}</span>
+              <span className={`text-graphite text-xs text-center transition-opacity duration-300 ${packetPos >= i || done ? 'opacity-100' : 'opacity-0'}`}>
                 {node.desc}
               </span>
             </div>
@@ -253,16 +253,16 @@ function Scene3({ onComplete }) {
         subtitle="Every stop along the way is a potential target. Find all the vulnerable points to secure the path."
       />
 
-      <div className="w-full max-w-4xl bg-[#1a1a2e] rounded-2xl p-12 relative mt-4">
+      <div className="w-full max-w-4xl bg-[#fdfcfa] rounded-2xl p-12 relative mt-4 border-[1.5px] border-ink/12 shadow-[0_2px_0_0_rgba(0,0,0,0.06)]">
         {/* Background Path */}
-        <div className="absolute top-[40%] left-12 right-12 h-2 bg-white/5 -translate-y-1/2 rounded-full" />
+        <div className="absolute top-[40%] left-12 right-12 h-2 bg-ink/10 -translate-y-1/2 rounded-full" />
 
         {/* Network devices row */}
         <div className="flex justify-between items-center relative z-10 mb-4">
           {["💻", "📡", "🏢", "🧱", "🗄️"].map((icon, i) => (
             <div key={i} className="flex flex-col items-center w-20">
               <div className="text-4xl mb-1">{icon}</div>
-              <span className="text-white/70 text-xs font-semibold">{["Laptop", "Router", "ISP", "Firewall", "Server"][i]}</span>
+              <span className="text-ink/70 text-xs font-semibold">{["Laptop", "Router", "ISP", "Firewall", "Server"][i]}</span>
             </div>
           ))}
         </div>
@@ -275,12 +275,12 @@ function Scene3({ onComplete }) {
               <div key={spot.id} className="flex flex-col items-center">
                 <button
                   onClick={() => handleClick(spot.id)}
-                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all text-sm font-bold ${isFound ? 'bg-error border-error text-white' : 'bg-white/10 border-white/30 text-white/60 hover:bg-white/20 animate-pulse'}`}
+                  className={`w-10 h-10 rounded-full border-[1.5px] flex items-center justify-center transition-all text-sm font-bold shadow-sm ${isFound ? 'bg-error border-error text-white' : 'bg-white border-ink/20 text-ink/60 hover:bg-ink/5 animate-pulse'}`}
                 >
                   {isFound ? "⚠️" : "?"}
                 </button>
                 {isFound && (
-                  <div className="mt-2 bg-[#fdfcfa] rounded-xl p-3 w-44 text-center shadow-lg border-2 border-error animate-slide-up">
+                  <div className="mt-2 bg-[#fdfcfa] rounded-xl p-3 w-44 text-center shadow-lg border-[1.5px] border-error animate-slide-up">
                     <h4 className="font-bold text-ink text-sm">{spot.title}</h4>
                     <p className="text-xs text-graphite mt-1">{spot.desc}</p>
                   </div>
