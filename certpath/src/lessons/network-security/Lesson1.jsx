@@ -33,10 +33,10 @@ function Scene1({ onComplete }) {
   }, []);
 
   const nodes = [
-    { id: "laptop", label: "Laptop", desc: "Your personal computer. Requests web pages and sends emails.", x: 20, y: 20 },
-    { id: "phone", label: "Phone", desc: "Your mobile device. Constantly syncing apps and messages.", x: 80, y: 20 },
-    { id: "router", label: "Router", desc: "The traffic director. Connects all your devices to the internet.", x: 50, y: 50 },
-    { id: "server", label: "Server", desc: "Stores websites and sends them to your browser when you ask.", x: 50, y: 80 },
+    { id: "laptop", label: "Laptop", desc: "Your personal computer. Requests web pages and sends emails.", x: 15, y: 15 },
+    { id: "phone", label: "Phone", desc: "Your mobile device. Constantly syncing apps and messages.", x: 85, y: 15 },
+    { id: "router", label: "Router", desc: "The traffic director. Connects all your devices to the internet.", x: 50, y: 45 },
+    { id: "server", label: "Server", desc: "Stores websites and sends them to your browser when you ask.", x: 50, y: 82 },
   ];
 
   const handleClick = (id) => {
@@ -57,12 +57,12 @@ function Scene1({ onComplete }) {
         title="Your Digital Neighborhood"
         subtitle="Every time you open a website, send a message, or stream a video — your device is talking to other devices across a network."
       />
-      <div className="relative w-full max-w-lg h-96 bg-[#1a1a2e] rounded-2xl p-6 border-2 border-ink/10 shadow-lg overflow-hidden">
+      <div className="relative w-full max-w-2xl h-[480px] bg-[#1a1a2e] rounded-2xl p-6 border-2 border-ink/10 shadow-lg overflow-hidden">
         {/* Connections */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <line x1="20%" y1="20%" x2="50%" y2="50%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" />
-          <line x1="80%" y1="20%" x2="50%" y2="50%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.2s" }} />
-          <line x1="50%" y1="50%" x2="50%" y2="80%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.4s" }} />
+          <line x1="15%" y1="15%" x2="50%" y2="45%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" />
+          <line x1="85%" y1="15%" x2="50%" y2="45%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.2s" }} />
+          <line x1="50%" y1="45%" x2="50%" y2="82%" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" className="animate-pulse" style={{ animationDelay: "0.4s" }} />
         </svg>
 
         {nodes.map((node) => {
@@ -70,18 +70,18 @@ function Scene1({ onComplete }) {
           return (
             <div
               key={node.id}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer"
+              className="absolute transform -translate-x-1/2 flex flex-col items-center group cursor-pointer"
               style={{ left: `${node.x}%`, top: `${node.y}%` }}
               onClick={() => handleClick(node.id)}
             >
               {/* Bug 6 fix: #2a9d8f → bg-success / shadow-success | Bug 8 fix: font-mono → font-sans */}
-              <div className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:scale-110'}`}>
-                {isClicked && <CheckIcon className="w-8 h-8 text-white" />}
-                {!isClicked && <span className="text-white font-sans text-sm font-semibold">{node.label}</span>}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isClicked ? 'bg-success shadow-[0_0_15px_theme(colors.success)]' : 'bg-white/20 border border-white/30 hover:bg-white/30 hover:scale-110'}`}>
+                {isClicked && <CheckIcon className="w-6 h-6 text-white" />}
+                {!isClicked && <span className="text-white font-sans text-xs font-semibold">{node.label}</span>}
               </div>
-              <div className={`mt-3 w-48 text-center transition-all duration-500 ${isClicked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                <p className="text-white text-sm font-bold bg-ink/50 px-2 py-1 rounded">{node.label}</p>
-                <p className="text-white/70 text-xs mt-1 leading-tight bg-ink/50 p-2 rounded-lg">{node.desc}</p>
+              <div className={`mt-2 w-40 text-center transition-all duration-500 ${isClicked ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                <p className="text-white text-xs font-bold bg-ink/50 px-2 py-1 rounded">{node.label}</p>
+                <p className="text-white/60 text-[11px] mt-1 leading-tight bg-ink/50 p-1.5 rounded-lg">{node.desc}</p>
               </div>
             </div>
           );
@@ -112,7 +112,7 @@ function Scene2({ onComplete }) {
     { label: "Laptop", desc: "Sends request", icon: "💻" },
     { label: "Router", desc: "Routes traffic", icon: "📡" },
     { label: "ISP", desc: "Internet Provider", icon: "🏢" },
-    { label: "Firewall", desc: "Checks rules", icon: "🧱" },
+    { label: "Firewall", desc: "Checks rules", icon: "🛡️" },
     { label: "Server", desc: "Returns site", icon: "🗄️" }
   ];
 
