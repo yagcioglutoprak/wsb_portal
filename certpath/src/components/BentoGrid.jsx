@@ -263,13 +263,14 @@ function LessonsCard({ revealed }) {
               { id: 'deploy', name: 'Deploy', icon: <IconDeploy />, color: 'text-rust' }
             ].map((stage, i) => {
               const isPlaced = placed.includes(stage.id);
-              if (!isPlaced) return null;
               return (
                 <div key={stage.id} className="relative h-12 w-full flex items-center justify-center z-10">
-                  <div className="absolute inset-0 bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_4px_0_0_rgba(0,0,0,0.06)] rounded-xl flex items-center gap-3 px-4 animate-[bounceInRight_0.5s_cubic-bezier(0.34,1.56,0.64,1)]">
-                    <span className={stage.color}>{stage.icon}</span>
-                    <span className="text-sm font-bold text-ink">{stage.name}</span>
-                  </div>
+                  {isPlaced && (
+                    <div className="absolute inset-0 bg-[#fdfcfa] border-[1.5px] border-ink/12 shadow-[0_4px_0_0_rgba(0,0,0,0.06)] rounded-xl flex items-center gap-3 px-4 animate-[bounceInRight_0.5s_cubic-bezier(0.34,1.56,0.64,1)]">
+                      <span className={stage.color}>{stage.icon}</span>
+                      <span className="text-sm font-bold text-ink">{stage.name}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -359,57 +360,33 @@ function LessonsCard({ revealed }) {
           </p>
         </div>
 
-        <div className="mt-6 bg-[#f8f6f2] border-[1.5px] border-ink/10 rounded-xl p-3 shadow-inner overflow-hidden relative min-h-[250px] flex flex-col gap-2.5">
+        <div className="mt-6 bg-[#f8f6f2] border-[1.5px] border-ink/10 rounded-xl p-3 shadow-inner overflow-hidden relative h-[250px] flex flex-col gap-2.5">
           {placed.length === 0 && (
              <div className="absolute inset-0 m-3 border-2 border-dashed border-ink/15 rounded-xl flex items-center justify-center bg-white/50">
                 <span className="text-ink/30 font-mono text-xs font-bold uppercase tracking-widest">{t("bento.dropBlocksHere")}</span>
              </div>
           )}
 
-          {placed.includes('build') && (
-             <div className="bg-[#fdfcfa] border-[1.5px] border-orange/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
-                {commitPos === 0 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
-                <div className="w-9 h-9 rounded-lg bg-orange/10 text-orange flex items-center justify-center shrink-0"><IconBuild /></div>
-                <div className="flex-1 min-w-0">
-                   <div className="font-mono text-xs font-bold text-ink">Build Phase</div>
-                   <div className="font-mono text-xs text-pencil truncate mt-0.5">run: npm run build</div>
+          {/* Always render all 4 slots to prevent layout shifts */}
+          {[
+            { id: 'build', label: 'Build Phase', sub: 'run: npm run build', icon: <IconBuild />, borderColor: 'border-orange/30', bgColor: 'bg-orange/10', textColor: 'text-orange', commitIdx: 0, showWhen: placed.includes('build') },
+            { id: 'test', label: 'Test Suite', sub: 'run: npm run test', icon: <IconTest />, borderColor: 'border-[#2a9d8f]/30', bgColor: 'bg-[#2a9d8f]/10', textColor: 'text-[#2a9d8f]', commitIdx: 1, showWhen: placed.includes('test') && !isBroken },
+            { id: 'lint', label: 'Code Linter', sub: 'run: eslint src/', icon: <IconLint />, borderColor: 'border-violet/30', bgColor: 'bg-violet/10', textColor: 'text-violet', commitIdx: 2, showWhen: placed.includes('lint') },
+            { id: 'deploy', label: 'Production Deploy', sub: 'target: production', icon: <IconDeploy />, borderColor: 'border-rust/30', bgColor: 'bg-rust/10', textColor: 'text-rust', commitIdx: 3, showWhen: placed.includes('deploy') },
+          ].map(slot => (
+            <div key={slot.id} className={`transition-opacity duration-300 ${slot.showWhen ? 'opacity-100' : 'opacity-0 pointer-events-none h-0 -my-1.5'}`}>
+              {slot.showWhen && (
+                <div className={`bg-[#fdfcfa] border-[1.5px] ${slot.borderColor} shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative`}>
+                  {commitPos === slot.commitIdx && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
+                  <div className={`w-9 h-9 rounded-lg ${slot.bgColor} ${slot.textColor} flex items-center justify-center shrink-0`}>{slot.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-mono text-xs font-bold text-ink">{slot.label}</div>
+                    <div className="font-mono text-xs text-pencil truncate mt-0.5">{slot.sub}</div>
+                  </div>
                 </div>
-             </div>
-          )}
-
-
-          {placed.includes('test') && !isBroken && (
-             <div className="bg-[#fdfcfa] border-[1.5px] border-[#2a9d8f]/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
-                {commitPos === 1 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
-                <div className="w-9 h-9 rounded-lg bg-[#2a9d8f]/10 text-[#2a9d8f] flex items-center justify-center shrink-0"><IconTest /></div>
-                <div className="flex-1 min-w-0">
-                   <div className="font-mono text-xs font-bold text-ink">Test Suite</div>
-                   <div className="font-mono text-xs text-pencil truncate mt-0.5">run: npm run test</div>
-                </div>
-             </div>
-          )}
-
-          {placed.includes('lint') && (
-             <div className="bg-[#fdfcfa] border-[1.5px] border-violet/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
-                {commitPos === 2 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
-                <div className="w-9 h-9 rounded-lg bg-violet/10 text-violet flex items-center justify-center shrink-0"><IconLint /></div>
-                <div className="flex-1 min-w-0">
-                   <div className="font-mono text-xs font-bold text-ink">Code Linter</div>
-                   <div className="font-mono text-xs text-pencil truncate mt-0.5">run: eslint src/</div>
-                </div>
-             </div>
-          )}
-
-          {placed.includes('deploy') && (
-             <div className="bg-[#fdfcfa] border-[1.5px] border-rust/30 shadow-[0_2px_0_0_rgba(0,0,0,0.04)] p-2.5 rounded-xl flex items-center gap-3 animate-[dropInBlock_0.4s_ease-out] relative">
-                {commitPos === 3 && <div className="absolute inset-0 border-2 border-rust rounded-xl opacity-50"></div>}
-                <div className="w-9 h-9 rounded-lg bg-rust/10 text-rust flex items-center justify-center shrink-0"><IconDeploy /></div>
-                <div className="flex-1 min-w-0">
-                   <div className="font-mono text-xs font-bold text-ink">Production Deploy</div>
-                   <div className="font-mono text-xs text-pencil truncate mt-0.5">target: production</div>
-                </div>
-             </div>
-          )}
+              )}
+            </div>
+          ))}
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
