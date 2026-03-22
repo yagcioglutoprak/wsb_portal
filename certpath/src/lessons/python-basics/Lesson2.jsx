@@ -766,11 +766,11 @@ const Scene6 = ({ onComplete }) => {
 
   const codePhase1 = (
     <div className="flex flex-col">
-       <div className="opacity-50">username = <span className="text-amber-300">"admin"</span></div>
-       <div className="opacity-50 mb-4">password = <span className="text-amber-300">"secure123"</span></div>
-       
-       <div className="opacity-50">entered_user = <span className="text-amber-300">"admin"</span></div>
-       <div className="opacity-50 mb-4">entered_pass = <span className="text-amber-300">"wrong"</span></div>
+       <div className="opacity-70">username = <span className="text-amber-300">"admin"</span></div>
+       <div className="opacity-70 mb-4">password = <span className="text-amber-300">"secure123"</span></div>
+
+       <div className="opacity-70">entered_user = <span className="text-amber-300">"admin"</span></div>
+       <div className="opacity-70 mb-4">entered_pass = <span className="text-amber-300">"wrong"</span></div>
 
        <div className="flex items-center relative">
          <span className="text-[#2a9d8f] font-bold mr-2">if</span> 
@@ -864,7 +864,7 @@ const Scene6 = ({ onComplete }) => {
          </div>
       </div>
 
-      <div className="w-full bg-[#1a1a2e] border border-[#222] rounded-2xl p-8 font-mono text-sm leading-loose shadow-2xl min-h-[400px]">
+      <div className="w-full bg-[#1a1a2e] border border-[#222] rounded-2xl p-8 font-mono text-sm leading-loose shadow-2xl min-h-[400px] text-gray-300">
          {phase === 1 ? codePhase1 : codePhase2}
       </div>
 
